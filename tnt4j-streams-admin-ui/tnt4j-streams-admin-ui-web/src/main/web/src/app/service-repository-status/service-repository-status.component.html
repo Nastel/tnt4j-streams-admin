@@ -1,0 +1,50 @@
+
+<h4 [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center">
+  <div class="row justify-content-center">
+    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" my-h4" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+  </div>
+</h4>
+
+<div *ngIf="valueThatChangesForSpinnerOnResponse" >
+  <div class="row justify-content-center medium-paddingTop" >
+    <mat-progress-spinner mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>
+  </div>
+</div>
+
+<div *ngIf="!valueThatChangesForSpinnerOnResponse">
+  <!-- ---------------Repository data------------------------------------------------------------------------------------------------------>
+  <div class="medium-marginLeftRight">
+
+      <mat-form-field class="filterInputField" >
+        <input matInput (keyup)="applyFilterRepositoryData($event.target.value)" placeholder="Filter">
+      </mat-form-field>
+
+      <mat-table mat-table [dataSource]="dataSourceRepositoryData"  matSort #matRepositoryData="matSort" class="agentRuntimeInformationTable rounded-cornersBottom">
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name" class="agentRuntimeTable">
+          <mat-header-cell *matHeaderCellDef mat-sort-header  [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }" class="agentRuntimeServiceInformationTableHeader mat-Header "> Name </mat-header-cell>
+          <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom"> <h6 class="noMargin"><b>{{element.name}}</b></h6> </mat-cell>
+        </ng-container>
+
+        <!-- Value Column -->
+        <ng-container matColumnDef="value" >
+          <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }" class="agentRuntimeServiceInformationTableHeader mat-Header"> Value </mat-header-cell>
+          <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom"> <h6 class="noMargin">{{element.value}}</h6> </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+      <mat-paginator #paginatorRepository
+                     [pageSize]="20"
+                     [pageSizeOptions]="[5, 10, 15, 20]" style="background-color: #E6E6E6;" class="agentRuntimeInformationPagginator">
+      </mat-paginator>
+  </div>
+</div>

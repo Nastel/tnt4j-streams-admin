@@ -1,0 +1,80 @@
+
+<h4 [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center">
+  <div class="row justify-content-center">
+    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" my-h4" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+  </div>
+</h4>
+
+<div *ngIf="valueThatChangesForSpinnerOnResponse" >
+  <div class="row justify-content-center medium-paddingTop" >
+    <mat-progress-spinner mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>
+  </div>
+</div>
+<div class="medium-marginLeftRight" *ngIf="!valueThatChangesForSpinnerOnResponse" >
+      <mat-form-field class="filterInputField" >
+        <input matInput (keyup)="applyFilterIncompleteBlocks($event.target.value)" placeholder="Filter">
+      </mat-form-field>
+        <mat-table [dataSource]="dataSource" matSort   class="agentRuntimeInformationTable"  [ngStyle]="{'background-color': this.utilsSvc.getColorBackground()}" >
+          <ng-container matColumnDef="activityName">
+            <mat-header-cell *matHeaderCellDef [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"   data-label="activityName" class="agentRuntimeServiceInformationTableHeader mat-Header text-alignCenter"> Item Name </mat-header-cell>
+            <mat-cell *matCellDef="let element" class="align-alignEnd extraSmall-paddingTopBottom" >
+              <span class="mobile-label"> Item Name : </span>
+              <a  href="{{element.linkToBlock}}" target="_blank"><span class="medium-fontSize routing"> {{element.ActivityName}}</span> </a>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="startTime" >
+            <mat-header-cell  *matHeaderCellDef [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"  data-label="startTime" class="agentRuntimeServiceInformationTableHeader mat-Header  text-alignCenter"> Start Time </mat-header-cell>>
+            <mat-cell  *matCellDef="let element" class=" align-alignEnd extraSmall-paddingTopBottom">
+              <span class="mobile-label"> Start Time : </span>
+             <span class="medium-fontSize" >{{element.StartTime}}</span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="reason">
+            <mat-header-cell *matHeaderCellDef [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"  data-label="Reason" class="agentRuntimeServiceInformationTableHeader mat-Header  text-alignCenter"> Reason </mat-header-cell>
+            <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom">
+              <span class="mobile-label"> Reason : </span>
+              <span class="medium-fontSize">{{ element.reason }}</span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="count">
+            <mat-header-cell  *matHeaderCellDef [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"  data-label="count" class="agentRuntimeServiceInformationTableHeader mat-Header  text-alignCenter"> Count </mat-header-cell>
+            <mat-cell  *matCellDef="let element" class=" align-alignEnd extraSmall-paddingTopBottom">
+              <span class="mobile-label"> Count : </span>
+              <span class="medium-fontSize">{{ element.count }}</span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="control">
+            <mat-header-cell  *matHeaderCellDef [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"  data-label="control" class="agentRuntimeServiceInformationTableHeader mat-Header  text-alignCenter"></mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div class="input-group">
+                <svg class="background-svgColorChange" style="padding-bottom: 1px; cursor: pointer;" (click)="replayTheBlockFromInput(element.ActivityName)" height="32" viewBox="0 0 46 46" width="32" xmlns="http://www.w3.org/2000/svg">
+                  <title>Replay Item</title>
+                  <path d="M0 0h48v48H0z" fill="none"/>
+                  <path d="M24 10V2L14 12l10 10v-8c6.63 0 12 5.37 12 12s-5.37 12-12 12-12-5.37-12-12H8c0 8.84 7.16 16 16 16s16-7.16 16-16-7.16-16-16-16z"/>
+                </svg>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+        </mat-table>
+        <div class="row justify-content-center">
+          <mat-paginator [pageSizeOptions]="[5, 10, 15, 20, 30]"  [pageSize]="10" showFirstLastButtons style="background-color: #E6E6E6; "></mat-paginator>
+        </div>
+</div>

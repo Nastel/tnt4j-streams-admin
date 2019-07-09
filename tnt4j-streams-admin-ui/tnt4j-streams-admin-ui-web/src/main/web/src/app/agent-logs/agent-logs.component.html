@@ -1,0 +1,83 @@
+
+<h4 [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center">
+  <div class="row justify-content-center">
+    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" my-h4" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+  </div>
+</h4>
+
+<div *ngIf="valueThatChangesForSpinnerOnResponse" >
+  <div class="row justify-content-center medium-paddingTop" >
+    <mat-progress-spinner mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>
+  </div>
+</div>
+<div *ngIf="!valueThatChangesForSpinnerOnResponse" >
+
+
+  <!-- -------Top navigation example-------------------------------------------------------------------------------------------------------------->
+  <div class="row">
+    <div *ngFor="let item of logArray" >
+      <div class="col-12  medium-marginLeftRight">
+        <div *ngIf="this.utilsSvc.compareStrings(item, logChoiceName); then selected; else notSelected"></div>
+        <ng-template #selected>
+          <div class="large-fontSize backgroundWhite text-AlignCenter backgroundUnderline extraSmall-paddingTopBottom small-paddingLeftRight extraSmall-marginTopBottom" (click)="logChoice(item)" ><b>{{item}}</b></div>
+        </ng-template>
+        <ng-template #notSelected>
+          <div class="large-fontSize hoverWhite text-AlignCenter extraSmall-paddingTopBottom small-paddingLeftRight extraSmall-marginTopBottom" (click)="logChoice(item)"><b>{{item}}</b></div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-12" >
+        <div class="row justify-content-between paddingBottom">
+          <div class="d-inline-block col-7 medium-marginLeftRight">
+            <div class="input-group border3" >
+              <input placeholder="Filter Data" [(ngModel)]="findValueLog" class="inputHighlight form-control" />
+              <svg  style="cursor: pointer;"  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" (click)="filterLogs(findValueLog)">
+                <title>Search</title>
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                <path d="M0 0h24v24H0z" fill="none"/>
+              </svg>
+              <svg  style="cursor: pointer;"  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" (click)="filterLogs('')">
+                <title>Clear</title>
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                <path d="M0 0h24v24H0z" fill="none"/>
+              </svg>
+              <!--<button class="btn2 green"  (click)="filterLogs(findValueLog)">Filter</button>-->
+              <!--<button class="btn2 green"  (click)="filterLogs('')">Clear</button>-->
+
+              <p class="amountShown"> show  {{logLinesLoaded}}/{{logLinesAvailable}} </p>
+            </div>
+          </div>
+          <div class="col-4 text-right">
+
+            <svg (click)="scrollToBottom()"  style="cursor: pointer;"  enable-background="new 0 0 24 24" height="20" id="Layer_1" version="1.1" viewBox="0 0 26 26" width="24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+               <title>Scroll Down</title>
+              <g>
+                <polygon fill="#231F20" points="0.046,2.582 2.13,0.498 12.967,11.334 23.803,0.498 25.887,2.582 12.967,15.502  "/>
+                <polygon fill="#231F20" points="0.046,13.582 2.13,11.498 12.967,22.334 23.803,11.498 25.887,13.582 12.967,26.502  "/>
+              </g>
+            </svg>
+
+            <svg (click)="loadMoreLogData()"  style="cursor: pointer;"  enable-background="new 0 0 80 80" height="36" id="Icons" version="1.1" viewBox="0 0 80 80" width="50" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <title>Load More</title>
+              <polygon points="61,37 43,37 43,19 37,19 37,37 19,37 19,43 37,43 37,61 43,61 43,43 61,43 "/>
+            </svg>
+
+            <!--<button class="btn2 green" (click)="scrollToBottom()">Scroll down</button>-->
+            <!--<button class="btn2 green" (click)="loadMoreLogData()">Load more</button>-->
+          </div>
+        </div>
+
+        <div #scrollMeLog id="scrollElementLog" [ngClass]="{'hiddenOverflowComponents' : true}" class="small-margin">
+          <div  *ngFor="let item of logData" >
+            <div  class="border4">
+              <PRE class="logMargin"><span class="threads">  <div [innerHTML]="item | highlight: findValueLog" ></div>  </span></PRE>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>

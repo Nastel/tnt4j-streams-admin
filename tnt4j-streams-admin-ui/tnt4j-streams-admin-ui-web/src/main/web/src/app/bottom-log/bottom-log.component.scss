@@ -1,0 +1,46 @@
+  $input-bg-static: #ddd;
+  $input-bg-pseudo-active: #CD1F1F;
+  $input-bg-pseudo-static: #489431;
+
+  $input-width: 5em;
+
+  $input-radius: calc( #{$input-width} / 2 );
+  $input-height: calc( #{$input-width} / 2 );
+
+
+  input[type="checkbox"] {
+    position: relative;
+    appearance: none;
+    width: $input-width;
+    height: $input-height;
+    background-color: $input-bg-static;
+    border-radius: $input-radius;
+    outline: none; // bad accessibility
+    transition: background 450ms ease;
+    box-shadow: 0 0 0 3px darken($input-bg-static, 7.5%);
+
+    &:before, &:after {
+      position: absolute;
+      display: block;
+      content: "";
+      border-radius: 100%;
+      transition:
+      background 450ms ease,
+      transform 450ms ease;
+    }
+
+    &:before {
+      width: calc( #{$input-width} / 2 );
+      height: $input-height;
+      background-color: $input-bg-pseudo-static;
+    }
+
+    // active state
+    &:checked {
+
+      &:before {
+        background-color: $input-bg-pseudo-active;
+        transform: translateX(100%);
+      }
+    }
+  }

@@ -1,0 +1,131 @@
+{
+	"StreamsIcon": {
+		"mainPage": "assets/icons/mainPage5.svg"
+	},
+    "StreamsDataForAgentPage": {
+		"latest block" : {"Last Streamed": "N/A"},
+		"last block query time" : {"Last Query Time" : "N/A"},
+		"last block time" :{"Last Stream Time": "N/A"},
+		"StreamsStartTime" :{"Start Time" : "N/A"}
+	},
+	
+    "StreamsDataForClusterPage": {
+		"latest block" : {"last streamed": "N/A"},
+		"last block time" :{"last block stream time": "N/A"},
+		"StreamsStartTime" :{"Start Time" : "N/A"}
+	},
+	"ReposDataForAllPage": {
+		"rowCount" :{"Total streams" : 0},
+		"last_msg_time" :{"Last received" : "N/A"},
+		"last_delivered_msg_time" : {"Last processed" : "N/A" },
+
+		"last_drop_msg_time" :{"Last failure" : "N/A"},
+		"last_error_msg_time" : {"Last drop" : "N/A" },
+
+		"SUMtotal_msg_count" :{"Total received" : 0},
+		"SUMtotal_delivered_msg_count" : {"Total Processed" : 0 },
+		"SUMtotal_drop_msg_count" :{"Total errors" : 0},
+		"SUMtotal_error_msg_count" : {"Total dropped" : 0 },
+
+		"SUMlimiter_total_delay_count" : {"Delayed by limiter" : 0 },
+		"SUMlimiter_total_msg_count" :{"Processed by limiter" : 0},
+		"limiter_overage_policy" : {"Overage policy" : "N/A" },
+
+		"SUMlimiter_bytes_per_sec" :{"Total bytes/sec" : 0},
+		"AVGlimiter_bytes_per_sec" :{"Avg bytes/sec per stream" : 0},
+		"SUMlimiter_msgs_per_sec" : {"Total msgs/sec" : 0 },
+		"AVGlimiter_msgs_per_sec" :{"Avg msgs/sec per stream" : 0}
+	},
+	"StreamsDataFormatting": {
+		
+		"LastBlockQueryTime" : "time",
+		"LastBlockTime": "time",
+		"StreamsStartTime" : "time",
+		"StreamActivityTime" : "time",
+		
+		"Last received" : "timeWords",
+		"Last processed" : "timeWords",
+		
+	
+		"last block query time" : "time",
+		"last block time": "time",
+		"Last action in streams time" : "time",
+		"Service start time" : "time",
+		"StartTime" : "time",
+		
+		"StreamStartTime" : "time",
+		"streamStartTime" : "time",
+		"LatestBlockTime" : "time",
+		"LatestBlockQueryTime" : "time"
+	},
+	"IncompleteItemsConfig" : {
+		"tableName" : "Incomplete Items",
+		"controlName" : "Replay",
+		"NeededColumns" : {
+			"reason" : "Reason",
+			"activityName" : "Item Name",
+			"startTime" : "Start Time",
+			"count" : "Count",
+			"blockRepeat" : "Replay Item"
+		}
+	},
+	"NeededDataToGetJKoolIncompleteBlocks" : [
+		"ActivityName",
+		"EventCount",
+		"StartTime",
+		{"Properties('txCount')" :"txCount"},
+		"linkToBlock"
+	],
+	"NeededDataToGetJKoolIncompleteBlocksNoReceipt" : [
+		"Count(EventName)",
+		{"Properties('blockNumber')" : "blockNumber" },
+		"StartTime"
+	],
+	
+	"LazyLoadDataLines" : {
+		"log" : 50,
+		"logErr" : 200,
+		"bottomLog" : 200,
+		"bottomLogLoadIntervalMS" : 10000
+	},
+	
+	"excludeFromTreeView" : [
+		"requests",
+		"downloaded"
+	],
+	
+	"excludeFromReadingOnTreeLoad" : [
+		"requests",
+		"downloaded",
+		"threadDump",
+		"configurations",
+		"downloadables",
+		"logs"
+	],
+	
+	"StartTreeNodeParentName" : "BaseNode",
+	"BasePathHide" : "streams/v1",
+	
+		
+	"ZooKeeperTreeNodes" : "//localhost:8080/test/registry/nodeTree",
+	
+	"ZooKeeperDataCall" : [
+		"//localhost:8080/test/registry",
+		"/list"
+	],
+	"PageColorConfigs" : {
+		"goodResponseHeaderFooter" : "#489431",
+		"colorInnerComponentLabels" : "#95ADB6",
+		
+		"labelTextColor" : "#000000",
+		"colorTableTextLabels" : "#000000",
+
+		"agentWindowStreamNoResponse" : "#DBB1BC",
+		"badResponse" : "#CD1F1F",
+		
+		
+		"componentsBackgroundColor" : "#E6E6E6"
+	}
+	
+	
+}

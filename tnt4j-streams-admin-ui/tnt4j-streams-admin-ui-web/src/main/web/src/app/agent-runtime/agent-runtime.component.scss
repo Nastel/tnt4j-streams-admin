@@ -1,0 +1,61 @@
+  .mat-column-value {
+  flex: 0 0 75% !important;
+  min-width: 104px !important;
+  }
+
+  .mat-column-value {
+    flex: 0 0 75% !important;
+    min-width: 104px !important;
+  }
+
+  .mat-column-control {
+    flex: 0 0 30% !important;
+    min-width: 104px !important;
+  }
+
+
+  .mat-column-AgentName {
+    flex: 0 0 20% !important;
+    justify-content: flex-start;
+  }
+
+  .mat-column-Status {
+    justify-content: center;
+  }
+
+  .mat-column-StreamName {
+    justify-content: flex-start;
+  }
+
+  .mat-column-Stream {
+    flex: 0 0 20% !important;
+    justify-content: flex-start;
+  }
+
+  mat-row.expand-detail-row {
+    min-height: 0em !important;
+  }
+
+  mat-cell.expand-detail-row{
+    text-align: start;
+  }
+
+    .element-detail {
+    overflow: hidden;
+    display: flex;
+  }
+
+  .mat-cell-Clusters{
+    overflow:inherit;
+    display:flex;
+  }
+
+
+  .mat-Header {
+    display:flex !important;
+  }
+
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+    padding: 0.4em !important;
+    border: none !important;
+  }
