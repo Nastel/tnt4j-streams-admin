@@ -129,12 +129,12 @@
         </dependency>
 
         <!-- UNUSED DEP -->
-        <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
-            <version>${javax.transaction.version}</version>
-            <scope>runtime</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>javax.transaction</groupId>-->
+        <!--<artifactId>jta</artifactId>-->
+        <!--<version>${javax.transaction.version}</version>-->
+        <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
 
         <!-- Quartz  -->
         <dependency>

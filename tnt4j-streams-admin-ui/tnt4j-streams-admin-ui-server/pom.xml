@@ -15,6 +15,18 @@
     <description>TNT4J-Streams administration Web-UI server side module</description>
 
     <properties>
+        <web3.version>4.3.1</web3.version>
+        <weld.version>2.4.7.Final</weld.version>
+        <servlet.api.version>3.0.1</servlet.api.version>
+        <logback.version>1.2.3</logback.version>
+        <jackson.version>2.9.9</jackson.version>
+        <jboss.version>3.0.9.Final</jboss.version>
+        <guava.version>27.0.1-jre</guava.version>
+        <jasypt.version>1.9.2</jasypt.version>
+        <quartz.version>2.3.1</quartz.version>
+        <jsonassert.version>1.5.0</jsonassert.version>
+        <httpcomp.version>4.5.6</httpcomp.version>
+        <zookeeper.version>3.4.14</zookeeper.version>
         <curator.version>4.2.0</curator.version>
     </properties>
 
@@ -143,7 +155,7 @@
         <dependency>
             <groupId>org.web3j</groupId>
             <artifactId>core</artifactId>
-            <version>4.3.1</version>
+            <version>${web3.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -154,104 +166,99 @@
         <dependency>
             <groupId>org.jboss.weld.servlet</groupId>
             <artifactId>weld-servlet</artifactId>
-            <version>2.4.7.Final</version>
+            <version>${weld.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
+            <version>${servlet.api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <!-- Servlet pluggability support -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-servlet-initializer</artifactId>
-            <version>3.0.9.Final</version>
+            <version>${jboss.version}</version>
         </dependency>
         <!-- JSON/POJO support -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jackson2-provider</artifactId>
-            <version>3.0.9.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.9.9</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.9.9</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.9.9</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>2.9.9</version>
+            <version>${jboss.version}</version>
         </dependency>
         <!-- REST Client support -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>3.0.9.Final</version>
+            <version>${jboss.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-cdi</artifactId>
-            <version>3.0.9.Final</version>
+            <version>${jboss.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>27.0.1-jre</version>
+            <version>${guava.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>listenablefuture</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jasypt</groupId>
             <artifactId>jasypt</artifactId>
-            <version>1.9.2</version>
-            <scope>compile</scope>
+            <version>${jasypt.version}</version>
         </dependency>
 
         <!-- Quartz scheduler -->
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.3.1</version>
+            <version>${quartz.version}</version>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz-jobs</artifactId>
-            <version>2.3.1</version>
+            <version>${quartz.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.skyscreamer</groupId>
             <artifactId>jsonassert</artifactId>
-            <version>1.5.0</version>
+            <version>${jsonassert.version}</version>
         </dependency>
 
         <!--  HTTP support -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.6</version>
+            <version>${httpcomp.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
-            <version>3.4.14</version>
+            <version>${zookeeper.version}</version>
         </dependency>
 
         <dependency>
