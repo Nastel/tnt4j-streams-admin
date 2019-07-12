@@ -50,7 +50,7 @@ public class   JobUtils {
         try {
             response = StaticObjectMapper.mapper.writeValueAsString(configData);
         } catch (JsonProcessingException e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR, String.format("Failed to transform object to json: %s", e.getMessage()));
+            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
         }
 
         return response;

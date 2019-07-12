@@ -8,18 +8,26 @@ import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.IoUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JobUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.CuratorSingleton;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class AgentConfigUpdaterJob implements Job {
+
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        LoggerWrapper.addMessage(OpLevel.INFO, "Starting AgentConfigUpdaterJob");
+        //LoggerWrapper.addMessage(OpLevel.INFO, "Starting AgentConfigUpdaterJob");
+
+
 
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
@@ -34,11 +42,12 @@ public class AgentConfigUpdaterJob implements Job {
 
         String response = JobUtils.toJson(configData);
 
-        try {
-            boolean wasSet = CuratorUtils.setData(path, response, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
-        }catch (Exception e){
-            e.printStackTrace();
+
+        boolean wasSet = CuratorUtils.setData(path, response, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
+
+
+        if (!wasSet) {
+            LoggerWrapper.addQuartzJobLog(this.getClass().getName(), path, response);
         }
-       // LoggerWrapper.addMessage(OpLevel.INFO, String.format("Config update was sent: %b", wasSet ));
     }
 }

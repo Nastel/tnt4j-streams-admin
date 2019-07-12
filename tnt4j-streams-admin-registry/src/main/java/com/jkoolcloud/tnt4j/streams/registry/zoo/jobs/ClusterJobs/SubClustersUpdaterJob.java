@@ -18,9 +18,6 @@ import java.util.Map;
 public class SubClustersUpdaterJob implements Job  {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-
-        LoggerWrapper.addMessage(OpLevel.INFO, "Starting SubClustersUpdaterJob");
-
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
         String path = JobUtils.getPathToNode(jobDataMap);
@@ -37,6 +34,8 @@ public class SubClustersUpdaterJob implements Job  {
 
         boolean wasSet = CuratorUtils.setData(path, response, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
 
-        LoggerWrapper.addMessage(OpLevel.INFO, String.format("SubClusters were updated: %b", wasSet));
+        if (!wasSet) {
+            LoggerWrapper.addQuartzJobLog(this.getClass().getName(), path, response);
+        }
     }
 }

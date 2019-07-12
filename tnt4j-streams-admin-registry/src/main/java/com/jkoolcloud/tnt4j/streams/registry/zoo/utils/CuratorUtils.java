@@ -16,8 +16,11 @@
 
 package com.jkoolcloud.tnt4j.streams.registry.zoo.utils;
 
+import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
+import org.apache.curator.utils.PathUtils;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.zookeeper.CreateMode;
@@ -25,12 +28,91 @@ import org.apache.zookeeper.data.Stat;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
  * The type Curator utils.
  */
 public class CuratorUtils {
+
+
+	private static boolean validateCuratorParam(CuratorFramework curatorFramework){
+		if(curatorFramework == null  ){
+			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
+			LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Curator framework is NULL \n %s", stackTrace ));
+			return false;
+		}
+
+		if(curatorFramework.getState() !=  CuratorFrameworkState.STARTED ){
+			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
+			LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Curator framework was not started: \n %s", stackTrace ));
+			return false;
+		}
+
+		return true;
+	}
+
+
+	private static boolean validatePayload(String payload){
+		int MAX_ZK_PAYLOAD_SIZE_BYTES = 1_000_000;
+		if(payload == null ){
+			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
+			LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Payload is NULL: %s", stackTrace ));
+
+			return false;
+		}
+		if(payload.getBytes().length > MAX_ZK_PAYLOAD_SIZE_BYTES){
+			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
+			LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Invalid parameter payload, too big: %d \n %s", payload.getBytes().length, stackTrace ));
+
+			return false;
+		}
+
+		return true;
+	}
+
+	private static boolean validatePath(String path, CuratorFramework curatorFramework){
+		if(path == null){
+			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
+			LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Path is NULL \n %s", stackTrace ));
+
+			return false;
+		}
+
+		boolean isPathValid = true;
+
+		try {
+			PathUtils.validatePath(path);
+		}catch (IllegalArgumentException e){
+			isPathValid = false;
+		}
+
+		if( !isPathValid || !doesNodeExist(path, curatorFramework)){
+			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
+			LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Invalid parameter path: %s \n %s", path, stackTrace ));
+
+			return false;
+		}
+		return true;
+	}
+
+
+	private static boolean areParameterValid(CuratorFramework curatorFramework, String path, String payload){
+
+		if(!validateCuratorParam(curatorFramework)){
+			return false;
+		}
+		if(!validatePayload(payload)){
+			return false;
+		}
+		if(!validatePath(path, curatorFramework)){
+			return false;
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Does node exist boolean.
@@ -46,7 +128,7 @@ public class CuratorUtils {
 		try {
 			stat = curator.checkExists().forPath(path);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 
 		return stat == null ? false : true;
@@ -66,7 +148,7 @@ public class CuratorUtils {
 				String result = curator.create().forPath(path);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 	}
 
@@ -84,9 +166,11 @@ public class CuratorUtils {
 	public static boolean setData(String path, String data, CuratorFramework curator) {
 		Stat stat = null;
 		try {
-			stat = curator.setData().forPath(path, data.getBytes());
+			if (areParameterValid(curator, path, data)) {
+				stat = curator.setData().forPath(path, data.getBytes());
+			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 		return stat != null;
 	}
@@ -110,7 +194,7 @@ public class CuratorUtils {
 				stat = curator.setData().forPath(path, data.getBytes());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 		return stat != null;
 	}
@@ -129,7 +213,7 @@ public class CuratorUtils {
 		try {
 			curator.delete().forPath(path);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 	}
 
@@ -147,7 +231,7 @@ public class CuratorUtils {
 		try {
 			bytes = curator.getData().forPath(path);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 		return bytes;
 	}
@@ -170,7 +254,7 @@ public class CuratorUtils {
 			Collection<String> serviceNames = serviceDiscovery.queryForNames();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 	}
 
@@ -223,68 +307,7 @@ public class CuratorUtils {
 				String result = curator.create().withMode(CreateMode.EPHEMERAL).forPath(path);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 	}
-
-	/**
-	 * Create default node hierarchy.
-	 *
-	 * @param curator
-	 *            the curator
-	 */
-	public static void createDefaultNodeHierarchy(CuratorFramework curator) {
-
-		if (doesNodeExist("/streams2", curator)) {
-			return;
-		}
-
-		String headPath = createHead("/streams2", curator);
-		String childPath = createChild(headPath, "v1", curator);
-		String activeServicesPath = createChild(childPath, "activeServices", curator);
-		String activeServicesEth = createChild(activeServicesPath, "eth", curator);
-		// createChild(activeServicesEth, "instances", curator);
-		createChild(activeServicesEth, "request", curator);
-		createChild(activeServicesEth, "response", curator);
-		createChild(activeServicesEth, "logs", curator);
-		createChild(activeServicesEth, "errLogs", curator);
-		String activeServicesEthRepair = createChild(activeServicesPath, "ethRepair", curator);
-		// createChild(activeServicesEthRepair, "instances", curator);
-		createChild(activeServicesEthRepair, "request", curator);
-		createChild(activeServicesEthRepair, "response", curator);
-		createChild(activeServicesEthRepair, "logs", curator);
-		createChild(activeServicesEthRepair, "errLogs", curator);
-		String offeredServices = createChild(childPath, "offeredServices", curator);
-
-		String servicesArrayJson = null;
-		try {
-			servicesArrayJson = FileUtils.readFile("./config/zookeeperConfigs/offeredServices/serviceArray.json",
-					Charset.defaultCharset());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		String[] servicesList = null;
-		try {
-			servicesList = StaticObjectMapper.mapper.readValue(servicesArrayJson, String[].class);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		for (int i = 0; i < servicesList.length; i++) {
-			String offeredServicePath = createChild(offeredServices, servicesList[i], curator);
-
-			String staticServiceData = null;
-			try {
-				staticServiceData = FileUtils.readFile(
-						"./config/zookeeperConfigs/offeredServices/" + servicesList[i] + ".json",
-						Charset.defaultCharset());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			setData(offeredServicePath, staticServiceData, curator);
-		}
-
-	}
-
 }

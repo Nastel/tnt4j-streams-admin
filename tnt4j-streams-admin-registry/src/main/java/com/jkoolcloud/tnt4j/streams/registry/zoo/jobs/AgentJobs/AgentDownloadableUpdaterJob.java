@@ -20,7 +20,6 @@ import java.util.Map;
 public class AgentDownloadableUpdaterJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        LoggerWrapper.addMessage(OpLevel.INFO, "Starting AgentDownloadableUpdaterJob");
 
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
@@ -40,6 +39,10 @@ public class AgentDownloadableUpdaterJob implements Job {
 
         boolean wasSet = CuratorUtils.setData(path, response, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
 
-        LoggerWrapper.addMessage(OpLevel.INFO, String.format("Downloadable  was sent: %b", wasSet ));
+
+        if (!wasSet) {
+            LoggerWrapper.addQuartzJobLog(this.getClass().getName(), path, response);
+        }
     }
+
 }

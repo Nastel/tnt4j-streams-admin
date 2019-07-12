@@ -21,31 +21,16 @@ public class ZkTree {
         properties = properties0;
     }
 
-    //Returns path where to put streams
+
     public static String createZkTree(CuratorFramework curatorFramework){
 
         List<String> zkTree = new ArrayList<>();
 
-        String path =  properties.getProperty("root");
+        String[] nodeList =  properties.getProperty("nodeList").split(",");
 
-        if(!CuratorUtils.doesNodeExist(path, curatorFramework)){
-            CuratorUtils.createNode(path, curatorFramework);
-        }
-
-        zkTree.add ( properties.getProperty("version"));
-        zkTree.add ( properties.getProperty("clusters"));
-        zkTree.add ( properties.getProperty("cluster_name"));
-        zkTree.add ( properties.getProperty("stream_agent_name"));
-        zkTree.add ( properties.getProperty("agent_logs"));
-        zkTree.add ( properties.getProperty("agent_configurations"));
-        zkTree.add ( properties.getProperty("agent_sampleConfigurations"));
-        zkTree.add ( properties.getProperty("agent_threadDump"));
-        zkTree.add ( properties.getProperty("downloadables"));
-
-
-
-        for (String node : zkTree){
-            if(!CuratorUtils.doesNodeExist(node, curatorFramework)){
+        for(String node : nodeList){
+            String nodePath = properties.getProperty(node);
+            if(!CuratorUtils.doesNodeExist(nodePath, curatorFramework)){
                 CuratorUtils.createNode(node, curatorFramework);
             }
         }
@@ -69,15 +54,12 @@ public class ZkTree {
             availableStats[0] = streams;
         }
 
-        CuratorFramework streamConnection = CuratorFrameworkFactory.newClient("127.0.0.1", new ExponentialBackoffRetry(1000, 1));
-        streamConnection.start();
-
         for (String stat : availableStats) {
-            CuratorUtils.createEphemeralNode(path + "/" + stat, streamConnection);
+            CuratorUtils.createEphemeralNode(path + "/" + stat, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
         }
 
 
-        StreamManagerSingleton.getInstance().putStream(streamName, streamConnection);
+        StreamManagerSingleton.getInstance().putStream(streamName, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
     }
 
 

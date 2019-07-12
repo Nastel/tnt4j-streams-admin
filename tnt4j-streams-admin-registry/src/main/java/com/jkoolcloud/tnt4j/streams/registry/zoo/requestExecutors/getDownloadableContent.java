@@ -49,14 +49,14 @@ public class getDownloadableContent implements JsonRpcRequest<Map<String, Object
         try {
             content = FileUtils.readFile(filePath, Charset.defaultCharset());
         } catch (IOException e) {
-            e.printStackTrace();
+            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
         }
 
         byte[] compressedBytes = null;
         try {
             compressedBytes = IoUtils.compress(content.getBytes(), fileToFetch + ".txt");
         } catch (IOException e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR, String.format("could not compress %s", e.getMessage())) ;
+            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
         }
 
         byte[] base64EncodedBytes = Base64.getEncoder().encode(compressedBytes);
@@ -71,7 +71,7 @@ public class getDownloadableContent implements JsonRpcRequest<Map<String, Object
         try {
             responseJson = StaticObjectMapper.mapper.writeValueAsString(response);
         } catch (JsonProcessingException e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR, String.format("could not map to json %s", e.getMessage())) ;
+            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
         }
 
         byte[] bytes = responseJson.getBytes();
@@ -88,7 +88,7 @@ public class getDownloadableContent implements JsonRpcRequest<Map<String, Object
                 CuratorUtils.setData(responsePath, "Error: File is to big", CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
             }
         } catch (UnsupportedEncodingException e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR, e.getMessage()) ;
+            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
         }
 
     }

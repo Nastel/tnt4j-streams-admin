@@ -18,7 +18,6 @@ public class StreamLifeManager implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        LoggerWrapper.addMessage(OpLevel.INFO, "Starting StreamLifeManager");
 
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
@@ -43,9 +42,6 @@ public class StreamLifeManager implements Job {
         for(String stream : registeredStreams){
             StreamManagerSingleton.getInstance().closeStream(stream);
         }
-
-        LoggerWrapper.addMessage(OpLevel.INFO, "StreamLifeManager has ended");
-
 
     }
 }

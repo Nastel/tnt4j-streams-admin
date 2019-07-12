@@ -16,8 +16,6 @@ public class ThreadDump implements JsonRpcRequest<Map<String,Object>> {
     @Override
     public void processRequest(Map<String,Object> params) {
 
-        try {
-
             String path = (String) params.get("responsePath");
             Properties properties = (Properties) params.get("properties");
 
@@ -40,15 +38,11 @@ public class ThreadDump implements JsonRpcRequest<Map<String,Object>> {
             try {
                 threadDumpResponse = StaticObjectMapper.mapper.writeValueAsString(configData);
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
             }
 
-            LoggerWrapper.addMessage(OpLevel.INFO, threadDumpResponse);
-
             CuratorUtils.setData(path, threadDumpResponse, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
-        }catch (Throwable t){
-           t.printStackTrace();
-        }
+
     }
 
 }

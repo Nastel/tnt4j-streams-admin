@@ -46,17 +46,14 @@ public class AgentSamplesConfigUpdaterJob implements Job {
      */
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        LoggerWrapper.addMessage(OpLevel.INFO, "Starting AgentConfigUpdaterJob");
 
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
         Config config = JobUtils.createConfigObject(jobDataMap);
         String path = JobUtils.getPathToNode(jobDataMap);
 
-        String regCommand = RuntimeInformation.getMainConfigPath();
 
-        String mainConfigPath = IoUtils.extractPathFromRegistry(regCommand);
-
+        String mainConfigPath = System.getProperty("mainCfg");
 
         List<String>  parsersNamesList = null;
         try {
@@ -96,7 +93,9 @@ public class AgentSamplesConfigUpdaterJob implements Job {
 
         boolean wasSet = CuratorUtils.setData(path, response, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
 
-        LoggerWrapper.addMessage(OpLevel.INFO, String.format("Config update was sent: %b", wasSet ));
+        if (!wasSet) {
+            LoggerWrapper.addQuartzJobLog(this.getClass().getName(), path, response);
+        }
 
     }
 }

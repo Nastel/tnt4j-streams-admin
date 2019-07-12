@@ -19,8 +19,6 @@ public class RootClusterUpdaterJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-        LoggerWrapper.addMessage(OpLevel.INFO, "Starting RootClusterUpdaterJob");
-
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
         String path = JobUtils.getPathToNode(jobDataMap);
@@ -36,7 +34,10 @@ public class RootClusterUpdaterJob implements Job {
 
 
         boolean wasSet = CuratorUtils.setData(path, response, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
-        LoggerWrapper.addMessage(OpLevel.INFO, String.format("Root cluster was updated: %b", wasSet));
+
+        if (!wasSet) {
+            LoggerWrapper.addQuartzJobLog(this.getClass().getName(), path, response);
+        }
 
 
     }

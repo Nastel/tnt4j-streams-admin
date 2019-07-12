@@ -44,7 +44,7 @@ public class Init {
         try {
             properties.load(new FileInputStream(path));
         } catch (IOException e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR, String.format("Could not read config on startup, declared path: %s \n err msg: %s",path, e.getMessage()));
+            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
         }
         return properties;
     }
@@ -82,7 +82,7 @@ public class Init {
         try {
             PathCacheManagerSingleton.getPathCacheManager().startPathCacheListener();
         } catch (Exception e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR, String.format("Failed to start cache listener %s", e.getMessage()));
+            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
         }
     }
 
@@ -95,22 +95,24 @@ public class Init {
         try {
             factory = new StdSchedulerFactory(System.getProperty("quartz"));
         } catch (SchedulerException e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR,
-                    String.format("%s \n %s", "StdSchedulerFactory failed", e.toString()));
+            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
             LoggerWrapper.addMessage(OpLevel.INFO,
                     String.format("CWD: %s", new File("./").getAbsolutePath()));
         }
         Scheduler scheduler = null;
+
         try {
             scheduler = factory.getScheduler();
         } catch (SchedulerException e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%s \n %s", "getScheduler() failed", e.toString()));
+            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
         }
+
+
+
         try {
             scheduler.start();
         } catch (SchedulerException e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR,
-                    String.format("%s \n %s", "failed to start scheduler", e.toString()));
+            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
         }
     }
 
@@ -130,8 +132,6 @@ public class Init {
 
             CuratorSingleton.init(connectString, baseSleepTimeMs, maxRetries);
             CuratorSingleton.getSynchronizedCurator().start();
-
-
 
             ZkTree.setProperties(properties);
 

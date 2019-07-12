@@ -24,8 +24,6 @@ public class StreamsUpdaterJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        LoggerWrapper.addMessage(OpLevel.INFO, "Starting StreamsUpdaterJob");
-
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
         ThreadGroup threadGroup = JobUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
@@ -54,7 +52,10 @@ public class StreamsUpdaterJob implements Job {
                 String json = JobUtils.toJson(configData);
 
                 boolean wasSet = CuratorUtils.setData(metricsPath, json, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
-                LoggerWrapper.addMessage(OpLevel.INFO, String.format("Stream update  update was sent: %b", wasSet));
+
+                if (!wasSet) {
+                    LoggerWrapper.addQuartzJobLog(this.getClass().getName(), metricsPath, json);
+                }
             }
         }
     }

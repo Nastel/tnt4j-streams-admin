@@ -48,10 +48,9 @@ public class ZookeeperRequestProcessor {
         try {
             invokeMethodWrapper(method, params);
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR, String.format("Could not invoke method %s", e.getMessage())) ;
+            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
         }
     }
-
 
 
     public void methodSelector(JsonRpcGeneric jsonRpcRequest) {
@@ -68,10 +67,10 @@ public class ZookeeperRequestProcessor {
 
 
 
-
+      /*
     private void processReplayBlocks(JsonRpcGeneric jsonRpcRequest){
 
-        /*
+
         Properties properties = IoUtils.propertiesWrapper(System.getProperty("listeners"));
         List<String> params = (List<String>) jsonRpcRequest.getParams();
 
@@ -119,8 +118,8 @@ public class ZookeeperRequestProcessor {
 
         file.delete();
 
-*/
+
 
     }
-
+*/
 }

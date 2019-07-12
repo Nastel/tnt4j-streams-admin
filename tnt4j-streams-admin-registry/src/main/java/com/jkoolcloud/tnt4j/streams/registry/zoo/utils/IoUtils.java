@@ -28,15 +28,18 @@ public class IoUtils {
             jarInputStream = new JarInputStream(fileInputStream);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LoggerWrapper.addMessage(OpLevel.ERROR, e.getMessage());
         } finally {
 
             try {
                 fileInputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LoggerWrapper.addMessage(OpLevel.ERROR, e.getMessage());
             }
         }
+
+
+
         return jarInputStream;
     }
 
@@ -111,6 +114,7 @@ public class IoUtils {
         return searchResult;
     }
 
+    /*
 
     public static String extractPathFromRegistry(String line) {
 
@@ -143,7 +147,7 @@ public class IoUtils {
 
         return execOutput.toString();
     }
-
+    */
 
 
     public static Map<String, Object> FileNameAndContentToMap(File file, String filenameKey, String fileContentKey) {
@@ -195,22 +199,10 @@ public class IoUtils {
 
         Properties properties = new Properties();
 
-        FileInputStream stream = null;
-        try {
-            stream = new FileInputStream(path);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
+        try( FileInputStream stream = new FileInputStream(path)){
             properties.load(stream);
         } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            LoggerWrapper.addMessage(OpLevel.ERROR, e.getMessage());
         }
 
         return properties;

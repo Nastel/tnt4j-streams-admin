@@ -16,12 +16,10 @@ import org.quartz.JobExecutionException;
 
 import java.util.Map;
 
-
-public class AgentRuntimeUpdaterJob implements Job {
+public class AgentRuntimeInformation implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-
 
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
@@ -63,9 +61,5 @@ public class AgentRuntimeUpdaterJob implements Job {
             LoggerWrapper.addQuartzJobLog(this.getClass().getName(), path, response);
         }
     }
+
 }
-
-
-
-
-

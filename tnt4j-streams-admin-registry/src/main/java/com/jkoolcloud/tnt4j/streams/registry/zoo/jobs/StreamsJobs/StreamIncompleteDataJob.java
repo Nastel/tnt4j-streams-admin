@@ -20,10 +20,6 @@ public class StreamIncompleteDataJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-        LoggerWrapper.addMessage(OpLevel.INFO, "Starting StreamIncompleteDataJob");
-
-
-
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
         ThreadGroup threadGroup = JobUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
@@ -66,7 +62,9 @@ public class StreamIncompleteDataJob implements Job {
 
                boolean wasSet = CuratorUtils.setData(incompleteNodePath, json, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
 
-                LoggerWrapper.addMessage(OpLevel.INFO, String.format("Incomplete data link was sent: %b", wasSet ));
+                if (!wasSet) {
+                    LoggerWrapper.addQuartzJobLog(this.getClass().getName(), incompleteNodePath, json);
+                }
             }
 
         }

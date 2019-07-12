@@ -48,8 +48,6 @@ public class AgentLogsUpdaterJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-        LoggerWrapper.addMessage(OpLevel.INFO, "Starting AgentLogsUpdaterJob");
-
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
         Config config = JobUtils.createConfigObject(jobDataMap);
@@ -81,7 +79,10 @@ public class AgentLogsUpdaterJob implements Job {
         String response = JobUtils.toJson(configData);
 
         boolean wasSet = CuratorUtils.setData(path, response, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
-        LoggerWrapper.addMessage(OpLevel.INFO, String.format("Logs update was sent: %b", wasSet));
+
+        if (!wasSet) {
+            LoggerWrapper.addQuartzJobLog(this.getClass().getName(), path, response);
+        }
 
 
     }

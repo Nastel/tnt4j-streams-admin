@@ -26,7 +26,7 @@ public class StreamMetricsUpdaterJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-        LoggerWrapper.addMessage(OpLevel.INFO, "Starting StreamMetricsUpdaterJob");
+        //LoggerWrapper.addMessage(OpLevel.INFO, "Starting StreamMetricsUpdaterJob");
 
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
@@ -45,9 +45,7 @@ public class StreamMetricsUpdaterJob implements Job {
             String metricsPath = agentPath + "/" + streamThread.getTarget().getName() + "/" + "metrics";
             if (CuratorUtils.doesNodeExist(metricsPath, CuratorSingleton.getSynchronizedCurator().getCuratorFramework())) {
 
-
                 MetricRegistry streamStatistics = TNTInputStreamStatistics.getMetrics(streamThread.getTarget());
-
 
                 Map<String, Metric> metricRegistry = streamStatistics.getMetrics();
 
@@ -59,7 +57,9 @@ public class StreamMetricsUpdaterJob implements Job {
 
                 boolean wasSet = CuratorUtils.setData(metricsPath, json, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
 
-                LoggerWrapper.addMessage(OpLevel.INFO, String.format("Metricss update was sent: %b", wasSet));
+                if (!wasSet) {
+                    LoggerWrapper.addQuartzJobLog(this.getClass().getName(), metricsPath, json);
+                }
             }
         }
     }

@@ -21,7 +21,6 @@ import java.util.Properties;
 public class StreamRepositoryStatusJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        LoggerWrapper.addMessage(OpLevel.INFO, "Starting StreamRepositoryStatusJob");
 
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
@@ -54,7 +53,10 @@ public class StreamRepositoryStatusJob implements Job {
                 String json = JobUtils.toJson(configData);
 
                 boolean wasSet = CuratorUtils.setData(repositoryInfoPath, json, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
-                LoggerWrapper.addMessage(OpLevel.INFO, String.format("Stream repository status update was sent: %b", wasSet));
+
+                if (!wasSet) {
+                    LoggerWrapper.addQuartzJobLog(this.getClass().getName(), repositoryInfoPath, json);
+                }
             }
         }
     }

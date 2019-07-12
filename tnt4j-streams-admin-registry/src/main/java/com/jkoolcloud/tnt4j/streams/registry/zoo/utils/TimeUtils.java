@@ -1,5 +1,6 @@
 package com.jkoolcloud.tnt4j.streams.registry.zoo.utils;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -7,16 +8,14 @@ import java.time.ZonedDateTime;
 public class TimeUtils {
 
 
-    public static ZonedDateTime getCurrentTime(String timeZone){
-        LocalDateTime localDateTime = LocalDateTime.now();
-        ZoneId zoneId = ZoneId.of(timeZone);
-        ZonedDateTime zonedDateTime = ZonedDateTime.of(localDateTime, zoneId);
+    public static LocalDateTime getCurrentTime(Clock clock){
+        LocalDateTime localDateTime = LocalDateTime.now(clock);
 
-        return zonedDateTime;
+        return localDateTime;
     }
 
     public static String getCurrentTimeStr(String timeZone){
-        return getCurrentTime(timeZone).toString();
+        return getCurrentTime(Clock.systemUTC()).toString() + "[UTC]";
     }
 
 }
