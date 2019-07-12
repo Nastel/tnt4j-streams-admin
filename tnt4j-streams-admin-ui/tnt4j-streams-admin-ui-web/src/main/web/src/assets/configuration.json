@@ -1,7 +1,23 @@
 {
 	"StreamsIcon": {
-		"mainPage": "assets/icons/mainPage5.svg"
-	},
+    "mainPage": "assets/icons/headerLogo.svg",
+    "start": "assets/iconControls/start.svg",
+    "replay": "assets/iconControls/replay.svg",
+    "stop": "assets/iconControls/stop.svg",
+    "pause": "assets/iconControls/pause.svg",
+    "streamUp": "assets/iconControls/streamUp.svg",
+    "streamDown": "assets/iconControls/streamDown.svg",
+    "expandDown": "assets/iconControls/expandDown.svg",
+    "expandUp": "assets/iconControls/expandUp.svg",
+    "search": "assets/iconControls/search.svg",
+    "clearSearch": "assets/iconControls/clearSearch.svg",
+    "closeModal": "assets/iconControls/clearSearch.svg",
+    "scrollDown": "assets/iconControls/scrollDown.svg",
+    "loadMore": "assets/iconControls/loadMore.svg",
+    "download" : "assets/iconControls/download.svg",
+	"fullScreen" : "assets/iconControls/fullScreen.svg",
+	"update" : "assets/iconControls/update.svg"
+  },
     "StreamsDataForAgentPage": {
 		"latest block" : {"Last Streamed": "N/A"},
 		"last block query time" : {"Last Query Time" : "N/A"},
@@ -107,10 +123,10 @@
 	"BasePathHide" : "streams/v1",
 	
 		
-	"ZooKeeperTreeNodes" : "//localhost:8080/test/registry/nodeTree",
+	"ZooKeeperTreeNodes" : "//eth.k2n.io:8080/streamsadminservices/registry/nodeTree",
 	
 	"ZooKeeperDataCall" : [
-		"//localhost:8080/test/registry",
+		"//eth.k2n.io:8080/streamsadminservices/registry",
 		"/list"
 	],
 	"PageColorConfigs" : {

@@ -1,12 +1,12 @@
 
-  <div fxLayout fxLayoutAlign="center center">
+  <div fxLayout fxLayoutAlign="center center" class=" small-paddingTop extraSmall-marginTop">
       <mat-form-field   class="filterInputField" fxFlex="40%">
-          <input  matInput placeholder="Search" (keyup)="searchNodeTree($event.target.value)" type="text">
+          <input  matInput placeholder="Search" (keyup)="searchNodeTree($event.target.value)" type="text"  matTooltip="Search for nodes in tree">
       </mat-form-field>
   </div>
-  <div class="treeButtonMargin">
-    <button mat-stroked-button (click)="expandNodeTree()">Expand nodes</button>
-    <button mat-stroked-button (click)="collapseNodeTree()">Collapse nodes</button>
+  <div class="small-marginLeftRight">
+    <button mat-stroked-button (click)="expandNodeTree()"  matTooltip="Expand All nodes in tree">Expand nodes</button>
+    <button mat-stroked-button (click)="collapseNodeTree()"  matTooltip="Collapse all nodes in tree">Collapse nodes</button>
   </div>
 
   <mat-tree  #tree [dataSource]="dataSource" [treeControl]="treeControl" >

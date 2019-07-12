@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatIconRegistry } from "@angular/material";
 import { DomSanitizer } from "@angular/platform-browser";
@@ -13,6 +13,9 @@ import { incompleteBlocks }  from '../incomplete-blocks/incomplete-blocks.compon
   styleUrls: ['./tree-view.component.scss']
 })
 export class TreeViewComponent implements OnInit {
+
+
+@ViewChild('viewComponent')private viewComponent: ElementRef;
 
   /** Url address */
   pathToData : string;
@@ -37,6 +40,12 @@ export class TreeViewComponent implements OnInit {
   ngOnInit() {
     this.pathToData = this.router.url.substring(1);
     this.loadZooKeeperNodeData(this.pathToData);
+
+  }
+
+  ngAfterViewInit(){
+   let height = this.viewComponent.nativeElement.offsetHeight;
+   localStorage.setItem("dataComponentHeight", height);
   }
 
   loadZooKeeperNodeData(pathToData){
@@ -54,7 +63,6 @@ export class TreeViewComponent implements OnInit {
 
   choiceMaker(configuration){
     try{
-        console.log("Check if the path matches", configuration['nodeName'],  configuration['componentLoad']);
       if(!this.utilsSvc.compareStrings(configuration['componentLoad'], 'undefined')){
         this.streamDataShowChoice = configuration['componentLoad'];
       }

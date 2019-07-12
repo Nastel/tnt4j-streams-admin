@@ -297,10 +297,16 @@ export class UtilsService
   }
 
   public getNodePathEnd (string): string {
-     let regex = /([^\/]*)$/;
-     string = string.match(regex);
-     //console.log("answer", string[0])
-     return string[0];
+    try{
+       if(!this.compareStrings(string, 'undefined')){
+         let regex = /([^\/]*)$/;
+         string = string.match(regex);
+       }
+      return string[0];
+    }
+    catch(err){
+      console.log(" No node was provided to the method", err);
+    }
   }
 
    public breadcrumbTitle (stringParam): string {

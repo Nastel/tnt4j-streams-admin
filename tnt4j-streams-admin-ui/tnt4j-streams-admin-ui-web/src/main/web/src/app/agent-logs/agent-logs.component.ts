@@ -42,6 +42,7 @@ export class AgentLogsComponent implements OnInit {
   /** Values for showing data loading properties */
   valueThatChangesOnDataLoad = false;
   valueThatChangesForSpinnerOnResponse = false;
+  dataHeight = 0;
 
   iconsRegistered = [];
 
@@ -55,6 +56,8 @@ export class AgentLogsComponent implements OnInit {
                 public incBlocks: incompleteBlocks) { }
 
   ngOnInit() {
+    this.dataHeight = parseInt(localStorage.getItem("dataComponentHeight"), 10);
+    this.dataHeight = this.dataHeight - 150;
     let tempVal =this.configurationHandler.CONFIG["LazyLoadDataLines"];
     this.errLogCount = tempVal["logErr"];
     this.logCount = tempVal["log"];

@@ -71,6 +71,7 @@ export class NavigationTreeComponent implements OnInit  {
     this.treeControl = new FlatTreeControl<FileFlatNode>(this.getLevel, this.isExpandable);
 
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+    console.log( this.dataSource)
   }
 
   getChildren = (node: FileNode): Observable<FileNode[]> => node.childrenChange;
@@ -116,7 +117,7 @@ export class NavigationTreeComponent implements OnInit  {
           let item = JSON.parse(localStorage.getItem("openTreeNodes"));
 //          console.log("EXPANDED NODE SET", this.treeControl)
           this.expandNodesById( this.treeControl.dataNodes,this.expandablePath);
-          if(!this.utilsSvc.compareStrings(item, 'undefined')){
+          if(!this.utilsSvc.compareStrings(item, 'undefined') && !this.utilsSvc.compareStrings(item, 'null')){
             this.expandNodesById( this.treeControl.dataNodes,item);
           }
         });
@@ -124,7 +125,6 @@ export class NavigationTreeComponent implements OnInit  {
      }catch(err){
         console.log("Problem on loading the tree nodes data for the tree view ", err);
      }
-        console.log("THE MAIN DATA SOURCE", this.dataSource)
     }
 
   insertTreeNode(tempNode){

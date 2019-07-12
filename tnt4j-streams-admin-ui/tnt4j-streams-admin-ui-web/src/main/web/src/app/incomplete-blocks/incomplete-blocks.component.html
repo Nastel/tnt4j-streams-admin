@@ -1,9 +1,9 @@
 
-<h4 [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center">
-  <div class="row justify-content-center">
-    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" my-h4" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+<div [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center headerFont small-marginBottom">
+  <div class="justify-content-center small-marginLeftRight">
+    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
   </div>
-</h4>
+</div>
 
 <div *ngIf="valueThatChangesForSpinnerOnResponse" >
   <div class="row justify-content-center medium-paddingTop" >
@@ -11,10 +11,10 @@
   </div>
 </div>
 <div class="medium-marginLeftRight" *ngIf="!valueThatChangesForSpinnerOnResponse" >
-      <mat-form-field class="filterInputField" >
+      <mat-form-field class="filterInputField " >
         <input matInput (keyup)="applyFilterIncompleteBlocks($event.target.value)" placeholder="Filter">
       </mat-form-field>
-        <mat-table [dataSource]="dataSource" matSort   class="agentRuntimeInformationTable"  [ngStyle]="{'background-color': this.utilsSvc.getColorBackground()}" >
+        <mat-table [dataSource]="dataSource" matSort [ngStyle]="{'background-color': this.utilsSvc.getColorBackground()}" >
           <ng-container matColumnDef="activityName">
             <mat-header-cell *matHeaderCellDef [ngStyle]="{
           'background-color': this.utilsSvc.getColorInnerLabels(),
@@ -61,12 +61,8 @@
           'color': this.utilsSvc.getColorTableLabels()
           }"  data-label="control" class="agentRuntimeServiceInformationTableHeader mat-Header  text-alignCenter"></mat-header-cell>
             <mat-cell *matCellDef="let element">
-              <div class="input-group">
-                <svg class="background-svgColorChange" style="padding-bottom: 1px; cursor: pointer;" (click)="replayTheBlockFromInput(element.ActivityName)" height="32" viewBox="0 0 46 46" width="32" xmlns="http://www.w3.org/2000/svg">
-                  <title>Replay Item</title>
-                  <path d="M0 0h48v48H0z" fill="none"/>
-                  <path d="M24 10V2L14 12l10 10v-8c6.63 0 12 5.37 12 12s-5.37 12-12 12-12-5.37-12-12H8c0 8.84 7.16 16 16 16s16-7.16 16-16-7.16-16-16-16z"/>
-                </svg>
+              <div class="display-content">
+                <mat-icon (click)="replayTheBlockFromInput(element.ActivityName)"  svgIcon="{{'replay'}}" class="background-svgColorChange mousePointer"></mat-icon>
               </div>
             </mat-cell>
           </ng-container>

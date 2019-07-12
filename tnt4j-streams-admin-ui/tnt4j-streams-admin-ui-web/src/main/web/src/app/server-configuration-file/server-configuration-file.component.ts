@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild, ElementRef  } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked  } from '@angular/core';
 import { Router } from '@angular/router';
+import { DomSanitizer } from "@angular/platform-browser";
 
 import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
@@ -13,6 +14,9 @@ import { incompleteBlocks }  from '../incomplete-blocks/incomplete-blocks.compon
 })
 export class ServerConfigurationFileComponent implements OnInit {
 
+
+@ViewChild('viewComponent')private viewComponent: ElementRef;
+
   /** Url address */
   pathToData : string;
 
@@ -25,6 +29,7 @@ export class ServerConfigurationFileComponent implements OnInit {
   /** Values for showing data loading properties */
   valueThatChangesOnDataLoad = false;
   valueThatChangesForSpinnerOnResponse = false;
+  dataHeight = 0;
 
   constructor(  private data: DataService,
                 private router: Router,
@@ -33,8 +38,18 @@ export class ServerConfigurationFileComponent implements OnInit {
                 public incBlocks: incompleteBlocks) { }
 
   ngOnInit() {
+    this.dataHeight = parseInt(localStorage.getItem("dataComponentHeight"), 10);
+    this.dataHeight = this.dataHeight - 50;
+    console.log("Logs component data height", this.dataHeight)
     this.pathToData = this.router.url.substring(1);
     this.loadZooKeeperNodeData(this.pathToData);
+  }
+
+  ngAfterViewChecked(){
+      let height = this.viewComponent.nativeElement.offsetHeight;
+      if(this.dataHeight<height){
+        this.dataHeight = height;
+      }
   }
 
    loadZooKeeperNodeData(pathToData){

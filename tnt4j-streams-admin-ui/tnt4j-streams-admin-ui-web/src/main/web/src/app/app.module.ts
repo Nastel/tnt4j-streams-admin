@@ -16,6 +16,8 @@ import {
   MatInputModule,
   MatIconModule,
   MatSortModule,
+  MatTooltipModule,
+  MatDialogModule,
   MatButtonModule} from '@angular/material'
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { JitCompilerFactory, platformBrowserDynamic } from '@angular/platform-browser-dynamic';
@@ -23,15 +25,16 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import {CdkTreeModule} from '@angular/cdk/tree';
 import { HighlightSearch } from './utils/highlight.search';
 
+
   export function createCompiler(compilerFactory: CompilerFactory) {
     return compilerFactory.createCompiler();
-  }
-  export function initializeLinks(appConfig: AutoRouteGenerator) {
-    return () => appConfig.getLinks();
   }
   export function initializeApp(appConfig: ConfigurationHandler) {
     return () => appConfig.getConfig();
   }
+    export function initializeLinks(appConfig: AutoRouteGenerator) {
+      return () => appConfig.getLinks();
+    }
 
 
 
@@ -41,11 +44,14 @@ import { AutoRouteGenerator } from './config/auto-route-generator';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 
-import { NavHeadComponent } from './nav-head/nav-head.component';
 import { IncompleteBlocksComponent } from './incomplete-blocks/incomplete-blocks.component';
 import { NavigationTreeComponent } from './navigation-tree/navigation-tree.component';
 import { TreeViewComponent } from './tree-view/tree-view.component';
 import { ThreadDumpComponent } from './thread-dump/thread-dump.component';
+
+import { DialogOverviewExampleDialog } from './thread-dump/thread-dump.component';
+
+
 import { ServerConfigurationFileComponent } from './server-configuration-file/server-configuration-file.component';
 import { AgentLogsComponent } from './agent-logs/agent-logs.component';
 import { AgentRuntimeComponent } from './agent-runtime/agent-runtime.component';
@@ -54,6 +60,7 @@ import { ServiceRepositoryStatusComponent } from './service-repository-status/se
 import { ServiceMetricsComponent } from './service-metrics/service-metrics.component';
 import { BottomLogComponent } from './bottom-log/bottom-log.component';
 import { DownloadsComponent } from './downloads/downloads.component';
+import { ConfigurableComponentNodeComponent } from './configurable-component-node/configurable-component-node.component';
 
 @NgModule({
   declarations: [
@@ -61,8 +68,8 @@ import { DownloadsComponent } from './downloads/downloads.component';
     HighlightSearch,
     HeaderComponent,
     FooterComponent,
-    NavHeadComponent,
     IncompleteBlocksComponent,
+    DialogOverviewExampleDialog,
     NavigationTreeComponent,
     TreeViewComponent,
     ThreadDumpComponent,
@@ -73,10 +80,12 @@ import { DownloadsComponent } from './downloads/downloads.component';
     ServiceRepositoryStatusComponent,
     ServiceMetricsComponent,
     BottomLogComponent,
-    DownloadsComponent
+    DownloadsComponent,
+    ConfigurableComponentNodeComponent
   ],
   entryComponents: [
-    TreeViewComponent
+    TreeViewComponent,
+    DialogOverviewExampleDialog
   ],
   imports: [
   CdkTreeModule,
@@ -88,8 +97,10 @@ import { DownloadsComponent } from './downloads/downloads.component';
     MatTableModule,
     MatPaginatorModule,
     BrowserModule,
+    MatDialogModule,
     ReactiveFormsModule,
     MatNativeDateModule,
+    MatTooltipModule,
     MatSidenavModule,
     AppRoutingModule,
     HttpClientModule,

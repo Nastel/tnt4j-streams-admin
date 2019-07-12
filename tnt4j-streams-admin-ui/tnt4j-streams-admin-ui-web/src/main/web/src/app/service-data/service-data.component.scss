@@ -3,6 +3,10 @@
   }
 
   ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
-  padding: 0.4em !important;
-  border: none !important;
+    padding: 0.6em !important;
+    border-top : 0px !important;
+  }
+
+  ::ng-deep .mat-form-field-infix{
+    border-top : 0px !important;
   }

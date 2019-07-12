@@ -28,8 +28,9 @@
   }
 
   .mat-column-Stream {
-    flex: 0 0 20% !important;
+    flex: 0 0 22% !important;
     justify-content: flex-start;
+    padding-right: 24px !important;
   }
 
   mat-row.expand-detail-row {
@@ -38,11 +39,6 @@
 
   mat-cell.expand-detail-row{
     text-align: start;
-  }
-
-    .element-detail {
-    overflow: hidden;
-    display: flex;
   }
 
   .mat-cell-Clusters{
@@ -56,6 +52,15 @@
   }
 
   ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
-    padding: 0.4em !important;
-    border: none !important;
+    padding: 0.6em !important;
+    border-top : 0px !important;
+  }
+
+  ::ng-deep .mat-form-field-infix{
+    border-top : 0px !important;
+  }
+
+    .mat-cell{
+    font-size: 1em !important;
+    font-family: Montserrat,sans-serif !important;
   }

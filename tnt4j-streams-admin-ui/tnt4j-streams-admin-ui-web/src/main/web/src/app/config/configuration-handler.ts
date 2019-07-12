@@ -33,7 +33,7 @@ import { DomSanitizer } from "@angular/platform-browser";
        try{
           this.CONFIG = data;
           console.log("CONFIG", this.CONFIG);
-          this.getAllImageSvg(this.CONFIG);
+          this.getAllImageSvg();
           this.threadsServiceDataName = String(this.CONFIG['threads']);
           this.configDataNameInAllData = String(this.CONFIG['config']);
           this.getZooKeeperNodeList();
@@ -62,11 +62,11 @@ import { DomSanitizer } from "@angular/platform-browser";
 
    /** Methods for config data from JSON config file assets/configuration.json */
 
-  getAllImageSvg(config){
+  getAllImageSvg(){
     try{
-      let neededData = config["StreamsIcon"];
+      let neededData = this.CONFIG["StreamsIcon"];
       for(let name in neededData) {
-        let pathToIcon =  config["StreamsIcon"][name];
+        let pathToIcon =  this.CONFIG["StreamsIcon"][name];
         this.matIconRegistry.addSvgIcon(name, this.domSanitizer.bypassSecurityTrustResourceUrl(pathToIcon));
       }
     }

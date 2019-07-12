@@ -51,13 +51,8 @@ export class DownloadsComponent implements OnInit {
                 private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
-
-
-
-
     this.pathToData = this.router.url.substring(1);
     this.loadZooKeeperNodeData();
-
   }
 
   loadZooKeeperNodeData(){
@@ -139,45 +134,41 @@ export class DownloadsComponent implements OnInit {
 
   download(fileName){
     let tempPath = this.pathToData + '/' + fileName;
-    console.log(fileName)
     console.log("Sending request to :", tempPath);
       this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
-        console.log("Response to Request", data)
-        let fileName;
-        let encodedFile;
-        let result = data;
-        this.fileZipData = JSON.parse(result.toString());
-        console.log(this.fileZipData)
-        if(!this.utilsSvc.compareStrings(this.fileZipData, "undefined")){
-          if( this.fileZipData['raw'].includes("Error")){
-              console.log("File download failed : File size to big")
-          }
-          else{
-            let dataRaw = this.fileZipData["raw"];
-            if(!this.utilsSvc.compareStrings(dataRaw, "undefined")){
-              var bytes = this._base64ToArrayBuffer(dataRaw);
+        try{
+          let fileName;
+          let encodedFile;
+          let result = data;
+          this.fileZipData = JSON.parse(result.toString());
+          if(!this.utilsSvc.compareStrings(this.fileZipData, "undefined")){
+            if( this.fileZipData['data'].includes("Error")){
+                console.log("File download failed : File size to big")
             }
-            var blob=new Blob([bytes], {type: "application/stream"});
-            console.log(" THE VALUE AFTER BLOB ", blob);
+            else{
+              let dataRaw = this.fileZipData["data"];
+              if(!this.utilsSvc.compareStrings(dataRaw, "undefined")){
+                var bytes = this._base64ToArrayBuffer(dataRaw);
+              }
+              var blob=new Blob([bytes], {type: "application/stream"});
 
-
-
-            var link=document.createElement('a');
-            link.href=window.URL.createObjectURL(blob);
-            console.log( link.href);
-            document.body.appendChild(link);
-            link.download=this.fileZipData["filename"]+".zip";
-               console.log(  link.download)
-            link.click();
+              var link=document.createElement('a');
+              link.href=window.URL.createObjectURL(blob);
+              console.log( link.href);
+              document.body.appendChild(link);
+              link.download=this.fileZipData["filename"]+".zip";
+                 console.log(  link.download)
+              link.click();
+            }
           }
-        }
-
+        } catch(err) {
+                 console.log("Problem while trying to download the file" , err);
+              }
       },
       err =>{
         this.responseShow("bad");
         console.log("Problem on reading downloads data from : ", this.pathToData);
       });
-//    }
   }
 
    downloadModalWindowMessage(){

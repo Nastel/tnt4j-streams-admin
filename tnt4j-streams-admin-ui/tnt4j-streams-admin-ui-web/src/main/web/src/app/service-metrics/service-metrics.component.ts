@@ -65,7 +65,6 @@ export class ServiceMetricsComponent implements OnInit {
          if(this.utilsSvc.isObject(metricInfo[key])){
             tempNumber++;
             if(dataObjectsCount > tempNumber && (tempNumber%2)==0){
-              console.log("Inside if", dataObjectsCount);
               tempAgentRuntimeInfo["name"]=key;
               tempAgentRuntimeInfo["value"]=metricInfo[key];
               tempAgentRuntimeInfo["name1"]=tempName;

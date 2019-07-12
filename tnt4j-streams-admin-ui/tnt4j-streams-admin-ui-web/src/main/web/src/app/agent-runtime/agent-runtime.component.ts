@@ -110,7 +110,6 @@ export class AgentRuntimeComponent implements OnInit {
               result = result['data'];
               this.agentRuntimeInfo = result;
               this.prepareRuntimeData(this.agentRuntimeInfo);
-              this.responseShow("good");
               setTimeout(() => this.dataSourceRuntime.paginator = this.paginatorAgent);
               setTimeout(() => this.dataSourceRuntime.sort = this.sortAgentRuntime);
           }
@@ -180,9 +179,6 @@ export class AgentRuntimeComponent implements OnInit {
 
       }
     }
-
-
-    console.log("healthy", this.healthyServices);
     this.healthyNodes[parentName] = tempHealthyCount;
     this.allServiceNodes[parentName] = dataTemp.length;
    }
@@ -234,7 +230,7 @@ export class AgentRuntimeComponent implements OnInit {
           }
         }
       }
-      console.log("DATA FROM AGENT FOR CLUSTERS VIEW", tempArr);
+      //console.log("DATA FROM AGENT FOR CLUSTERS VIEW", tempArr);
       return tempArr;
    }
 
@@ -261,7 +257,7 @@ export class AgentRuntimeComponent implements OnInit {
       this.data.getZooKeeperNodeData(this.pathToServiceData[name]).subscribe( data => {
         let result = data;
         result = JSON.parse(result.toString());
-        console.log("Children data: ",result)
+        //console.log("Children data: ",result)
         this.serviceBaseMetrics = result["data"];
         this.serviceConfiguration = result["config"];
         if( this.utilsSvc.compareStrings(this.serviceConfiguration["componentLoad"],'service')){
@@ -275,15 +271,16 @@ export class AgentRuntimeComponent implements OnInit {
         }
         else if(this.utilsSvc.compareStrings(this.serviceConfiguration["componentLoad"],'agent')){
           this.prepareClusterViewTableData( this.serviceBaseMetrics, result['parentsInChildren'],  this.serviceConfiguration['nodeName'], false);
-          setTimeout(() => this.dataSourceCluster.paginator = this.paginatorCluster, 100);
-          setTimeout(() => this.dataSourceCluster.sort = this.sortCluster, 100);
+          setTimeout(() => this.dataSourceCluster.paginator = this.paginatorCluster, 300);
+          setTimeout(() => this.dataSourceCluster.sort = this.sortCluster, 300);
+          this.responseShow("good");
         }
         else{
           this.prepareClusterViewTableData( this.serviceBaseMetrics, result['parentsInChildren'],  this.serviceConfiguration['nodeName'], true);
-          setTimeout(() => this.dataSourceClusters.paginator = this.paginatorClusters, 100);
-          setTimeout(() => this.dataSourceClusters.sort = this.sortClusters, 100);
+          setTimeout(() => this.dataSourceClusters.paginator = this.paginatorClusters, 300);
+          setTimeout(() => this.dataSourceClusters.sort = this.sortClusters, 300);
+          this.responseShow("good");
         }
-//        console.log(this.dataSourceService)
       });
    }
  }
@@ -381,7 +378,7 @@ export class AgentRuntimeComponent implements OnInit {
       }
     }
     this.tempServiceData.push(tempServiceInformation);
-//   console.log( this.tempServiceData)
+    this.responseShow("good");
   }
 
   serviceTableExpandableData(serviceData, name, config){
@@ -417,21 +414,21 @@ export class AgentRuntimeComponent implements OnInit {
 
 /*The information about agent runtime prepared for material table*/
   prepareRuntimeData(agentInfo){
-  console.log(agentInfo)
       let value = [];
       try{
-      for(let key in agentInfo){
-      let tempAgentRuntimeInfo = [];
-      let tempFormatAgent = [];
-          tempAgentRuntimeInfo["name"]=key;
-          for(let data in agentInfo[key]){
-              tempFormatAgent[data] = this.utilsSvc.formatData(data, agentInfo[key][data])
-          }
-          agentInfo[key] = tempFormatAgent;
-          tempAgentRuntimeInfo["value"]= agentInfo[key];
-          value.push(tempAgentRuntimeInfo);
-      }
-      this.dataSourceRuntime = new MatTableDataSource(value);
+        for(let key in agentInfo){
+        let tempAgentRuntimeInfo = [];
+        let tempFormatAgent = [];
+            tempAgentRuntimeInfo["name"]=key;
+            for(let data in agentInfo[key]){
+                tempFormatAgent[data] = this.utilsSvc.formatData(data, agentInfo[key][data])
+            }
+            agentInfo[key] = tempFormatAgent;
+            tempAgentRuntimeInfo["value"]= agentInfo[key];
+            value.push(tempAgentRuntimeInfo);
+        }
+        this.dataSourceRuntime = new MatTableDataSource(value);
+        this.responseShow("good");
       }
       catch(e){
         console.log("Problem on preparing agent runtime info for table: ", e)

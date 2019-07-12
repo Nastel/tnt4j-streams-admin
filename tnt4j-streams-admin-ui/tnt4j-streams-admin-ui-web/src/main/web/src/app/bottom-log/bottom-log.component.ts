@@ -59,7 +59,6 @@ export class BottomLogComponent implements OnInit, OnDestroy{
 
   ngOnInit() {
      let item = localStorage.getItem("bottomLogUpdateState");
-
      this.pathToData = this.router.url.substring(1);
      this.iconsRegistered = this.utilsSvc.getAllRegisteredIonsList();
      this.pathToLogs = this.createPathToLogsData(this.pathToData);
@@ -76,12 +75,12 @@ export class BottomLogComponent implements OnInit, OnDestroy{
   }
 
   ngOnDestroy(){
-      console.log ("Destroy called", this.pathToData);
+     // console.log ("Destroy called", this.pathToData);
       clearInterval(this.interval);
   }
 
   sessionUpdateLog(choice){
-   console.log("SESSION CHOICE", this.autoUpdate);
+  // console.log("SESSION CHOICE", this.autoUpdate);
     if(this.utilsSvc.compareStrings(choice, "Auto update Off")){
       this.updateLogs = true;
       this.autoUpdate = "Auto update Off";
@@ -91,11 +90,11 @@ export class BottomLogComponent implements OnInit, OnDestroy{
       this.updateLogs = false;
       this.autoUpdate = "Auto update On";
     }
-    console.log(this.autoUpdate);
+   // console.log(this.autoUpdate);
   }
 
   turnOnOffAutoLogUpdate(){
-   console.log("CHOICE", this.autoUpdate);
+   //console.log("CHOICE", this.autoUpdate);
    let tempVal = this.configurationHandler.CONFIG["LazyLoadDataLines"]
     if(this.utilsSvc.compareStrings(this.autoUpdate, "Auto update Off")){
       this.autoUpdate = "Auto update On";

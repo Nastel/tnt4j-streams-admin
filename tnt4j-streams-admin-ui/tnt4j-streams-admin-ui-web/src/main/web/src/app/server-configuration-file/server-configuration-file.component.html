@@ -1,53 +1,53 @@
 
-<h4 [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center">
-  <div class="row justify-content-center">
-    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" my-h4" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+<div [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center small-marginBottom headerFont">
+  <div class="justify-content-center small-marginLeftRight">
+    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
   </div>
-</h4>
+</div>
 
 <div *ngIf="valueThatChangesForSpinnerOnResponse" >
   <div class="row justify-content-center medium-paddingTop" >
     <mat-progress-spinner mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>
   </div>
 </div>
-<div *ngIf="!valueThatChangesForSpinnerOnResponse" class="medium-marginLeftRight" >
+<div  *ngIf="!valueThatChangesForSpinnerOnResponse" class="medium-marginLeftRight" >
   <div *ngIf="!this.utilsSvc.compareStrings(serviceConfigParent, 'undefined')">
     <div class="row">
-       <div class="col-12 col-sm-4 col-lg-4 col-xl-3 ">
-         <div class=" justify-content-center mat-elevation-z8 rounded-corners extraSmall-paddingTopBottom">
+       <div class="col-12 col-sm-12 col-lg-4 col-xl-3 small-paddingBottom">
+         <div #viewComponent  class=" justify-content-center mat-elevation-z8 rounded-corners extraSmall-paddingTopBottom">
             <div  *ngFor="let key of objectKeys(serviceConfigParent)">
               <div  *ngFor="let key1 of objectKeys(serviceConfigParent[key])" >
-                  <div *ngIf="this.utilsSvc.compareStrings(key1, 'name')">
-                        <div *ngIf="this.utilsSvc.compareStrings(serviceConfigParent[key][key1], this.configChoiceData); then notSelected; else selected"></div>
-                        <ng-template #notSelected>
-                          <div class="borderConfNav borderSelected" (click)="configFileChoice(serviceConfigParent[key][key1])" >
-                            <mat-nav-list >
-                              <div >
-                                <span class="configNav agentRuntimeServiceInformationTableHeader" mat-list-item >{{serviceConfigParent[key][key1]}}</span>
-                              </div>
-                            </mat-nav-list>
-                          </div>
-                        </ng-template>
-                        <ng-template #selected>
-                          <div class="borderConfNav" (click)="configFileChoice(serviceConfigParent[key][key1])" >
-                            <mat-nav-list>
-                              <span class="configNav agentRuntimeServiceInformationTableHeader" mat-list-item (click)="configFileChoice(serviceConfigParent[key][key1])" >{{serviceConfigParent[key][key1]}}</span>
-                            </mat-nav-list>
-                          </div>
-                        </ng-template>
-                  </div>
+                <div *ngIf="this.utilsSvc.compareStrings(key1, 'name')">
+                  <div *ngIf="this.utilsSvc.compareStrings(serviceConfigParent[key][key1], this.configChoiceData); then notSelected; else selected"></div>
+                  <ng-template #notSelected>
+                    <div class="borderConfNav backgroundWhite" (click)="configFileChoice(serviceConfigParent[key][key1])" >
+                      <mat-nav-list >
+                        <div >
+                          <span class="configNav agentRuntimeServiceInformationTableHeader">{{serviceConfigParent[key][key1]}}</span>
+                        </div>
+                      </mat-nav-list>
+                    </div>
+                  </ng-template>
+                  <ng-template #selected>
+                    <div class="borderConfNav" (click)="configFileChoice(serviceConfigParent[key][key1])" >
+                      <mat-nav-list>
+                        <span class="configNav agentRuntimeServiceInformationTableHeader" (click)="configFileChoice(serviceConfigParent[key][key1])" >{{serviceConfigParent[key][key1]}}</span>
+                      </mat-nav-list>
+                    </div>
+                  </ng-template>
+                </div>
               </div>
             </div>
           </div>
        </div>
-      <div class="col-12 col-sm-8 col-lg-8 col-xl-9">
+      <div class="col-12 col-sm-12 col-lg-8 col-xl-9">
         <div  *ngFor="let key of objectKeys(serviceConfigParent)"   #configuration >
           <div  *ngFor="let key1 of objectKeys(serviceConfigParent[key])" >
             <div *ngIf="!this.utilsSvc.compareStrings(key1, 'name')">
-              <div *ngIf="this.utilsSvc.compareStrings(serviceConfigParent[key]['name'], configChoiceData)">
-                <div class="small-marginRight" style="cursor: context-menu;" [ngClass]="{'hiddenOverflowComponents' : true}">
-                  <div  class="border1">
-                    <PRE class="zeroMargin"><h6 class="threads">{{serviceConfigParent[key][key1]}}</h6></PRE>
+              <div *ngIf="this.utilsSvc.compareStrings(serviceConfigParent[key]['name'], configChoiceData)" [style.max-height.px]="dataHeight" class="hiddenOverflow">
+                <div class="small-marginRight" style="cursor: context-menu;" >
+                  <div  class="hoverWhite">
+                    <PRE><span class="threads wordWrap">{{serviceConfigParent[key][key1]}}</span></PRE>
                   </div>
                 </div>
               </div>

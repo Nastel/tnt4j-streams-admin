@@ -1,22 +1,32 @@
 
-<h4 [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center">
-  <div class="row justify-content-center">
-    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" my-h4" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+
+
+
+
+<div [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center headerFont  small-marginBottom">
+  <div class="justify-content-center small-marginLeftRight  display-inlineFlex" >
+    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+    <mat-icon (click)="openDialog()" svgIcon="{{'fullScreen'}}" matTooltip="Expand Window" class="small-marginLeft"></mat-icon>
    </div>
-</h4>
+
+</div>
+
+
 
 <div *ngIf="valueThatChangesForSpinnerOnResponse" >
   <div class="row justify-content-center medium-paddingTop" >
     <mat-progress-spinner mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>
   </div>
 </div>
-<div *ngIf="!valueThatChangesForSpinnerOnResponse">
-  <h4 class="small-margin"><b> Last update: {{threadsTimeStamp}}</b></h4>
-  <div [ngClass]="{'hiddenOverflowComponents' : true}" class="medium-marginLeftRight">
-    <div  class="border1">
+<div *ngIf="!valueThatChangesForSpinnerOnResponse" #valueForMat>
+  <span class="small-margin headerFont"><b> Last update: {{threadsTimeStamp}}</b></span>
+  <div #scrollMeLog id="scrollElementLog" [style.max-height.px]="dataHeight" class="medium-marginLeftRight hiddenOverflow full-height">
+    <div  class="hoverWhite small-paddingTop">
       <div class="d-inline-block col-12">
-        <PRE class="zeroMargin"><h6 class="threads">{{threadData}}</h6></PRE>
+        <PRE><span class="threads wordWrap">{{threadData}}</span></PRE>
       </div>
     </div>
   </div>
 </div>
+
+
