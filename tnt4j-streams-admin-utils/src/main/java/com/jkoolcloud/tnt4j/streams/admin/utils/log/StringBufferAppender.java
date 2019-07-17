@@ -37,7 +37,7 @@ public class StringBufferAppender extends AppenderSkeleton {
 	/**
 	 * The Logs.
 	 */
-	ArrayList<String> logs = new ArrayList<String>();
+	ArrayList<String> logs = new ArrayList<>();
 
 	/**
 	 * The Capture mode.
@@ -90,7 +90,7 @@ public class StringBufferAppender extends AppenderSkeleton {
 	 * Start.
 	 */
 	public void start() {
-		StringBuffer logs = new StringBuffer();
+		StringBuilder logs = new StringBuilder();
 		captureMode.set(true);
 	}
 
@@ -101,7 +101,7 @@ public class StringBufferAppender extends AppenderSkeleton {
 	 */
 	public ArrayList<String> stop() {
 		captureMode.set(false);
-		ArrayList<String> data = new ArrayList(logs);
+		ArrayList<String> data = new ArrayList<>(logs);
 		logs = null;
 		return data;
 	}

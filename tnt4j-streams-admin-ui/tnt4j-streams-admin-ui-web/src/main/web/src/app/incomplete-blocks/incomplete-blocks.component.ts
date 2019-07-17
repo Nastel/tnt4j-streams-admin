@@ -4,6 +4,8 @@ import { Injectable } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
+
+import { ControlUtils } from "../utils/control.utils";
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginator , MatTableDataSource, MatSort } from '@angular/material';
 
@@ -30,7 +32,8 @@ export class IncompleteBlocksComponent implements OnInit {
                 private router: Router,
                 private configurationHandler:ConfigurationHandler,
                 public utilsSvc: UtilsService,
-                private matSpinner: MatProgressSpinnerModule) {
+                private matSpinner: MatProgressSpinnerModule,
+                private controlUtils : ControlUtils) {
   }
   /** Url address */
   pathToData : string;
@@ -65,6 +68,7 @@ export class IncompleteBlocksComponent implements OnInit {
   valueThatChangesForSpinnerOnResponse = false;
 
   public ngOnInit() {
+    this.responseShow("");
     this.pathToData = this.router.url.substring(1);
     this.loadZooKeeperNodeData(this.pathToData);
   }
@@ -75,19 +79,17 @@ export class IncompleteBlocksComponent implements OnInit {
           this.zooKeeperData = data;
           let result =  JSON.parse(this.zooKeeperData.toString());
            console.log( result)
-          this.serviceName = result["config"]["serviceName"];
+          this.serviceName = result["config"]["blockchain"];
           this.result = result["data"];
           this.loadIncompleteBlocksData(this.result);
-          this.valueThatChangesForSpinnerOnResponse = true;
-          this.valueThatChangesOnDataLoad = false;
         }catch(err){
+          this.responseShow("bad");
           console.log("Problem while trying to read data from incomplete blocks", err);
         }
 
       },
        err =>{
-         this.valueThatChangesForSpinnerOnResponse = false;
-         this.valueThatChangesOnDataLoad = false;
+         this.responseShow("bad");
          console.log("Problem on reading incomplete blocks data: ", err);
        }
       );
@@ -107,12 +109,12 @@ export class IncompleteBlocksComponent implements OnInit {
           this.formatData( this.incompleteBlocksDataNoReceipt, "incompleteNoReceipt");
           this.createTableWhenDataLoaded();
       }catch(err){
+        this.responseShow("bad");
         console.log("Problem while trying to read data from incomplete blocks no receipt", err);
       }
     },
      err =>{
-       this.valueThatChangesForSpinnerOnResponse = false;
-       this.valueThatChangesOnDataLoad = false;
+       this.responseShow("bad");
        console.log("Problem on reading incomplete blocks no receipt data: ", err);
      });
   }
@@ -173,8 +175,7 @@ export class IncompleteBlocksComponent implements OnInit {
         }
      },
      err =>{
-       this.valueThatChangesForSpinnerOnResponse = false;
-       this.valueThatChangesOnDataLoad = false;
+       this.responseShow("bad");
        console.log("Problem on reading incomplete blocks data: ", err);
      });
   }
@@ -200,50 +201,56 @@ export class IncompleteBlocksComponent implements OnInit {
   getNeededDataFromBlockRows(dataBlockRows){
     let index = 0;
     let objTempRows = [];
+    let tempArr = [];
     try{
-    let tempArr = Object.keys(dataBlockRows[0]);
-//     console.log("Proble: ", tempArr);
-     if(tempArr.includes("ActivityName")){
-      let neededData = this.configurationHandler.CONFIG["NeededDataToGetJKoolIncompleteBlocks"];
-      for(let dataBlockRow of dataBlockRows){
+    if(dataBlockRows.length > 0){
+      let tempArr = Object.keys(dataBlockRows[0]);
 
-      let objTemp= [];
-        for(let neededDataName in neededData){
-          let dataKey = neededData[neededDataName];
-          if(this.utilsSvc.compareStrings(neededData[neededDataName],"ActivityName")){
-            if(typeof dataBlockRow[dataKey] !== this.utilsSvc.theValueUsedIsNotSet){
-              objTemp["linkToBlock"]= this.linkToGocypherBlock(dataBlockRow[dataKey]);
+       if(tempArr.includes("ActivityName")){
+        let neededData = this.configurationHandler.CONFIG["NeededDataToGetJKoolIncompleteBlocks"];
+        for(let dataBlockRow of dataBlockRows){
+
+        let objTemp= [];
+          for(let neededDataName in neededData){
+            let dataKey = neededData[neededDataName];
+            if(this.utilsSvc.compareStrings(neededData[neededDataName],"ActivityName")){
+              if(typeof dataBlockRow[dataKey] !== this.utilsSvc.theValueUsedIsNotSet){
+                objTemp["linkToBlock"]= this.linkToGocypherBlock(dataBlockRow[dataKey]);
+              }
+
             }
-
-          }
-          if(typeof dataBlockRow[dataKey] !== this.utilsSvc.theValueUsedIsNotSet){
-            objTemp[dataKey]=dataBlockRow[dataKey];
-          }
-          else{
-           for(let neededDataNameInner in neededData[neededDataName]){
-             for(let dataInRow in dataBlockRow){
-               if(this.utilsSvc.compareStrings(neededDataNameInner, dataInRow)){
-                  objTemp[dataKey[dataInRow]]=dataBlockRow[dataInRow][dataKey[dataInRow]];
+            if(typeof dataBlockRow[dataKey] !== this.utilsSvc.theValueUsedIsNotSet){
+              objTemp[dataKey]=dataBlockRow[dataKey];
+            }
+            else{
+             for(let neededDataNameInner in neededData[neededDataName]){
+               for(let dataInRow in dataBlockRow){
+                 if(this.utilsSvc.compareStrings(neededDataNameInner, dataInRow)){
+                    objTemp[dataKey[dataInRow]]=dataBlockRow[dataInRow][dataKey[dataInRow]];
+                 }
                }
              }
-           }
+            }
           }
+          let tempCount = objTemp["txCount"]-objTemp["EventCount"];
+          objTemp["reason"] = "Missing transactions";
+          objTemp["count"] = tempCount;
+          objTempRows[index] = objTemp;
+          index++;
         }
-        let tempCount = objTemp["txCount"]-objTemp["EventCount"];
-        objTemp["reason"] = "Missing transactions";
-        objTemp["count"] = tempCount;
-        objTempRows[index] = objTemp;
-        index++;
-      }
-      this.incompleteBlocksData = objTempRows;
+        this.incompleteBlocksData = objTempRows;
+        }
+        else{
+         // this.loadIncompleteBlocksDataNoReceipt(this.result);
+          this.incompleteBlocksNoReceiptFull = this.fullBlocksDataFromJKool;
+           //console.log(" <-----> JKool  Blocks No Receipt",  this.fullBlocksDataFromJKool);
+           this.getNeededDataFromBlockNoReceipt(this.incompleteBlocksNoReceiptFull );
+           this.formatData( this.incompleteBlocksDataNoReceipt, "incompleteNoReceipt");
+           this.createTableWhenDataLoaded();
+        }
       }
       else{
-       // this.loadIncompleteBlocksDataNoReceipt(this.result);
-        this.incompleteBlocksNoReceiptFull = this.fullBlocksDataFromJKool;
-         //console.log(" <-----> JKool  Blocks No Receipt",  this.fullBlocksDataFromJKool);
-         this.getNeededDataFromBlockNoReceipt(this.incompleteBlocksNoReceiptFull );
-         this.formatData( this.incompleteBlocksDataNoReceipt, "incompleteNoReceipt");
-         this.createTableWhenDataLoaded();
+        this.responseShow("bad");
       }
     } catch(err){
       console.log("Problem occurred while trying to form the incomplete blocks no receipt dataObject ", err);
@@ -257,32 +264,25 @@ export class IncompleteBlocksComponent implements OnInit {
           //console.log(this.incompleteBlocksData, this.incompleteBlocksDataNoReceipt)
           let tryArr = this.incompleteBlocksDataNoReceipt.concat(this.incompleteBlocksData);
           this.dataSource = new MatTableDataSource<incompleteBlocks>( tryArr);
-          this.valueThatChangesOnDataLoad = true;
-          this.valueThatChangesForSpinnerOnResponse = false;
+          this.responseShow("good");
         }
         else if(typeof this.incompleteBlocksData !== 'undefined'){
           this.dataSource = new MatTableDataSource<incompleteBlocks>( this.incompleteBlocksData);
-          this.valueThatChangesOnDataLoad = true;
-          this.valueThatChangesForSpinnerOnResponse = false;
+          this.responseShow("good");
         }
         else if(typeof this.incompleteBlocksDataNoReceipt !== 'undefined') {
           this.dataSource = new MatTableDataSource<incompleteBlocks>(this.incompleteBlocksDataNoReceipt);
-          this.valueThatChangesOnDataLoad = true;
-          this.valueThatChangesForSpinnerOnResponse = false;
+          this.responseShow("good");
         }
         else{
-          this.valueThatChangesOnDataLoad = false;
-          this.valueThatChangesForSpinnerOnResponse = true;
+          this.responseShow("bad");
         }
     } catch(err){
       console.log("Problem occurred while trying to create data table", err);
     }
   }
 
-  public replayTheBlockFromInput(blockNumber){
-    let activityName = blockNumber.replace(',', '');
-    console.log("Trying to replay block "+ activityName+" ...");
-  }
+
 
   linkToGocypherBlock(blockName): string{
     try{
@@ -322,5 +322,28 @@ export class IncompleteBlocksComponent implements OnInit {
  applyFilterIncompleteBlocks(filterValue: string) {
    this.dataSource.filter = filterValue.trim().toLowerCase();
  }
+
+  /*Response variables set to good, bad or else for showing the data loading state*/
+    responseShow(responseData){
+     if(this.utilsSvc.compareStrings(responseData, "good")){
+       this.valueThatChangesForSpinnerOnResponse = false;
+       this.valueThatChangesOnDataLoad = true;
+     }
+     else if(this.utilsSvc.compareStrings(responseData, "bad")){
+       this.valueThatChangesForSpinnerOnResponse = false;
+       this.valueThatChangesOnDataLoad = false;
+     }
+     else{ //still loading
+       this.valueThatChangesOnDataLoad = false;
+       this.valueThatChangesForSpinnerOnResponse = true;
+     }
+    }
+
+
+  public replayTheBlockFromInput(blockNumber){
+    let activityName = blockNumber.replace(/,/g, '');
+    console.log("Trying to replay block "+ activityName+" ...");
+    this.controlUtils.replayBlock(this.pathToData, activityName);
+  }
 
 }

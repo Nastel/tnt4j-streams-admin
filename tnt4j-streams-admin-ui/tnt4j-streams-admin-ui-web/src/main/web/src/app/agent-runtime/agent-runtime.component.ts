@@ -9,6 +9,8 @@ import { UtilsService } from "../utils/utils.service";
 import { DataService } from '../data.service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 
+import { ControlUtils } from "../utils/control.utils";
+
 @Component({
   selector: 'app-agent-runtime',
   templateUrl: './agent-runtime.component.html',
@@ -88,7 +90,8 @@ export class AgentRuntimeComponent implements OnInit {
                 private configurationHandler:ConfigurationHandler,
                 public utilsSvc: UtilsService,
                 private matIconRegistry: MatIconRegistry,
-                private domSanitizer: DomSanitizer) { }
+                private domSanitizer: DomSanitizer,
+                private controlUtils : ControlUtils) {}
 
   ngOnInit() {
     this.pathToData = this.router.url.substring(1);
@@ -475,30 +478,32 @@ export class AgentRuntimeComponent implements OnInit {
          event.stopPropagation();
       }
 
-    startStopStream(streamState){
-      if(this.utilsSvc.compareStrings(streamState,"Stop")){
-        this.streamStartStop="Start";
-      }
-      else{
-        console.log("Starting ...");
-        this.streamStartStop="Stop";
-      }
+  startStopStream(streamState){
+    if(this.utilsSvc.compareStrings(streamState,"Stop")){
+      this.streamStartStop="Start";
     }
+    else{
+      console.log("Starting ...");
+      this.streamStartStop="Stop";
+    }
+  }
 
-    pauseResumeStream(streamState){
-      if(this.utilsSvc.compareStrings(streamState,"Pause")){
-        this.streamPauseResume="Resume";
-      }
-      else{
-        console.log("Resuming service...");
-        this.streamPauseResume="Pause";
-      }
+  pauseResumeStream(streamState){
+    if(this.utilsSvc.compareStrings(streamState,"Pause")){
+      this.streamPauseResume="Resume";
     }
+    else{
+      console.log("Resuming service...");
+      this.streamPauseResume="Pause";
+    }
+  }
 
-    replayTheBlockFromInput(blockNumber){
-     console.log("Trying to replay block "+ blockNumber+" ...");
-     this.blockNumber = "";
-    }
+  replayTheBlockFromInput(blockNumber){
+   //console.log("Trying to replay block "+ blockNumber+" ...");
+
+   //let activityName = blockNumber.replace(/,/g, '');
+   this.controlUtils.replayBlock(this.pathToData, blockNumber);
+  }
 
 
 }

@@ -46,7 +46,13 @@ export class ServerConfigurationFileComponent implements OnInit {
   }
 
   ngAfterViewChecked(){
-      let height = this.viewComponent.nativeElement.offsetHeight;
+  let height = 0;
+    if(!this.utilsSvc.compareStrings(this.viewComponent,"undefined")){
+      height = this.viewComponent.nativeElement.offsetHeight;
+    }
+    else{
+      height = 700;
+    }
       if(this.dataHeight<height){
         this.dataHeight = height;
       }

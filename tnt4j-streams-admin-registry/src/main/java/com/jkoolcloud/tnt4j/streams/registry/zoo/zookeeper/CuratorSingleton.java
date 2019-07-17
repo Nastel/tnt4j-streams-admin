@@ -47,7 +47,8 @@ public class CuratorSingleton {
 
 	public synchronized static SynchronizedCurator init(String connectString, int baseSleepTimeMs, int maxRetries) {
 		if (synchronizedCurator == null) {
-			CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient(connectString, new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries));
+			CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient(connectString,
+					new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries));
 			synchronizedCurator = new SynchronizedCurator(curatorFramework);
 		}
 		return synchronizedCurator;

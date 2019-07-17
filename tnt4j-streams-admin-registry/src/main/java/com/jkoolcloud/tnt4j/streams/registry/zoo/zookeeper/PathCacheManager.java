@@ -5,30 +5,26 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 
 public class PathCacheManager {
 
+	private PathChildrenCache pathChildrenCache;
 
-    private PathChildrenCache pathChildrenCache;
+	public PathCacheManager(PathChildrenCache pathToTreeCache) {
+		this.pathChildrenCache = pathToTreeCache;
+	}
 
-    public PathCacheManager(PathChildrenCache pathToTreeCache) {
-        this.pathChildrenCache = pathToTreeCache;
-    }
+	public void addListenerToPath(PathChildrenCacheListener pathChildrenCacheListener) {
+		pathChildrenCache.getListenable().addListener(pathChildrenCacheListener);
+	}
 
+	public void startPathCacheListener() throws Exception {
+		pathChildrenCache.start();
+	}
 
-    public void addListenerToPath(PathChildrenCacheListener pathChildrenCacheListener) {
-        pathChildrenCache.getListenable().addListener(pathChildrenCacheListener);
-    }
+	public void closeTreeCacheListener() throws Exception {
+		pathChildrenCache.close();
+	}
 
-
-    public void startPathCacheListener() throws Exception {
-        pathChildrenCache.start();
-    }
-
-
-    public void closeTreeCacheListener() throws Exception {
-        pathChildrenCache.close();
-    }
-
-    public void clear() throws Exception {
-        pathChildrenCache.clearAndRefresh();
-    }
+	public void clear() throws Exception {
+		pathChildrenCache.clearAndRefresh();
+	}
 
 }

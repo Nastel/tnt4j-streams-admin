@@ -4,10 +4,9 @@ import java.util.List;
 
 public class BlockReplay implements JsonRpcRequest<List<String>> {
 
-    @Override
-    public void processRequest(List<String> blocks) {
+	@Override
+	public void processRequest(List<String> blocks) {
 
-    }
-
+	}
 
 }

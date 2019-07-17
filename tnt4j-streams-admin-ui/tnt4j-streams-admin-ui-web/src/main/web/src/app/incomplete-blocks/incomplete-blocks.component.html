@@ -62,7 +62,7 @@
           }"  data-label="control" class="agentRuntimeServiceInformationTableHeader mat-Header  text-alignCenter"></mat-header-cell>
             <mat-cell *matCellDef="let element">
               <div class="display-content">
-                <mat-icon (click)="replayTheBlockFromInput(element.ActivityName)"  svgIcon="{{'replay'}}" class="background-svgColorChange mousePointer"></mat-icon>
+                <mat-icon (click)="replayTheBlockFromInput(element.ActivityName)"   matTooltip="Replay item" svgIcon="{{'replay'}}" class="background-svgColorChange mousePointer"></mat-icon>
               </div>
             </mat-cell>
           </ng-container>

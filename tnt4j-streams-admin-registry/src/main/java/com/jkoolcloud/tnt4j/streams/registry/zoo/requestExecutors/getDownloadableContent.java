@@ -1,5 +1,13 @@
 package com.jkoolcloud.tnt4j.streams.registry.zoo.requestExecutors;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils;
@@ -9,87 +17,72 @@ import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StaticObjectMapper;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.CuratorSingleton;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 public class getDownloadableContent implements JsonRpcRequest<Map<String, Object>> {
 
+	public final int MAX_FILE_SIZE_BYTES = 1_000_000; // 1mb
 
-    public final int MAX_FILE_SIZE_BYTES = 1_000_000; // 1mb
+	private Boolean doesExceedSizeLimit(String response, int limit) throws UnsupportedEncodingException {
 
+		byte[] bytes = response.getBytes();
 
-    private Boolean doesExceedSizeLimit(String response, int limit) throws UnsupportedEncodingException {
+		return bytes.length < limit;
+	}
 
-        byte[] bytes = response.getBytes();
+	@Override
+	public void processRequest(Map<String, Object> params) {
 
-        if(bytes.length < limit) {
-            return true;
-        }
-        return false;
-    }
+		String responsePath = (String) params.get("responsePath");
+		String fileToFetch = (String) params.get("fileName");
 
+		Properties properties = (Properties) params.get("properties");
+		String contentPath = properties.getProperty("contentPath");
 
-    @Override
-    public void processRequest(Map<String, Object> params) {
+		String filePath = IoUtils.findFile(contentPath, fileToFetch);
+		String content = null;
 
-        String responsePath = (String) params.get("responsePath");
-        String fileToFetch = (String) params.get("fileName");
+		try {
+			content = FileUtils.readFile(filePath, Charset.defaultCharset());
+		} catch (IOException e) {
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+		}
 
-        Properties properties = (Properties) params.get("properties");
-        String contentPath = properties.getProperty("contentPath");
+		byte[] compressedBytes = null;
+		try {
+			compressedBytes = IoUtils.compress(content.getBytes(), fileToFetch + ".txt");
+		} catch (IOException e) {
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+		}
 
-        String filePath = IoUtils.findFile(contentPath, fileToFetch);
-        String content = null;
+		byte[] base64EncodedBytes = Base64.getEncoder().encode(compressedBytes);
 
-        try {
-            content = FileUtils.readFile(filePath, Charset.defaultCharset());
-        } catch (IOException e) {
-            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
-        }
+		Map<String, Object> response = new HashMap<>();
+		response.put("filename", fileToFetch);
+		response.put("data", new String(base64EncodedBytes));
 
-        byte[] compressedBytes = null;
-        try {
-            compressedBytes = IoUtils.compress(content.getBytes(), fileToFetch + ".txt");
-        } catch (IOException e) {
-            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
-        }
+		String responseJson = null;
+		try {
+			responseJson = StaticObjectMapper.mapper.writeValueAsString(response);
+		} catch (JsonProcessingException e) {
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+		}
 
-        byte[] base64EncodedBytes = Base64.getEncoder().encode(compressedBytes);
+		byte[] bytes = responseJson.getBytes();
 
+		content = null;
+		base64EncodedBytes = null;
+		compressedBytes = null;
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("filename", fileToFetch);
-        response.put("data", new String(base64EncodedBytes));
+		try {
+			if (doesExceedSizeLimit(responseJson, MAX_FILE_SIZE_BYTES)) {
+				CuratorUtils.setData(responsePath, responseJson,
+						CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
+			} else {
+				CuratorUtils.setData(responsePath, "Error: File is to big",
+						CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
+			}
+		} catch (UnsupportedEncodingException e) {
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+		}
 
-
-        String responseJson = null;
-        try {
-            responseJson = StaticObjectMapper.mapper.writeValueAsString(response);
-        } catch (JsonProcessingException e) {
-            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
-        }
-
-        byte[] bytes = responseJson.getBytes();
-
-        content = null;
-        base64EncodedBytes = null;
-        compressedBytes = null;
-
-
-        try {
-            if(doesExceedSizeLimit(responseJson, MAX_FILE_SIZE_BYTES)) {
-                CuratorUtils.setData(responsePath, responseJson, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
-            } else {
-                CuratorUtils.setData(responsePath, "Error: File is to big", CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
-            }
-        } catch (UnsupportedEncodingException e) {
-            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
-        }
-
-    }
+	}
 }

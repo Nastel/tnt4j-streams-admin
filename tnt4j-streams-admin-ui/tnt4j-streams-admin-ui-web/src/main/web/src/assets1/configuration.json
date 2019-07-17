@@ -1,0 +1,150 @@
+{
+	"StreamsIcon": {
+    "mainPage": "assets/icons/headerXRay1.svg",
+    "start": "assets/iconControls/start.svg",
+    "replay": "assets/iconControls/replay.svg",
+    "stop": "assets/iconControls/stop.svg",
+    "pause": "assets/iconControls/pause.svg",
+    "streamUp": "assets/iconControls/streamUp.svg",
+    "streamDown": "assets/iconControls/streamDown.svg",
+    "expandDown": "assets/iconControls/expandDown.svg",
+    "expandUp": "assets/iconControls/expandUp.svg",
+    "search": "assets/iconControls/search.svg",
+    "clearSearch": "assets/iconControls/clearSearch.svg",
+    "closeModal": "assets/iconControls/clearSearch.svg",
+    "scrollDown": "assets/iconControls/scrollDown.svg",
+    "loadMore": "assets/iconControls/loadMore.svg",
+    "download" : "assets/iconControls/download.svg",
+	"fullScreen" : "assets/iconControls/fullScreen.svg",
+	"update" : "assets/iconControls/update.svg",
+	"/streams/v1/clusters" : "assets/iconControls/clusters.svg",
+	"/streams/v1/clusters/clusterBlockchainMainnets" : "assets/iconControls/clusterMainnet.svg",
+	"/streams/v1/clusters/clusterBlockchainTestnet" : "assets/iconControls/clusterTestnet.svg"
+  },
+    "StreamsDataForAgentPage": {
+		"latest block" : {"Last Streamed": "N/A"},
+		"last block query time" : {"Last Query Time" : "N/A"},
+		"last block time" :{"Last Stream Time": "N/A"},
+		"StreamsStartTime" :{"Start Time" : "N/A"}
+	},
+	
+    "StreamsDataForClusterPage": {
+		"latest block" : {"last streamed": "N/A"},
+		"last block time" :{"last block stream time": "N/A"},
+		"StreamsStartTime" :{"Start Time" : "N/A"}
+	},
+	"ReposDataForAllPage": {
+		"rowCount" :{"Total streams" : 0},
+		"last_msg_time" :{"Last received" : "N/A"},
+		"last_delivered_msg_time" : {"Last processed" : "N/A" },
+
+		"last_drop_msg_time" :{"Last failure" : "N/A"},
+		"last_error_msg_time" : {"Last drop" : "N/A" },
+
+		"SUMtotal_msg_count" :{"Total received" : 0},
+		"SUMtotal_delivered_msg_count" : {"Total Processed" : 0 },
+		"SUMtotal_drop_msg_count" :{"Total errors" : 0},
+		"SUMtotal_error_msg_count" : {"Total dropped" : 0 },
+
+		"SUMlimiter_total_delay_count" : {"Delayed by limiter" : 0 },
+		"SUMlimiter_total_msg_count" :{"Processed by limiter" : 0},
+		"limiter_overage_policy" : {"Overage policy" : "N/A" },
+
+		"SUMlimiter_bytes_per_sec" :{"Total bytes/sec" : 0},
+		"AVGlimiter_bytes_per_sec" :{"Avg bytes/sec per stream" : 0},
+		"SUMlimiter_msgs_per_sec" : {"Total msgs/sec" : 0 },
+		"AVGlimiter_msgs_per_sec" :{"Avg msgs/sec per stream" : 0}
+	},
+	"StreamsDataFormatting": {
+		
+		"LastBlockQueryTime" : "time",
+		"LastBlockTime": "time",
+		"StreamsStartTime" : "time",
+		"StreamActivityTime" : "time",
+		
+		"Last received" : "timeWords",
+		"Last processed" : "timeWords",
+		
+	
+		"last block query time" : "time",
+		"last block time": "time",
+		"Last action in streams time" : "time",
+		"Service start time" : "time",
+		"StartTime" : "time",
+		
+		"StreamStartTime" : "time",
+		"streamStartTime" : "time",
+		"LatestBlockTime" : "time",
+		"LatestBlockQueryTime" : "time"
+	},
+	"IncompleteItemsConfig" : {
+		"tableName" : "Incomplete Items",
+		"controlName" : "Replay",
+		"NeededColumns" : {
+			"reason" : "Reason",
+			"activityName" : "Item Name",
+			"startTime" : "Start Time",
+			"count" : "Count",
+			"blockRepeat" : "Replay Item"
+		}
+	},
+	"NeededDataToGetJKoolIncompleteBlocks" : [
+		"ActivityName",
+		"EventCount",
+		"StartTime",
+		{"Properties('txCount')" :"txCount"},
+		"linkToBlock"
+	],
+	"NeededDataToGetJKoolIncompleteBlocksNoReceipt" : [
+		"Count(EventName)",
+		{"Properties('blockNumber')" : "blockNumber" },
+		"StartTime"
+	],
+	
+	"LazyLoadDataLines" : {
+		"log" : 50,
+		"logErr" : 200,
+		"bottomLog" : 200,
+		"bottomLogLoadIntervalMS" : 10000
+	},
+	
+	"excludeFromTreeView" : [
+		"requests",
+		"downloaded"
+	],
+	
+	"excludeFromReadingOnTreeLoad" : [
+		"requests",
+		"downloaded",
+		"threadDump",
+		"configurations",
+		"downloadables",
+		"logs"
+	],
+	
+	"StartTreeNodeParentName" : "BaseNode",
+	"BasePathHide" : "streams/v1",
+	
+	"ZooKeeperTreeNodes" : "//eth.k2n.io:8080/streamsadminservices/registry/nodeTree",
+	
+	"ZooKeeperDataCall" : [
+		"//eth.k2n.io:8080/streamsadminservices/registry",
+		"/list"
+	],
+	"PageColorConfigs" : {
+		"goodResponseHeaderFooter" : "#050506",
+		"colorInnerComponentLabels" : "#403e47",
+		"footerColor" : "#282a2b",
+		
+		"labelTextColor" : "#D3D3D3",
+		"colorTableTextLabels" : "#D3D3D3",
+
+		"agentWindowStreamNoResponse" : "#DD8DA1",
+		"badResponse" : "#931423",
+		
+		
+		"componentsBackgroundColor" : "#E6E6E6"
+	}
+	
+	
+}

@@ -130,8 +130,9 @@ public class ZookeeperAccessService {
 
 //		zooAccess.getServiceNodeData("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/streamAdminLogger.log");
 
-		zooAccess.getServiceNodeData("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/streamAdminLogger.log");
+		//zooAccess.getServiceNodeData("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/streamAdminLogger.log");
 
+		zooAccess.sendControlRequest("/clusters/clusterBlockchainMainnets/streamsAgentBch/BitcoinCashStream/incomplete/590694.444444.666666.88888", "replayBlock");
 
         zooAccess.destroy();
     }
@@ -199,7 +200,6 @@ public class ZookeeperAccessService {
         return myNodeMap;
     }
 
-
 	/**
 	 * Gets stream services.
 	 *
@@ -228,7 +228,6 @@ public class ZookeeperAccessService {
 		return services;
 	}
 
-
 	/**
 	 * Method that finishes building the path to ZooKeeper node and returns the data inside the node.
 	 * @param pathToData
@@ -246,7 +245,7 @@ public class ZookeeperAccessService {
 
 			LOG.info("Path to node full :{}", tempPathToNode);
 			if(checkIfNeededURL(pathToData, "threadDump")){
-				sendRequestAndWaitForResponseData(myMap, tempPathToNode, "getThreadDump", 10, "");
+				sendRequestAndWaitForResponseData(tempPathToNode, "getThreadDump", 10, "");
 			}
 			else if(checkIfNeededURLDownload(pathToData, "download")){
 				String[] arrayUrl = pathToData.split("/");
@@ -254,7 +253,7 @@ public class ZookeeperAccessService {
 				String tempValue =  tempPathToNode.substring(0, tempPathToNode.length() - arrayUrl[arrayUrl.length-1].length()-1);
 				LOG.info("FIle that we want to download: {}", arrayUrl[arrayUrl.length-1]);
 				LOG.info("Remove from request end : {}",tempValue);
-				sendRequestAndWaitForResponseData(myMap, tempValue, "getDownloadableContent", pathLengthRemove, arrayUrl[arrayUrl.length-1]);
+				sendRequestAndWaitForResponseData(tempValue, "getDownloadableContent", pathLengthRemove, arrayUrl[arrayUrl.length-1]);
 				tempPathToNode = tempValue+SERVICE_DOWNLOAD_PATH;
 			}
 			//			else if(checkIfNeededURL(pathToData, "download")){
@@ -431,17 +430,12 @@ public class ZookeeperAccessService {
 		return false;
 	}
 
-
-
-	private void sendRequestAndWaitForResponseData(HashMap myMap, String pathToResponse, String methodName, int nodeNameLength, String fileName) {
+	private void sendRequestAndWaitForResponseData(String pathToResponse, String methodName, int nodeNameLength, String fileName) {
 		AsyncCuratorFramework async = AsyncCuratorFramework.wrap(client);
 		String requestId = UUID.randomUUID().toString();
-		HashMap configData = (HashMap) myMap.get("config");
-		//because only threads data node should come hear the value is - 10  'threadDump'
 		String pathToRequests = pathToResponse.substring(0, pathToResponse.length() - nodeNameLength) + "requests";
 		LOG.info("Path To request dump: {}", pathToRequests);
 		LOG.info("Path To response dump: {}", pathToResponse);
-
 		String requestJson = "{\"jsonrpc\":\"2.0\",\"method\":\"" + methodName + "\",\"params\":{\"responsePath\" : \"" + pathToResponse + "\"},\"id\":\"" + requestId + "\"}";
 		if(!fileName.equals("")){
 			LOG.info("File name if Exists: {}", fileName);
@@ -461,6 +455,7 @@ public class ZookeeperAccessService {
 							LOG.info("ET:" + event.getType());
 							LOG.info("E:" + event);
 						}).toCompletableFuture().get(4, TimeUnit.SECONDS);
+
 			} catch (Exception e) {
 				LOG.error("Problem on reading response from {}", methodName);
 				e.printStackTrace();
@@ -468,114 +463,6 @@ public class ZookeeperAccessService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-/*	private void sendRequestAndWaitForThreadResponse(HashMap myMap, String pathToResponse){
-		AsyncCuratorFramework async = AsyncCuratorFramework.wrap(client);
-		String requestId = UUID.randomUUID().toString();
-		HashMap configData = (HashMap) myMap.get("config");
-		//because only threads data node should come hear the value is - 10  'threadDump'
-		String pathToRequests = pathToResponse.substring(0, pathToResponse.length() - 10) + "requests";
-		LOG.info("Path To request thread dump: {}", pathToRequests);
-		LOG.info("Path To response thread dump: {}", pathToResponse);
-		if (checkIfThreadDump(pathToResponse)) {
-			String method = "getThreadDump";
-			List<Object> myParams = new ArrayList<>();
-			String requestJson = "{\"jsonrpc\":\"2.0\",\"method\":\"" + method + "\",\"params\":{\"responsePath\" : \""+pathToResponse+"\"},\"id\":\"" + requestId + "\"}";
-			try {
-				checkIfRequestResponseNodeExist(pathToRequests, pathToResponse);
-				SimpleDistributedQueue data = new SimpleDistributedQueue(client, pathToRequests);
-				if(data.offer(requestJson.getBytes())){
-					LOG.info("Writing request to node successful");
-				}
-				try {
-					LOG.info("Waiting for thread dump response");
-					async.with(WatchMode.successOnly).watched().getData().forPath(pathToResponse).event()
-							.thenAccept(event -> {
-								LOG.info("ET:" + event.getType());
-								LOG.info("E:" + event);
-							}).toCompletableFuture().get(2, TimeUnit.SECONDS);
-				} catch (Exception e) {
-					LOG.error("Prob");
-					e.printStackTrace();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-	}*/
-
-
-	/**
-	 * Get service name from inside the metrics information
-	 * @param myMap The data from ZooKeeper node inside Map
-	 * @return
-	 */
-	private String getStreamName(HashMap myMap){
-		HashMap serviceData = (HashMap) myMap.get("data");
-		String serviceName;
-		String data = serviceData.toString().substring(1);
-		int index = data.indexOf(' ');
-		if (index > -1) {
-			serviceName = data.substring(0, index);
-		} else {
-			serviceName = data;
-		}
-		serviceData.get(serviceName);
-		return serviceName;
-	}
-
-
-	// The separating line between the new code and the old code that might be reused (needs review before
-	// production deploy).
-
-	/**
-	 * Gets stream services static data.
-	 *
-	 * @return the stream services static data
-	 */
-	public Map<String, Object> getStreamServicesStaticData() {
-
-		Map<String, Object> myMap = new HashMap<>();
-		ServiceDiscovery<String> serviceDiscovery = ServiceDiscoveryBuilder.builder(String.class).client(client)
-				.basePath(SERVICES_REGISTRY_NODE).build();
-		try {
-			serviceDiscovery.start();
-			Collection<String> serviceNames = serviceDiscovery.queryForNames();
-			LOG.info("Services found:{}", serviceNames);
-			for (String serviceName : serviceNames) {
-				HashMap<String, String> tempMap = new HashMap<>();
-				try {
-					LOG.info("SN:{}", serviceName);
-					Collection<ServiceInstance<String>> instances = serviceDiscovery.queryForInstances(serviceName);
-					LOG.info("Instances:{}", instances);
-					System.out.println("Node created:" + serviceName);
-					byte[] serviceConfigurationFromZooKeeper = client.getData().watched()
-							.forPath(SERVICES_REGISTRY_NODE + "/" + serviceName);
-
-					ObjectMapper objectMapper = new ObjectMapper();
-
-					tempMap = objectMapper.readValue(serviceConfigurationFromZooKeeper, HashMap.class);
-					myMap.put(serviceName, tempMap);
-					// tempMap = objectMapper.readValue(serviceConfigurationFromZooKeeper, HashMap.class);
-					System.out.println("Map is: " + myMap);
-					LOG.info("Map is: " + myMap);
-
-				} catch (Exception e1) {
-					destroy();
-					LOG.error("Error on query for instances", e1);
-				}
-			}
-		} catch (Exception e) {
-			LOG.error("Error on query for names", e);
-		} finally {
-			try {
-				serviceDiscovery.close();
-			} catch (Exception ignored) {
-			}
-		}
-		return myMap;
 	}
 
 	private void createNode(String path) {
@@ -618,6 +505,140 @@ public class ZookeeperAccessService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Get service name from inside the metrics information
+	 * @param myMap The data from ZooKeeper node inside Map
+	 * @return
+	 */
+	private String getStreamName(HashMap myMap){
+		HashMap serviceData = (HashMap) myMap.get("data");
+		String serviceName;
+		String data = serviceData.toString().substring(1);
+		int index = data.indexOf(' ');
+		if (index > -1) {
+			serviceName = data.substring(0, index);
+		} else {
+			serviceName = data;
+		}
+		serviceData.get(serviceName);
+		return serviceName;
+	}
+
+	private String getAddressEnding(String path){
+		String pathEnding = path.substring(path.lastIndexOf('/') + 1);
+		return pathEnding;
+	}
+
+
+
+	/**
+	 * Method that finishes building the path to ZooKeeper node and returns the data inside the node.
+	 * @param pathToData
+	 * 				The path got on request from front-end or API user to get the data from ZooKeeper node
+	 * @return
+	 */
+	public HashMap sendControlRequest(String pathToData, String methodName) {
+		List<String> blockList = new LinkedList<>();
+		HashMap parameterMap = new HashMap<>();
+		HashMap nodeResponse = new HashMap<>();
+		try {
+			LOG.info("Got from URL call:{}", pathToData);
+			String tempPathToNode = SERVICES_REGISTRY_START_PARENT+pathToData;
+			blockList = getBlockListIfExists(tempPathToNode);
+			parameterMap.put("Items", blockList);
+			if(blockList.size()>0) {
+				sendRequestAndWaitForResponseStreamControls(tempPathToNode, methodName, parameterMap);
+
+				byte[] serviceConfigurationFromZooKeeper = client.getData().watched().forPath(tempPathToNode);
+				if (serviceConfigurationFromZooKeeper[0] == '{' || serviceConfigurationFromZooKeeper[1] == '{' || serviceConfigurationFromZooKeeper[0] == '[' || serviceConfigurationFromZooKeeper[1] == '[') {
+					ObjectMapper objectMapper = new ObjectMapper();
+					nodeResponse = objectMapper.readValue(serviceConfigurationFromZooKeeper, HashMap.class);
+				} else {
+					String data = new String(serviceConfigurationFromZooKeeper);
+					nodeResponse.put(methodName, data);
+				}
+			}
+			else{
+				nodeResponse.put("Error", "No blocks specified in request");
+			}
+			LOG.info("Response is: {}", parameterMap);
+		} catch (Exception e) {
+			LOG.error("Error on query for node information", e);
+		}
+		return nodeResponse;
+	}
+
+	private List<String> getBlockListIfExists(String tempPathToNode){
+		List<String> blockList = new LinkedList<>();
+		String requestBlocks = getAddressEnding(tempPathToNode);
+		String[] array = requestBlocks.split("\\.");
+		if(array.length==0){
+			blockList.add("Error: No block selected for replay");
+			return blockList;
+		}
+		else {
+			for (String blockNumber : array) {
+				blockList.add(blockNumber);
+			}
+		}
+		return blockList;
+	}
+
+
+
+	private String sendRequestAndWaitForResponseStreamControls(String pathToResponse, String methodName, HashMap requestParameters) {
+		AsyncCuratorFramework async = AsyncCuratorFramework.wrap(client);
+		String requestId = UUID.randomUUID().toString();
+		String responseData = "";
+		String jsonParams = " ";
+		String pathToRequests = getPathToRequestNode(pathToResponse);
+		LOG.info("Path To response node: {}", pathToResponse);
+		try {
+			requestParameters.put("responsePath", pathToResponse);
+			jsonParams = new ObjectMapper().writeValueAsString(requestParameters);
+		}catch (Exception e) {
+			LOG.error("Problem converting parameters map to json");
+			e.printStackTrace();
+		}
+		String requestJson = "{\"jsonrpc\":\"2.0\",\"method\":\"" + methodName + "\",\"params\":\""+ jsonParams + "\",\"id\":\"" + requestId + "\"}";
+		try {
+			checkIfRequestResponseNodeExist(pathToRequests, pathToResponse);
+			SimpleDistributedQueue data = new SimpleDistributedQueue(client, pathToRequests);
+			if (data.offer(requestJson.getBytes())) {
+				LOG.info("Writing request to node successful {}", requestJson);
+			}
+			LOG.info("Waiting for {} response", methodName);
+			async.with(WatchMode.successOnly).watched().getData().forPath(pathToResponse).event()
+					.thenAccept(event -> {
+						LOG.info("ET:" + event.getType());
+						LOG.info("E:" + event);
+					}).toCompletableFuture().get(4, TimeUnit.SECONDS);
+
+		} catch (Exception e) {
+			LOG.error("Problem on reading response from {}", methodName);
+			e.printStackTrace();
+		}
+		return responseData;
+	}
+
+	private String getPathToRequestNode(String pathToData){
+		String requestNodePath = "";
+		int count=0;
+		String[] nodeParts = pathToData.split("/");
+		for(String partOfPath : nodeParts) {
+			count++;
+			if(count<7) {
+				requestNodePath = requestNodePath + partOfPath + "/";
+			}
+			else{
+				break;
+			}
+		}
+		requestNodePath = requestNodePath + "request";
+		LOG.info("Path to request node: {}", requestNodePath);
+		return requestNodePath;
 	}
 
 }

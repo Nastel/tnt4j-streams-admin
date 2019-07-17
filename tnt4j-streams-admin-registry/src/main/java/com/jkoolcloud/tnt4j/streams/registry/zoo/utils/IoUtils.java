@@ -1,15 +1,9 @@
 package com.jkoolcloud.tnt4j.streams.registry.zoo.utils;
 
-import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.jar.JarInputStream;
@@ -17,6 +11,17 @@ import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import com.jkoolcloud.tnt4j.core.OpLevel;
+import com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils;
 
 public class IoUtils {
 
@@ -38,8 +43,6 @@ public class IoUtils {
             }
         }
 
-
-
         return jarInputStream;
     }
 
@@ -50,7 +53,6 @@ public class IoUtils {
 
         return files;
     }
-
 
     public static List<String> getParsersList(String path) throws Exception {
         List<String> parserNames = new ArrayList<>();
@@ -64,7 +66,7 @@ public class IoUtils {
             public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
                 if (qName.equalsIgnoreCase("resource-ref")) {
                     if (attributes.getValue("type").equalsIgnoreCase("Parser"))
-                        parserNames.add(attributes.getValue("id"));
+                        parserNames.add(attributes.getValue("uri"));
                     handler.endDocument();
                 }
             }
@@ -75,7 +77,8 @@ public class IoUtils {
         return parserNames;
     }
 
-    public static Map<String, Object> getStreamsAndClasses(String path) throws ParserConfigurationException, SAXException, IOException {
+    public static Map<String, Object> getStreamsAndClasses(String path)
+            throws ParserConfigurationException, SAXException, IOException {
         Map<String, Object> streamToClassMap = new HashMap<>();
 
         SAXParser saxParser = null;
@@ -108,7 +111,7 @@ public class IoUtils {
 
             if (name != null && libName.contains(name.toLowerCase())) {
                 String value = attribute.getValue("Implementation-Version");
-                searchResult.put(name,value);
+                searchResult.put(name, value);
             }
         }
         return searchResult;
@@ -149,14 +152,13 @@ public class IoUtils {
     }
     */
 
-
     public static Map<String, Object> FileNameAndContentToMap(File file, String filenameKey, String fileContentKey) {
         String fileContent = null;
         String fileName = file.getName();
         try {
             fileContent = FileUtils.readFile(file.getPath(), Charset.defaultCharset());
         } catch (IOException e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR, String.format("Failed to read file %s", e.getMessage()));
+            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
         }
         Map<String, Object> response = new HashMap<>();
         response.put(filenameKey, fileName);
@@ -164,7 +166,6 @@ public class IoUtils {
 
         return response;
     }
-
 
     public static List<Map<String, Object>> getConfigs(String path) {
 
@@ -181,25 +182,21 @@ public class IoUtils {
         return list;
     }
 
-    public static List<String> getAvailableFiles(String path){
+    public static List<String> getAvailableFiles(String path) {
         List<File> fileList = new ArrayList<>();
 
         FileUtils.listf(path, fileList);
 
-        List<String> fileNames = fileList.stream().map( file -> file.getName() ).collect(Collectors.toList());
+        List<String> fileNames = fileList.stream().map(file -> file.getName()).collect(Collectors.toList());
 
         return fileNames;
     }
 
-
-
-
-
-    public static Properties propertiesWrapper(String path){
+    public static Properties propertiesWrapper(String path) {
 
         Properties properties = new Properties();
 
-        try( FileInputStream stream = new FileInputStream(path)){
+        try (FileInputStream stream = new FileInputStream(path)) {
             properties.load(stream);
         } catch (IOException e) {
             LoggerWrapper.addMessage(OpLevel.ERROR, e.getMessage());
@@ -208,14 +205,13 @@ public class IoUtils {
         return properties;
     }
 
-
-    public static String findFile(String dir, String fileName){
+    public static String findFile(String dir, String fileName) {
         List<File> files = new ArrayList<>();
 
         FileUtils.listf(dir, files);
 
-        for(File file : files){
-            if(file.getName().equals(fileName)){
+        for (File file : files) {
+            if (file.getName().equals(fileName)) {
                 return file.getAbsolutePath();
             }
         }

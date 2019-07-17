@@ -8,6 +8,7 @@ import {ConfigurationHandler} from './configuration-handler';
 import {TreeViewComponent} from '../tree-view/tree-view.component';
 import {UtilsService} from "../utils/utils.service";
 
+
 import { MatIconRegistry } from "@angular/material";
 import { DomSanitizer } from "@angular/platform-browser";
 
@@ -24,6 +25,8 @@ export class AutoRouteGenerator
   zooKeeperTreeNodeList = {};
   zooKeeperData = {};
   nodesToExcludeArray = [];
+
+  iconsDataLoaded = false;
 
   jsonFile = "assets/configuration.json";
 
@@ -43,20 +46,28 @@ export class AutoRouteGenerator
         this.CONFIG = data;
           this.http.get(this.CONFIG["ZooKeeperTreeNodes"]).subscribe(data => {
             this.zooKeeperTreeNodeList = data;
-            this.getConfigurationsFromTree( this.zooKeeperTreeNodeList )
             this.createDynamic();
-            if(!this.utilsSvc.compareStrings( this.zooKeeperTreeNodeList, "undefined")){
-              resolve("done")
+            if(!this.utilsSvc.compareStrings(this.zooKeeperTreeNodeList, "undefined")&&!this.utilsSvc.compareStrings(this.zooKeeperTreeNodeList, "null")){
+              this.getConfigurationsFromTree(this.zooKeeperTreeNodeList);
+              if(this.iconsDataLoaded){
+                setTimeout(function(){ resolve("resolved"); }, 2000);
+                console.log( "The data has been loaded resolve the response");
+              }
             }
         });
       });
     });
-//    promise.then(() =>  this.getConfigurationsFromTree( this.zooKeeperTreeNodeList ));
+    promise.then(function(value) {
+     // this.getConfigurationsFromTree( this.zooKeeperTreeNodeList );
+      console.log(value);
+    });
+
     return promise;
 
   }
 
   getConfigurationsFromTree(listOfNodes){
+   console.log( "Adding svg icons");
     let elementsToExcludeFromTreeView = this.configurationHandler.CONFIG["excludeFromReadingOnTreeLoad"];
     let nodesToExcludeArray = this.getArrayOfNodesToExclude(elementsToExcludeFromTreeView);
     for(let node in this.zooKeeperTreeNodeList){
@@ -82,6 +93,7 @@ export class AutoRouteGenerator
           });
        }
     }
+    this.iconsDataLoaded = true;
   }
 
   getZooKeeperNodeData(zooKeeperPath){

@@ -64,3 +64,9 @@
     font-size: 1em !important;
     font-family: Montserrat,sans-serif !important;
   }
+
+
+
+    mat-footer-row, mat-header-row, mat-row{
+      align-items: unset !important;
+    }

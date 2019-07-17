@@ -16,7 +16,15 @@
 
 package com.jkoolcloud.tnt4j.streams.registry.zoo.jobs.AgentJobs;
 
-import com.jkoolcloud.tnt4j.core.OpLevel;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+
 import com.jkoolcloud.tnt4j.streams.admin.utils.log.StringBufferAppender;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.Config;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.ConfigData;
@@ -24,66 +32,54 @@ import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.CuratorUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JobUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.CuratorSingleton;
-import org.apache.log4j.Logger;
-import org.quartz.Job;
-import org.quartz.JobDataMap;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The type Agent logs updater job.
  */
 public class AgentLogsUpdaterJob implements Job {
 
+	/**
+	 * execute.
+	 *
+	 * @param jobExecutionContext
+	 * @throws JobExecutionException
+	 */
+	@Override
+	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-    /**
-     * execute.
-     *
-     * @param jobExecutionContext
-     * @throws JobExecutionException
-     */
-    @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+		JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
-        JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
+		Config config = JobUtils.createConfigObject(jobDataMap);
+		String path = JobUtils.getPathToNode(jobDataMap);
 
-        Config config = JobUtils.createConfigObject(jobDataMap);
-        String path = JobUtils.getPathToNode(jobDataMap);
+		StringBufferAppender stringBufferAppenderNormal = null;
+		StringBufferAppender stringBufferAppenderError = null;
 
+		Logger logger = Logger.getRootLogger();
 
-        StringBufferAppender stringBufferAppenderNormal = null;
-        StringBufferAppender stringBufferAppenderError = null;
+		stringBufferAppenderNormal = (StringBufferAppender) logger.getAppender("myAppender");
+		stringBufferAppenderError = (StringBufferAppender) logger.getAppender("myErrorAppender");
 
-        Logger logger = Logger.getRootLogger();
+		Map<String, Object> data = new HashMap<>();
 
-        stringBufferAppenderNormal = (StringBufferAppender) logger.getAppender("myAppender");
-        stringBufferAppenderError = (StringBufferAppender) logger.getAppender("myErrorAppender");
+		if (stringBufferAppenderNormal == null && stringBufferAppenderError == null) {
+			data.put("Service log", "");
+			data.put("Service error log", "");
+		} else {
+			data.put("Service log", stringBufferAppenderNormal.getLogs());
+			data.put("Service error log", stringBufferAppenderError.getLogs());
+		}
 
+		ConfigData configData = new ConfigData<>(config, data);
 
+		String response = JobUtils.toJson(configData);
 
-        Map<String, Object> data = new HashMap<>();
+		boolean wasSet = CuratorUtils.setData(path, response,
+				CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
 
-        if(stringBufferAppenderNormal == null && stringBufferAppenderError == null) {
-            data.put("Service log", "");
-            data.put("Service error log", "");
-        }else {
-            data.put("Service log", stringBufferAppenderNormal.getLogs());
-            data.put("Service error log", stringBufferAppenderError.getLogs());
-        }
+		if (!wasSet) {
+			LoggerWrapper.addQuartzJobLog(this.getClass().getName(), path, response);
+		}
 
-        ConfigData configData = new ConfigData<>(config, data);
-
-        String response = JobUtils.toJson(configData);
-
-        boolean wasSet = CuratorUtils.setData(path, response, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
-
-        if (!wasSet) {
-            LoggerWrapper.addQuartzJobLog(this.getClass().getName(), path, response);
-        }
-
-
-    }
+	}
 }

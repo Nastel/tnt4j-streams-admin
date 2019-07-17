@@ -1,27 +1,27 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
-@import './customize-bootstrap';
+  @import './customize-bootstrap';
 
 
-/* -----------Main body -----------------------------------------------*/
-html {
+  /* -----------Main body -----------------------------------------------*/
+  html {
   font-size: 0.75em;
   height: 100%;
-}
-body {
+  }
+  body {
   overflow-x: hidden;
   height: 100%;
   font-family: Montserrat,sans-serif;
   background-color: #FBFBFB !important;
-}
+  }
 
-/* -----------Footer style -----------------------------------------------*/
-.footer {
+  /* -----------Footer style -----------------------------------------------*/
+  .footer {
   padding: 3rem !important;
   margin-top: 2rem !important;
-}
+  }
 
-/* -----------Contetnt header font color configuration available in configuration file -----------------------------------------------*/
-.headerFont {
+  /* -----------Contetnt header font color configuration available in configuration file -----------------------------------------------*/
+  .headerFont {
   font-size: 1.35em;
   color: #2E2E2E;
   font-family: Montserrat,sans-serif;
@@ -29,210 +29,210 @@ body {
   border-top-right-radius: 1em;
   padding: 0.25em;
   word-break: break-all;
-}
+  }
 
-/* -----------Material TABLE component style changes-----------------------------------------------*/
-.mat-paginator-container {
+  /* -----------Material TABLE component style changes-----------------------------------------------*/
+  .mat-paginator-container {
   display: flex;
   justify-content: center !important;
-}
-.mat-row:nth-child(even){
+  }
+  .mat-row:nth-child(even){
   transition: 0.4s;
   background-color:#E6E6E6;
   &:hover {
-    background: #e1fcf1;
+  background: #e1fcf1;
   }
-}
-.mat-row:nth-child(odd){
+  }
+  .mat-row:nth-child(odd){
   transition: 0.4s;
   background-color:#D1CFCF;
   &:hover {
-    background: #e1fcf1;
+  background: #e1fcf1;
   }
-}
+  }
 
-.mat-row{
+  .mat-row{
   min-height: 0em !important;
   max-height: 400em !important;
   word-break: break-all;
-}
+  }
 
-/* --------------------Responsive table---------------------------------*/
-.example-container {
+  /* --------------------Responsive table---------------------------------*/
+  .example-container {
   display: flex;
   flex-direction: column;
   max-height: 500px;
   min-width: 300px;
-}
+  }
 
-.mat-table {
+  .mat-table {
   font-family: Montserrat,sans-serif !important;
   max-height: 500em;
-}
+  }
 
-.mobile-label {
-  display: none;
-}
-
-@media(max-width: 900px) {
   .mobile-label {
-    font-family: Montserrat,sans-serif !important;
-    text-align: center;
-    display: inline-block;
-    font-weight: bold;
+  display: none;
+  }
+
+  @media(max-width: 900px) {
+  .mobile-label {
+  font-family: Montserrat,sans-serif !important;
+  text-align: center;
+  display: inline-block;
+  font-weight: bold;
   }
 
   .mat-header-row {
-    display: none;
+  display: none;
   }
 
   .mat-row {
-    flex-direction: column;
-    align-items: start;
-    padding: 8px 24px;
+  flex-direction: column;
+  align-items: start;
+  padding: 8px 24px;
   }
 
   .mat-cell{
-    font-size: 1em !important;
-    font-family: Montserrat,sans-serif !important;
-    padding-right: 24px !important;
+  font-size: 1em !important;
+  font-family: Montserrat,sans-serif !important;
+  padding-right: 24px !important;
   }
-}
+  }
 
 
-/* -----------Material FORM component style changes-----------------------------------------------*/
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+  /* -----------Material FORM component style changes-----------------------------------------------*/
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
   padding: 0.6em !important;
   border-top : 0px !important;
-}
+  }
 
-::ng-deep .mat-form-field-infix{
+  ::ng-deep .mat-form-field-infix{
   border-top : 0px !important;
-}
+  }
 
-/* -----------Material SPINNER component style changes-----------------------------------------------*/
+  /* -----------Material SPINNER component style changes-----------------------------------------------*/
 
-.mat-progress-spinner circle, .mat-spinner circle {
+  .mat-progress-spinner circle, .mat-spinner circle {
   stroke: #298A08 !important;
-}
-.spinnerSection{
+  }
+  .spinnerSection{
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.spinnerTop{
+  }
+  .spinnerTop{
   margin-left:5px;
   margin-bottom:2px;
   margin-right:10px;
-}
+  }
 
-/* -----------Material TREE component style changes -----------------------------------------------*/
-mark{
+  /* -----------Material TREE component style changes -----------------------------------------------*/
+  mark{
   background: #95ADB6 !important;
-}
-.navTreeFill {
+  }
+  .navTreeFill {
   transition: 0.7s;
   color: black;
   cursor: pointer;
   padding: 2px;
   &:hover {
-    background-color: #FBFBFB;
-    text-decoration: underline;
+  background-color: #FBFBFB;
+  text-decoration: underline;
   }
-}
-.navTreeSelected {
+  }
+  .navTreeSelected {
   color: black;
   cursor: pointer;
   padding: 2px;
   background-color: #FBFBFB !important;
   text-decoration: underline;
-}
-button:focus{
+  }
+  button:focus{
   outline:none !important;
-}
-.mat-icon-button {
+  }
+  .mat-icon-button {
   width: 1.5em !important;
-}
-.mat-tree{
+  }
+  .mat-tree{
   font-family: Montserrat,sans-serif;
-}
-.mat-tree-node{
+  }
+  .mat-tree-node{
   background-color: #e6e6e6;
   min-height: 1.6em !important;
   height: 1.6em !important;
-}
-.mat-tree-node-leaf{
+  }
+  .mat-tree-node-leaf{
   padding-left: 20px !important;
-}
-.mat-icon.serviceIcon{
+  }
+  .mat-icon.serviceIcon{
   padding-left: 5px !important;
-}
-.treeButtonMargin{
+  }
+  .treeButtonMargin{
   margin-right: 1em !important;
   margin-left: 1em !important;
-}
-a.navTree {
+  }
+  a.navTree {
   color: black !important;
   font-size: 1.05em;
   padding: 0.4em 0.2em;
-}
+  }
 
-/* -----------Data background view-----------------------------------------------*/
-.fullBorder {
+  /* -----------Data background view-----------------------------------------------*/
+  .fullBorder {
   height: 100%;
   background-color: #E6E6E6 ;
   border-radius: 2em;
   box-shadow: 6px 12px 6px #A4A4A4;
   margin-bottom: 1em !important;
-}
+  }
 
-/* ----------Input fields design------------------------------------------------*/
+  /* ----------Input fields design------------------------------------------------*/
 
-.filterInputField{
+  .filterInputField{
   padding-left: 1em;
-}
+  }
 
-.inputHighlight{
+  .inputHighlight{
   min-width:10em;
   margin-left: 0.5em;
   margin-right: 0.5em;
-}
+  }
 
-/* ----------Log show borders------------------------------------------------*/
+  /* ----------Log show borders------------------------------------------------*/
   .logBorderBottom {
-    border: 2px solid #D8D8D8;
-    margin-bottom: 2em 1em 1em 1em;
-    background-color: #E6E6E6 ;
-    overflow-y : auto;
-    overflow-x: hidden;
-    max-height: 15em;
-    min-height: 1em;
+  border: 2px solid #D8D8D8;
+  margin-bottom: 2em 1em 1em 1em;
+  background-color: #E6E6E6 ;
+  overflow-y : auto;
+  overflow-x: hidden;
+  max-height: 15em;
+  min-height: 1em;
   }
   .threads {
-    word-break: break-all;
-    font-family: Montserrat,sans-serif;
-    font-size: 1rem;
+  word-break: break-all;
+  font-family: Montserrat,sans-serif;
+  font-size: 1rem;
   }
   .hiddenOverflowComponents{
-    overflow-y : auto;
-    overflow-x: hidden;
-    max-height: 48em;
+  overflow-y : auto;
+  overflow-x: hidden;
+  max-height: 48em;
   }
   .logAmountShown{
-    color: #888080;
-    overflow-x: hidden;
+  color: #888080;
+  overflow-x: hidden;
   }
 
-/* ----------Configuration file navigation------------------------------------------------*/
-.configNav {
+  /* ----------Configuration file navigation------------------------------------------------*/
+  .configNav {
   cursor: pointer;
   word-break: break-all;
   font-size: 1.25em !important;
   font-family: Montserrat,sans-serif;
   padding: 0px;
   margin: 0px;
-}
-.borderConfNav {
+  }
+  .borderConfNav {
   transition: 0.3s;
   border-bottom-width:1px;
   border-bottom-color:black;
@@ -241,246 +241,246 @@ a.navTree {
   max-height: 8 em !important;
   padding: 5px 0px 5px 10px;
   &:hover {
-    background: #FAFAFA;
+  background: #FAFAFA;
   }
-}
+  }
 
-/* ----------Agent runtime------------------------------------------------*/
-.agentRuntimeServiceInformationTableHeader{
+  /* ----------Agent runtime------------------------------------------------*/
+  .agentRuntimeServiceInformationTableHeader{
   font-family: Montserrat,sans-serif !important;
   font-size: 1.15em !important;
   font-weight: bold;
-}
-.agentRuntimeTable{
+  }
+  .agentRuntimeTable{
   max-height: 40em !important;
   padding: 5px 20px 5px 0px;
-}
+  }
 
-/* -----------------------------------------------        ONE PURPOSE STYLES            -----------------------------------------------------------*/
+  /* -----------------------------------------------        ONE PURPOSE STYLES            -----------------------------------------------------------*/
 
 
-/* ---------------------------------------  LAYOUT  ----------------------------------------------------*/
+  /* ---------------------------------------  LAYOUT  ----------------------------------------------------*/
 
-/* -----------------PADDING------------------*/
-.noPadding{
+  /* -----------------PADDING------------------*/
+  .noPadding{
   padding: 0px 0px 0px 0px !important;;
-}
-.extraSmall-paddingTopBottom{
+  }
+  .extraSmall-paddingTopBottom{
   padding-bottom: 0.5em;
   padding-top: 0.5em;
-}
- .small-paddingLeft{
+  }
+  .small-paddingLeft{
   padding-left: 1em;
-}
-.small-paddingRight{
+  }
+  .small-paddingRight{
   padding-right: 1em;
-}
-.small-paddingTop{
+  }
+  .small-paddingTop{
   padding-top: 1em;
-}
-.small-paddingBottom{
+  }
+  .small-paddingBottom{
   padding-bottom: 1em;
-}
-.small-padding{
+  }
+  .small-padding{
   padding-top: 1em;
   padding-right: 1em;
   padding-left: 1em;
   padding-bottom: 1em;
-}
-.small-paddingTopBottom{
+  }
+  .small-paddingTopBottom{
   padding-bottom: 1em;
   padding-top: 1em;
-}
-.small-paddingLeftRight{
+  }
+  .small-paddingLeftRight{
   padding-left: 1em;
   padding-right: 1em;
-}
-.medium-paddingTop{
-padding-top: 3em;
-}
+  }
+  .medium-paddingTop{
+  padding-top: 3em;
+  }
 
-/* -----------------MARGIN------------------*/
-.noMargin{
+  /* -----------------MARGIN------------------*/
+  .noMargin{
   margin: 0px 0px 0px 0px !important;;
-}
-.extraSmall-marginTopBottom{
+  }
+  .extraSmall-marginTopBottom{
   margin-bottom: 0.4em;
   margin-top: 0.4em;
-}
-.extraSmall-marginRight{
+  }
+  .extraSmall-marginRight{
   margin-right: 0.5em;
-}
-.extraSmall-marginBottom{
+  }
+  .extraSmall-marginBottom{
   margin-bottom: 0.5em;
-}
-.extraSmall-marginTop{
+  }
+  .extraSmall-marginTop{
   margin-top: 0.5em;
-}
-.small-marginLeft{
+  }
+  .small-marginLeft{
   margin-left: 1em;
-}
-.small-marginRight{
+  }
+  .small-marginRight{
   margin-right: 1em !important;
-}
-.small-marginTop{
+  }
+  .small-marginTop{
   margin-top: 1em;
-}
-.small-marginBottom{
+  }
+  .small-marginBottom{
   margin-bottom: 1em;
-}
-.small-margin{
+  }
+  .small-margin{
   margin-top: 1em;
   margin-right: 1em;
   margin-left: 1em;
   margin-bottom: 1em;
-}
-.small-marginTopBottom{
+  }
+  .small-marginTopBottom{
   margin-bottom: 1em;
   margin-top: 1em;
-}
-.small-marginLeftRight{
+  }
+  .small-marginLeftRight{
   margin-left: 1em;
   margin-right: 1em;
-}
-.medium-marginLeftRight{
+  }
+  .medium-marginLeftRight{
   margin-left: 1.5em;
   margin-right: 1.5em;
-}
+  }
 
-/* -------------DISPLAY--------------------*/
-.display-inlineBlock{
+  /* -------------DISPLAY--------------------*/
+  .display-inlineBlock{
   display: inline-block;
-}
-.display-inline{
+  }
+  .display-inline{
   display: inline;
-}
-.display-inlineFlex{
+  }
+  .display-inlineFlex{
   display: inline-flex;
-}
-.displayNone{
+  }
+  .displayNone{
   display: none;
-}
-.display-content{
+  }
+  .display-content{
   display: contents;
-}
-.display-grid{
+  }
+  .display-grid{
   display: grid;
-}
+  }
 
 
-/* --------------------------------------------  COMPONENT VIEW   ------------------------------------------------------*/
+  /* --------------------------------------------  COMPONENT VIEW   ------------------------------------------------------*/
 
-/* -------------DISPLAY--------------------*/
-.rounded-corners{
+  /* -------------DISPLAY--------------------*/
+  .rounded-corners{
   border-collapse:separate;
   border-radius: 1em;
-}
-.rounded-cornersTop{
+  }
+  .rounded-cornersTop{
   border-top-left-radius: 1em;
   border-top-right-radius: 1em;
-}
-.rounded-cornersBottom{
+  }
+  .rounded-cornersBottom{
   border-bottom-left-radius: 1em;
   border-bottom-right-radius: 1em;
-}
-.rounded-cornersLeft{
+  }
+  .rounded-cornersLeft{
   border-bottom-left-radius: 1em;
   border-top-left-radius: 1em;
-}
-.rounded-cornersRight{
+  }
+  .rounded-cornersRight{
   border-top-right-radius: 1em;
   border-bottom-right-radius: 1em;
-}
-.block-nameValue{
+  }
+  .block-nameValue{
   width:30em;
-}
-.fullWidth{
+  }
+  .fullWidth{
   width: 100%;
-}
+  }
 
-/* -------------TEXT--------------------*/
-.small-fontSize{
+  /* -------------TEXT--------------------*/
+  .small-fontSize{
   font-family: Montserrat,sans-serif;
   font-size: 0.8em !important;
-}
-.medium-fontSize{
+  }
+  .medium-fontSize{
   font-family: Montserrat,sans-serif;
   font-size: 1em !important;
-}
-.large-fontSize{
+  }
+  .large-fontSize{
   font-family: Montserrat,sans-serif;
   font-size: 1.25em !important;
-}
-.routing{
+  }
+  .routing{
   color:#790604;
   &:hover {
-    text-decoration: underline;
+  text-decoration: underline;
   }
-}
-.wordBreak{
+  }
+  .wordBreak{
   word-break: break-all;
-}
-.wordWrap{
+  }
+  .wordWrap{
   white-space: pre-wrap;
-}
-.textBreak{
+  }
+  .textBreak{
   word-break: break-word;
-}
+  }
 
-/* -------------SVG EFFECTS--------------------*/
-.background-svgColorChange{
+  /* -------------SVG EFFECTS--------------------*/
+  .background-svgColorChange{
   transition: 0.3s;
   &:hover {
-    background: #F6CECE !important;
+  background: #F6CECE !important;
   }
-}
+  }
 
-/* -------------TEXT EFFECTS--------------------*/
-.hoverWhite{
+  /* -------------TEXT EFFECTS--------------------*/
+  .hoverWhite{
   transition: 0.3s;
   &:hover {
-    background: #FAFAFA;
-  }
-}
-.backgroundWhite{
   background: #FAFAFA;
-}
-.hoverUnderline{
-  &:hover {
-    text-decoration: underline;
   }
-}
-.backgroundUnderline{
+  }
+  .backgroundWhite{
+  background: #FAFAFA;
+  }
+  .hoverUnderline{
+  &:hover {
+  text-decoration: underline;
+  }
+  }
+  .backgroundUnderline{
   border-bottom-width:1px;
   border-bottom-color:black;
   border-bottom-style: solid;
-}
-.mousePointer{
+  }
+  .mousePointer{
   cursor: pointer;
-}
+  }
 
-/* -------------CONTENT ALIGN--------------------*/
-.text-alignCenter{
+  /* -------------CONTENT ALIGN--------------------*/
+  .text-alignCenter{
   display: flex;
   justify-content: center;
-}
-.align-alignEnd{
+  }
+  .align-alignEnd{
   display: flex;
   justify-content: flex-end;
-}
-.align-alignStart{
+  }
+  .align-alignStart{
   display: flex;
   justify-content: flex-start;
-}
-.hiddenOverflow{
+  }
+  .hiddenOverflow{
   overflow-y : auto;
-}
+  }
 
   .full-height {
-    height: 100%;
+  height: 100%;
   }
 
   .full-width {
-    width: 100%;
+  width: 100%;
   }
 

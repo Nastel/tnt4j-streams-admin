@@ -36,13 +36,19 @@
 
       <!-- Name Column -->
       <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{'background-color': this.utilsSvc.getColorInnerLabels()}" class="agentRuntimeServiceInformationTableHeader"> Name </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"  class="agentRuntimeServiceInformationTableHeader"> Name </mat-header-cell>
         <mat-cell *matCellDef="let element"> <h6 class="small-marginTop"><b>{{element.name}}</b></h6> </mat-cell>
       </ng-container>
 
       <!-- Value Column -->
       <ng-container matColumnDef="value" >
-        <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{'background-color': this.utilsSvc.getColorInnerLabels()}" class="agentRuntimeServiceInformationTableHeader" style="padding-left: 15px !important;"> Download </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"  class="agentRuntimeServiceInformationTableHeader" style="padding-left: 15px !important;"> Download </mat-header-cell>
         <mat-cell *matCellDef="let element" class="fullWidth "  style="padding-left: 0px !important;">
           <mat-icon  style="width:48px; height:48px;" svgIcon="{{'download'}}" class="small-paddingTop mousePointer"   (click)="download(element.name)"></mat-icon>
         </mat-cell>

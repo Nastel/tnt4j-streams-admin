@@ -16,6 +16,8 @@
 
 package com.jkoolcloud.tnt4j.streams.registry.zoo.misc;
 
+import org.apache.curator.framework.CuratorFramework;
+
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Reporter;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,7 +27,6 @@ import com.jkoolcloud.tnt4j.format.DefaultFormatter;
 import com.jkoolcloud.tnt4j.sink.EventSink;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.CuratorUtils;
 import com.jkoolcloud.tnt4j.streams.utils.LoggerUtils;
-import org.apache.curator.framework.CuratorFramework;
 
 /**
  * The type Custom reporter.

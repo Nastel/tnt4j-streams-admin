@@ -16,13 +16,13 @@
 
 package com.jkoolcloud.tnt4j.streams.registry.zoo.utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.format.DefaultFormatter;
 import com.jkoolcloud.tnt4j.sink.EventSink;
 import com.jkoolcloud.tnt4j.streams.utils.LoggerUtils;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 /**
  * The type Logger wrapper.
@@ -34,9 +34,9 @@ public class LoggerWrapper {
 	 */
 	private static final EventSink streamsAdminLogger;
 
-	static{
-		 streamsAdminLogger = LoggerUtils.getLoggerSink("streamsAdmin_error");
-		 streamsAdminLogger.setEventFormatter(new DefaultFormatter("{2}")); // NON-NLS
+	static {
+		streamsAdminLogger = LoggerUtils.getLoggerSink("streamsAdmin_error");
+		streamsAdminLogger.setEventFormatter(new DefaultFormatter("{2}")); // NON-NLS
 	}
 
 	/**
@@ -51,16 +51,15 @@ public class LoggerWrapper {
 		streamsAdminLogger.log(opLevel, msg);
 	}
 
-	public static void addQuartzJobLog(String clazzName, String zkPath, String payload){
-		LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%1$-20s: %2$20s","failed", clazzName));
-		LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%1$-20s: %2$30s","Path:", zkPath ));
-		//LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%1$-20s: %2$30s","Response", payload ));
-		LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%1$-20s: %2$3d", "ResponseSizeInBytes", payload.getBytes().length ));
+	public static void addQuartzJobLog(String clazzName, String zkPath, String payload) {
+		LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%1$-20s: %2$20s", "failed", clazzName));
+		LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%1$-20s: %2$30s", "Path:", zkPath));
+		// LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%1$-20s: %2$30s","Response", payload ));
+		LoggerWrapper.addMessage(OpLevel.ERROR,
+				String.format("%1$-20s: %2$3d", "ResponseSizeInBytes", payload.getBytes().length));
 	}
 
-
-
-	private static String getStatTrace(Exception e){
+	private static String getStatTrace(Exception e) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 
@@ -70,11 +69,10 @@ public class LoggerWrapper {
 
 		pw.close();
 
-
 		return stackTrace;
 	}
 
-	public static void logStackTrace(OpLevel opLevel, Exception e){
+	public static void logStackTrace(OpLevel opLevel, Exception e) {
 		LoggerWrapper.addMessage(OpLevel.ERROR, getStatTrace(e));
 	}
 

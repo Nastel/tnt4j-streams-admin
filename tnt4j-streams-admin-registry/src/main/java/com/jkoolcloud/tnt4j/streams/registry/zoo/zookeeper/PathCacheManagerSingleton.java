@@ -5,21 +5,21 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 
 public class PathCacheManagerSingleton {
 
-    private static PathCacheManager pathCacheManager;
+	private static PathCacheManager pathCacheManager;
 
-    private PathCacheManagerSingleton() {
-    }
+	private PathCacheManagerSingleton() {
+	}
 
-    public static void Init(CuratorFramework curatorFramework, String nodePath , Boolean cacheData){
-        if (pathCacheManager == null) {
-            pathCacheManager = new PathCacheManager(new PathChildrenCache(curatorFramework, nodePath ,cacheData));
-        }
-    }
+	public static void Init(CuratorFramework curatorFramework, String nodePath, Boolean cacheData) {
+		if (pathCacheManager == null) {
+			pathCacheManager = new PathCacheManager(new PathChildrenCache(curatorFramework, nodePath, cacheData));
+		}
+	}
 
-    public static PathCacheManager getPathCacheManager() {
-        if(pathCacheManager == null) {
-            throw new AssertionError("You have to call init first");
-        }
-        return pathCacheManager;
-    }
+	public static PathCacheManager getPathCacheManager() {
+		if (pathCacheManager == null) {
+			throw new AssertionError("You have to call init first");
+		}
+		return pathCacheManager;
+	}
 }

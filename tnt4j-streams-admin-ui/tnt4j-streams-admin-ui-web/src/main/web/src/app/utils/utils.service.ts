@@ -114,6 +114,10 @@ export class UtilsService
        }
   }
 
+   public getColorFooter(): string{
+       return this.configurationHandler.CONFIG["PageColorConfigs"]["footerColor"];
+   }
+
 
   public getColorFalseAgent(value): string{
     if(value){

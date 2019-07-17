@@ -16,61 +16,56 @@
 
 package com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper;
 
-import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.JsonRpcGeneric;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.IoUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Properties;
+
+import com.jkoolcloud.tnt4j.core.OpLevel;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.JsonRpcGeneric;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.IoUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
 
 /**
  * The type Zookeeper request processor.
  */
 public class ZookeeperRequestProcessor {
 
-    private void invokeMethodWrapper(String classReference, Map<String, Object> params) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
-        Class<?> cls = Class.forName(classReference);
-        Method methods = cls.getMethod("processRequest", Object.class);
+	private void invokeMethodWrapper(String classReference, Map<String, Object> params) throws ClassNotFoundException,
+			NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
+		Class<?> cls = Class.forName(classReference);
+		Method methods = cls.getMethod("processRequest", Object.class);
 
-        Object obj = cls.newInstance();
-        methods.invoke(obj, params);
-    }
+		Object obj = cls.newInstance();
+		methods.invoke(obj, params);
+	}
 
+	@SuppressWarnings("unchecked")
+	private void processRequest(String method, JsonRpcGeneric jsonRpcRequest, Properties properties) {
+		Map<String, Object> params = (Map<String, Object>) jsonRpcRequest.getParams();
+		params.put("properties", properties);
+		try {
+			invokeMethodWrapper(method, params);
+		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException
+				| ClassNotFoundException e) {
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+		}
+	}
 
+	public void methodSelector(JsonRpcGeneric jsonRpcRequest) {
+		Properties properties = IoUtils.propertiesWrapper(System.getProperty("listeners"));
 
-    private void processRequest(String method, JsonRpcGeneric jsonRpcRequest , Properties properties){
+		String method = properties.getProperty(jsonRpcRequest.getMethod());
 
-        Map<String, Object> params = (Map<String, Object>) jsonRpcRequest.getParams();
-        params.put("properties", properties);
-        try {
-            invokeMethodWrapper(method, params);
-        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
-            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
-        }
-    }
-
-
-    public void methodSelector(JsonRpcGeneric jsonRpcRequest) {
-        Properties properties = IoUtils.propertiesWrapper(System.getProperty("listeners"));
-
-        String method =  properties.getProperty(jsonRpcRequest.getMethod());
-
-        if(method != null){
-            processRequest(method, jsonRpcRequest, properties);
-        } else {
-            LoggerWrapper.addMessage(OpLevel.WARNING, "Received incorrect request");
-        }
-    }
-
-
+		if (method != null) {
+			processRequest(method, jsonRpcRequest, properties);
+		} else {
+			LoggerWrapper.addMessage(OpLevel.WARNING, "Received incorrect request");
+		}
+	}
 
       /*
     private void processReplayBlocks(JsonRpcGeneric jsonRpcRequest){
-
-
         Properties properties = IoUtils.propertiesWrapper(System.getProperty("listeners"));
         List<String> params = (List<String>) jsonRpcRequest.getParams();
 
@@ -111,15 +106,9 @@ public class ZookeeperRequestProcessor {
             e.printStackTrace();
         }
 
-
-
-
         StreamsAgent.runFromAPI(file.getPath());
 
         file.delete();
-
-
-
     }
 */
 }

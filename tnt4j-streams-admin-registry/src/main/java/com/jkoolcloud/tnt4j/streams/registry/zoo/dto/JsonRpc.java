@@ -16,9 +16,9 @@
 
 package com.jkoolcloud.tnt4j.streams.registry.zoo.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The type Json rpc.
@@ -30,7 +30,7 @@ public class JsonRpc {
 	@JsonProperty("method") // NON-NLS
 	private String method;
 	@JsonProperty("params") // NON-NLS
-	private Map<String,Object> params = null;
+	private Map<String, Object> params = null;
 	@JsonProperty("id") // NON-NLS
 	private String id;
 
@@ -46,7 +46,7 @@ public class JsonRpc {
 	 * @param id
 	 *            the id
 	 */
-	public JsonRpc(String jsonrpc, String method, Map<String,Object> params, String id) {
+	public JsonRpc(String jsonrpc, String method, Map<String, Object> params, String id) {
 		this.jsonrpc = jsonrpc;
 		this.method = method;
 		this.params = params;
@@ -108,7 +108,7 @@ public class JsonRpc {
 	 * @return the params
 	 */
 	@JsonProperty("params") // NON-NLS
-	public Map<String,Object> getParams() {
+	public Map<String, Object> getParams() {
 		return params;
 	}
 
@@ -119,7 +119,7 @@ public class JsonRpc {
 	 *            the params
 	 */
 	@JsonProperty("params") // NON-NLS
-	public void setParams(Map<String,Object> params) {
+	public void setParams(Map<String, Object> params) {
 		this.params = params;
 	}
 
@@ -150,7 +150,7 @@ public class JsonRpc {
 	public static final class JsonRpcBuilder {
 		private String jsonrpc;
 		private String method;
-		private Map<String,Object> params = null;
+		private Map<String, Object> params = null;
 		private String id;
 
 		/**
@@ -190,7 +190,7 @@ public class JsonRpc {
 		 *            the params
 		 * @return the params
 		 */
-		public JsonRpcBuilder setParams(Map<String,Object> params) {
+		public JsonRpcBuilder setParams(Map<String, Object> params) {
 			this.params = params;
 			return this;
 		}

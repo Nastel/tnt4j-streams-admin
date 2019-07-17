@@ -128,12 +128,11 @@
             <version>${apache.commons.version}</version>
         </dependency>
 
-
         <dependency>
-          <groupId>javax.transaction</groupId>
-          <artifactId>jta</artifactId>
-          <version>${javax.transaction.version}</version>
-          <scope>runtime</scope>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>${javax.transaction.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Quartz  -->

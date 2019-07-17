@@ -106,6 +106,32 @@ public class ZookeeperRegistryEndpoint {
 	 * @return the node information
 	 */
 	@GET
+	@Path("{nodePath:.*}/blockReplay")
+	public Response catchRequestWildcardReplay(@PathParam("nodePath") List<PathSegment> nodePath) {
+		LOG.info("Call url parameters{}", nodePath);
+		ObjectMapper mapper = new ObjectMapper();
+		String pathToNode ="";
+		try {
+			for (PathSegment node : nodePath) {
+				pathToNode = pathToNode + "/" + node;
+			}
+			LOG.info("Path created from URL: {}", pathToNode);
+			String value = mapper.writeValueAsString(zookeeperAccessService.sendControlRequest(pathToNode, "replayBlock"));
+
+			return Response.status(200).entity(value).build();
+		} catch (Exception e) {
+			LOG.error("Error on reading node from ZooKeeper", e);
+			return null;
+		}
+	}
+
+
+	/**
+	 * Gets stream services node information
+	 *
+	 * @return the node information
+	 */
+	@GET
 	@Path("{nodePath:.*}/list")
 	public Response getWildcardList(@PathParam("nodePath") List<PathSegment> nodePath) {
 		LOG.info("Call url parameters{}", nodePath);
@@ -124,28 +150,4 @@ public class ZookeeperRegistryEndpoint {
 			return null;
 		}
 	}
-
-
-	/* ------------------------------- V1 ------------------------------------------------*/
-
-	/**
-	 * Gets stream services static data.
-	 *
-	 * @return the stream services static data
-	 */
-	@GET
-	@Path("/config")
-	@Produces("application/json")
-	public String getStreamServicesStaticData() {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			LOG.info("-------->Accessing zookeeper:{}", zookeeperAccessService);
-			return mapper.writeValueAsString(zookeeperAccessService.getStreamServicesStaticData());
-
-		} catch (Exception e) {
-			LOG.error("Error on services registry access from zookeeper", e);
-			return null;
-		}
-	}
-
 }

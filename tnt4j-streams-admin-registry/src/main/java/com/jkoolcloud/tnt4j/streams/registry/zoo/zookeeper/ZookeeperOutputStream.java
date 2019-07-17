@@ -16,12 +16,12 @@
 
 package com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import com.jkoolcloud.tnt4j.format.DefaultFormatter;
 import com.jkoolcloud.tnt4j.sink.EventSink;
 import com.jkoolcloud.tnt4j.streams.utils.LoggerUtils;
-
-import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * The type Zookeeper output stream.

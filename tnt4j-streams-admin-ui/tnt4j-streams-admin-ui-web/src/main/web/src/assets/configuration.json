@@ -16,7 +16,10 @@
     "loadMore": "assets/iconControls/loadMore.svg",
     "download" : "assets/iconControls/download.svg",
 	"fullScreen" : "assets/iconControls/fullScreen.svg",
-	"update" : "assets/iconControls/update.svg"
+	"update" : "assets/iconControls/update.svg",
+	"/streams/v1/clusters" : "assets/iconControls/clusters.svg",
+	"/streams/v1/clusters/clusterBlockchainMainnets" : "assets/iconControls/clusterMainnet.svg",
+	"/streams/v1/clusters/clusterBlockchainTestnet" : "assets/iconControls/clusterTestnet.svg"
   },
     "StreamsDataForAgentPage": {
 		"latest block" : {"Last Streamed": "N/A"},
@@ -122,12 +125,17 @@
 	"StartTreeNodeParentName" : "BaseNode",
 	"BasePathHide" : "streams/v1",
 	
-		
-	"ZooKeeperTreeNodes" : "//eth.k2n.io:8080/streamsadminservices/registry/nodeTree",
+			
+"ZooKeeperTreeNodes" : "//localhost:8080/test/registry/nodeTree",
 	
 	"ZooKeeperDataCall" : [
-		"//eth.k2n.io:8080/streamsadminservices/registry",
+		"//localhost:8080/test/registry",
 		"/list"
+	],
+	
+	"ZooReplayRequest" : [
+		"//localhost:8080/test/registry",
+		"/blockReplay"
 	],
 	"PageColorConfigs" : {
 		"goodResponseHeaderFooter" : "#489431",

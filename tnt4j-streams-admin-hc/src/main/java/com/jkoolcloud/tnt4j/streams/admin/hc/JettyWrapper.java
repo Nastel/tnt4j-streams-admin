@@ -16,10 +16,8 @@
 
 package com.jkoolcloud.tnt4j.streams.admin.hc;
 
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -36,7 +34,6 @@ import com.codahale.metrics.servlets.PingServlet;
 import com.codahale.metrics.servlets.ThreadDumpServlet;
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.sink.EventSink;
-import com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils;
 import com.jkoolcloud.tnt4j.streams.admin.utils.log.ErrorLogsServlet;
 import com.jkoolcloud.tnt4j.streams.admin.utils.log.LogsServlet;
 import com.jkoolcloud.tnt4j.streams.inputs.TNTInputStreamStatistics;
@@ -49,7 +46,7 @@ public class JettyWrapper {
 	private static final EventSink LOGGER = LoggerUtils.getLoggerSink(JettyWrapper.class);
 
 	private static Server server = null;
-	//private static ZookeeperManager zookeeperManager = null;
+	// private static ZookeeperManager zookeeperManager = null;
 
 	/**
 	 * Instantiates a new Jetty wrapper.
@@ -93,7 +90,7 @@ public class JettyWrapper {
 		server.setStopAtShutdown(true);
 		server.setStopTimeout(TimeUnit.SECONDS.toMillis(20));
 
-		//instantiateZookeeperManager();
+		// instantiateZookeeperManager();
 
 		server.start();
 		// server.join();
@@ -110,15 +107,15 @@ public class JettyWrapper {
 			zookeeperManager.registerAndStartServices();
 		}
 	}
-*/
+	 */
 
 	/**
 	 * Shutdown jetty.
 	 */
 	public static void shutdownJetty() {
-	//	if (zookeeperManager != null) {
-	//		zookeeperManager.shutdownZookeeperManager();
-	//	}
+		// if (zookeeperManager != null) {
+		// zookeeperManager.shutdownZookeeperManager();
+		// }
 
 		if (server != null) {
 			try {
