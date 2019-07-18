@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.quartz.Scheduler;
@@ -118,27 +117,27 @@ public class Init {
 	 * Init.
 	 */
 	public Init() {
-			String path = System.getProperty("zkTree");
+		String path = System.getProperty("zkTree");
 
-			Properties properties = getProperties(path);
+		Properties properties = getProperties(path);
 
-			String connectString = properties.getProperty("connectString");
-			int baseSleepTimeMs = Integer.parseInt(properties.getProperty("baseSleepTimeMs"));
-			int maxRetries = Integer.parseInt(properties.getProperty("maxRetries"));
+		String connectString = properties.getProperty("connectString");
+		int baseSleepTimeMs = Integer.parseInt(properties.getProperty("baseSleepTimeMs"));
+		int maxRetries = Integer.parseInt(properties.getProperty("maxRetries"));
 
-			CuratorSingleton.init(connectString, baseSleepTimeMs, maxRetries);
-			CuratorSingleton.getSynchronizedCurator().start();
+		CuratorSingleton.init(connectString, baseSleepTimeMs, maxRetries);
+		CuratorSingleton.getSynchronizedCurator().start();
 
-			ZkTree.setProperties(properties);
+		ZkTree.setProperties(properties);
 
-			String pathToAgent = ZkTree.createZkTree(CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
-			ZkTree.registerStreams(pathToAgent, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
+		String pathToAgent = ZkTree.createZkTree(CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
+		ZkTree.registerStreams(pathToAgent, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
 
-			configureDistributedQueue(CuratorSingleton.getSynchronizedCurator().getCuratorFramework(),
-					properties.getProperty("requestNode"));
-			configureAndStartRequestListener(CuratorSingleton.getSynchronizedCurator().getCuratorFramework(),
-					properties.getProperty("requestNode"), false);
+		configureDistributedQueue(CuratorSingleton.getSynchronizedCurator().getCuratorFramework(),
+				properties.getProperty("requestNode"));
+		configureAndStartRequestListener(CuratorSingleton.getSynchronizedCurator().getCuratorFramework(),
+				properties.getProperty("requestNode"), false);
 
-			configureAndStartScheduler();
+		configureAndStartScheduler();
 	}
 }

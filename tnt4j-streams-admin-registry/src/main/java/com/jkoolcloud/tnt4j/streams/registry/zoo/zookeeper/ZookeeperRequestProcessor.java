@@ -20,6 +20,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.JsonRpcGeneric;
@@ -31,13 +33,21 @@ import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
  */
 public class ZookeeperRequestProcessor {
 
+	private ExecutorService executorService = Executors.newFixedThreadPool(5);
+
 	private void invokeMethodWrapper(String classReference, Map<String, Object> params) throws ClassNotFoundException,
 			NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
 		Class<?> cls = Class.forName(classReference);
 		Method methods = cls.getMethod("processRequest", Object.class);
-
 		Object obj = cls.newInstance();
-		methods.invoke(obj, params);
+
+		executorService.submit(() -> {
+			try {
+				methods.invoke(obj, params);
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -63,52 +73,4 @@ public class ZookeeperRequestProcessor {
 			LoggerWrapper.addMessage(OpLevel.WARNING, "Received incorrect request");
 		}
 	}
-
-      /*
-    private void processReplayBlocks(JsonRpcGeneric jsonRpcRequest){
-        Properties properties = IoUtils.propertiesWrapper(System.getProperty("listeners"));
-        List<String> params = (List<String>) jsonRpcRequest.getParams();
-
-        Map<String,Object> placeholderToValue = new HashMap<>();
-        placeholderToValue.put("blocks", "45645445564,5644565645,78799789,9899");
-
-        String template = null;
-        try {
-            template = FileUtils.readFile(System.getProperty("replay"), Charset.defaultCharset());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String resolvedString = StringUtils.substitutePlaceholders(template, placeholderToValue);
-
-        File file = new File("./replayBlocks.xml");
-
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            out.write(resolvedString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        StreamsAgent.runFromAPI(file.getPath());
-
-        file.delete();
-    }
-*/
 }

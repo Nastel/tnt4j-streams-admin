@@ -101,10 +101,11 @@ export class AutoRouteGenerator
         zooKeeperPath = zooKeeperPath.substr(1);
         let pathLink = zooKeeperPath.replace(this.CONFIG["BasePathHide"],'');
         let serviceUrl : string
-        let urlBuild = this.CONFIG["ZooKeeperDataCall"];
-          if(!(urlBuild === "undefined")){
-              serviceUrl = urlBuild[0] + pathLink + urlBuild[1];
-          }
+        let urlBuild = this.configurationHandler.CONFIG["ZooKeeperBasePath"];
+           let urlChoice = this.configurationHandler.CONFIG["ZooKeeperDataCall"];
+           if(!this.utilsSvc.compareStrings(urlBuild, "undefined")){
+               serviceUrl = urlBuild + pathLink + urlChoice[0];
+           }
         return this.http.get(serviceUrl, {responseType: 'text'} );
       }
       catch(err){

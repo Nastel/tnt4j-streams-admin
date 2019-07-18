@@ -110,14 +110,15 @@
 	
 	"excludeFromTreeView" : [
 		"requests",
-		"downloaded"
+		"downloaded",
+		"response"
 	],
 	
 	"excludeFromReadingOnTreeLoad" : [
 		"requests",
+		"response",
 		"downloaded",
 		"threadDump",
-		"configurations",
 		"downloadables",
 		"logs"
 	],
@@ -126,17 +127,21 @@
 	"BasePathHide" : "streams/v1",
 	
 			
-"ZooKeeperTreeNodes" : "//localhost:8080/test/registry/nodeTree",
+	"ZooKeeperTreeNodes" : "//localhost:8080/test/registry/nodeTree",
+	
+	"ZooKeeperBasePath" : "//localhost:8080/test/registry",
 	
 	"ZooKeeperDataCall" : [
-		"//localhost:8080/test/registry",
-		"/list"
+		"/list",
+		"/blockReplay",
+		"/start",
+		"/stop",
+		"/pause",
+		"/resume"
 	],
 	
-	"ZooReplayRequest" : [
-		"//localhost:8080/test/registry",
-		"/blockReplay"
-	],
+	
+	
 	"PageColorConfigs" : {
 		"goodResponseHeaderFooter" : "#489431",
 		"colorInnerComponentLabels" : "#95ADB6",

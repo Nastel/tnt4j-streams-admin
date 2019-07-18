@@ -1,7 +1,3 @@
-
-
-
-
 <div [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center headerFont small-marginBottom">
   <div class="justify-content-center small-marginLeftRight">
     <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
@@ -29,18 +25,21 @@
           <div class="small-marginLeftRight rounded-corners display-content">
               <div *ngIf="serviceControlList.includes('replay')"  class="display-inlineFlex ">
                 <mat-form-field (click)="onEvent($event)">
-                  <input matInput   type="number" placeholder="Item id" [(ngModel)]="blockNumber" />
+                  <input matInput   matTooltip="Insert item id to replay" type="number" placeholder="Item id" [(ngModel)]="blockNumber" />
                 </mat-form-field>
                 <mat-icon  svgIcon="{{'replay'}}" class="background-svgColorChange" (click)="replayTheBlockFromInput(blockNumber)"></mat-icon>
               </div>
-              <div *ngIf="serviceControlList.includes('stop')" class="display-inlineFlex">
-                <mat-icon  svgIcon="{{'stop'}}" class="background-svgColorChange" (click)="startStopStream(streamStartStop)"></mat-icon>
+              <div *ngIf="serviceControlList.includes('stop')  && utilsSvc.compareStrings(streamState, 'startStop')" class="display-inlineFlex">
+                <mat-icon  svgIcon="{{'stop'}}" class="background-svgColorChange" (click)="startStopStream('stop')"></mat-icon>
               </div>
-              <div *ngIf="serviceControlList.includes('start')" class="display-inlineFlex">
-                <mat-icon  svgIcon="{{'start'}}" class="background-svgColorChange" (click)="startStopStream(streamStartStop)"></mat-icon>
+              <div *ngIf="serviceControlList.includes('start') && utilsSvc.compareStrings(streamState, 'startStop')" class="display-inlineFlex">
+                <mat-icon  svgIcon="{{'start'}}" class="background-svgColorChange" (click)="startStopStream('start')"></mat-icon>
               </div>
-              <div *ngIf="serviceControlList.includes('pause')" class="display-inlineFlex">
-                <mat-icon  svgIcon="{{'pause'}}" class="background-svgColorChange" ></mat-icon>
+              <div *ngIf="serviceControlList.includes('pause') && utilsSvc.compareStrings(streamState, 'running')" class="display-inlineFlex">
+                <mat-icon  svgIcon="{{'pause'}}" class="background-svgColorChange" (click)="pauseResumeStream('pause')"></mat-icon>
+              </div>
+              <div *ngIf="serviceControlList.includes('resume') && utilsSvc.compareStrings(streamState, 'running')" class="display-inlineFlex">
+                <mat-icon  svgIcon="{{'start'}}" class="background-svgColorChange" (click)="pauseResumeStream('resume')"></mat-icon>
               </div>
           </div>
         </div>

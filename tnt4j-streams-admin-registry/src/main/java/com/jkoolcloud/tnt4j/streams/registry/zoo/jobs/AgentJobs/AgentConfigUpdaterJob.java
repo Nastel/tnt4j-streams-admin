@@ -20,7 +20,6 @@ public class AgentConfigUpdaterJob implements Job {
 
 	@Override
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-		// LoggerWrapper.addMessage(OpLevel.INFO, "Starting AgentConfigUpdaterJob");
 
 		JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 

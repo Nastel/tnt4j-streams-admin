@@ -29,6 +29,8 @@ public class Config {
 	private String capabilities;
 	@JsonProperty("logNavigation")
 	private List<String> logNavigation;
+	@JsonProperty("blockchain")
+	private String blockchain;
 
 	@JsonProperty("logNavigation")
 	public List<String> getLogNavigation() {
@@ -88,6 +90,16 @@ public class Config {
 	@JsonProperty("capabilities")
 	public void setCapabilities(String capabilities) {
 		this.capabilities = capabilities;
+	}
+
+	@JsonProperty("blockchain")
+	public String getBlockchain() {
+		return blockchain;
+	}
+
+	@JsonProperty("blockchain")
+	public void setBlockchain(String blockchain) {
+		this.blockchain = blockchain;
 	}
 
 }

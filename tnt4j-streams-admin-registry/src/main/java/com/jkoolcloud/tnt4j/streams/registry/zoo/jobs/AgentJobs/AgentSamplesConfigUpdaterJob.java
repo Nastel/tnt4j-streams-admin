@@ -20,14 +20,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.Config;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.ConfigData;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.CuratorUtils;
@@ -41,50 +39,51 @@ import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.CuratorSingleton;
  */
 public class AgentSamplesConfigUpdaterJob implements Job {
 
-    /**
-     * execute.
-     *
-     * @param jobExecutionContext
-     * @throws JobExecutionException
-     */
-    @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+	/**
+	 * execute.
+	 *
+	 * @param jobExecutionContext
+	 * @throws JobExecutionException
+	 */
+	@Override
+	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-        JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
+		JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
-        Config config = JobUtils.createConfigObject(jobDataMap);
-        String path = JobUtils.getPathToNode(jobDataMap);
+		Config config = JobUtils.createConfigObject(jobDataMap);
+		String path = JobUtils.getPathToNode(jobDataMap);
 
-        String mainConfigPath = System.getProperty("mainCfg");
+		String mainConfigPath = System.getProperty("mainCfg");
 
-        List<String> parsersUriList = null;
-        try {
-            parsersUriList = IoUtils.getParsersList(mainConfigPath);
-        } catch (Exception e) {
-            parsersUriList = new ArrayList<>();
-        }
+		List<String> parsersUriList = null;
+		try {
+			parsersUriList = IoUtils.getParsersList(mainConfigPath);
+		} catch (Exception e) {
+			parsersUriList = new ArrayList<>();
+		}
 
-        String streamConfigsPath = (String) jobDataMap.get("streamConfigsPath");
+		String streamConfigsPath = (String) jobDataMap.get("streamConfigsPath");
 
-        List<Map<String, Object>> mapList = new ArrayList<>();
+		List<Map<String, Object>> mapList = new ArrayList<>();
 
-        for (String parserUri : parsersUriList) {
-            String pathToParser = streamConfigsPath + "/" + parserUri;
+		for (String parserUri : parsersUriList) {
+			String pathToParser = streamConfigsPath + "/" + parserUri;
 
-            File file = new File(pathToParser);
+			File file = new File(pathToParser);
 
-            mapList.add(IoUtils.FileNameAndContentToMap(file, "name", "config"));
-        }
-        mapList.add(IoUtils.FileNameAndContentToMap(new File(mainConfigPath), "name", "config"));
+			mapList.add(IoUtils.FileNameAndContentToMap(file, "name", "config"));
+		}
+		mapList.add(IoUtils.FileNameAndContentToMap(new File(mainConfigPath), "name", "config"));
 
-        ConfigData configData = new ConfigData<>(config, mapList);
+		ConfigData configData = new ConfigData<>(config, mapList);
 
-        String response = JobUtils.toJson(configData);
+		String response = JobUtils.toJson(configData);
 
-        boolean wasSet = CuratorUtils.setData(path, response, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
+		boolean wasSet = CuratorUtils.setData(path, response,
+				CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
 
-        if (!wasSet) {
-            LoggerWrapper.addQuartzJobLog(this.getClass().getName(), path, response);
-        }
-    }
+		if (!wasSet) {
+			LoggerWrapper.addQuartzJobLog(this.getClass().getName(), path, response);
+		}
+	}
 }

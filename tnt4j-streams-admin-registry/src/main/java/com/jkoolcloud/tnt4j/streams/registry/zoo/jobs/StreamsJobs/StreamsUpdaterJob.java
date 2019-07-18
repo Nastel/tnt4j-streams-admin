@@ -22,34 +22,34 @@ import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.ZkTree;
 
 public class StreamsUpdaterJob implements Job {
 
-    @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
+	@Override
+	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+		JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
-        ThreadGroup threadGroup = JobUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
+		ThreadGroup threadGroup = JobUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
 
-        if (threadGroup == null) {
-            return;
-        }
+		if (threadGroup == null) {
+			return;
+		}
 
-        List<StreamThread> streamThreadList = JobUtils.getThreadsByClass(threadGroup, StreamThread.class);
+		List<StreamThread> streamThreadList = JobUtils.getThreadsByClass(threadGroup, StreamThread.class);
 
-        String agentPath = ZkTree.pathToAgent;
+		String agentPath = ZkTree.pathToAgent;
 
-        for (StreamThread streamThread : streamThreadList) {
-            String metricsPath = agentPath + "/" + streamThread.getTarget().getName();
-            MetricRegistry streamStatistics = TNTInputStreamStatistics.getMetrics(streamThread.getTarget());
-            Map<String, Metric> metricRegistry = streamStatistics.getMetrics();
-            Config config = JobUtils.createConfigObject(jobDataMap);
-            ConfigData<Map<String, Metric>> configData = new ConfigData<>(config, metricRegistry);
-            String json = JobUtils.toJson(configData);
+		for (StreamThread streamThread : streamThreadList) {
+			String metricsPath = agentPath + "/" + streamThread.getTarget().getName();
+			MetricRegistry streamStatistics = TNTInputStreamStatistics.getMetrics(streamThread.getTarget());
+			Map<String, Metric> metricRegistry = streamStatistics.getMetrics();
+			Config config = JobUtils.createConfigObject(jobDataMap);
+			ConfigData<Map<String, Metric>> configData = new ConfigData<>(config, metricRegistry);
+			String json = JobUtils.toJson(configData);
 
-            boolean wasSet = CuratorUtils.setData(metricsPath, json,
-                    CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
+			boolean wasSet = CuratorUtils.setData(metricsPath, json,
+					CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
 
-            if (!wasSet) {
-                LoggerWrapper.addQuartzJobLog(this.getClass().getName(), metricsPath, json);
-            }
-        }
-    }
+			if (!wasSet) {
+				LoggerWrapper.addQuartzJobLog(this.getClass().getName(), metricsPath, json);
+			}
+		}
+	}
 }

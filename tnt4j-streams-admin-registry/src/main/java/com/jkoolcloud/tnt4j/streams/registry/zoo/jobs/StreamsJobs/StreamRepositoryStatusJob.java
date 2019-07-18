@@ -19,42 +19,42 @@ import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.CuratorSingleton;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.ZkTree;
 
 public class StreamRepositoryStatusJob implements Job {
-    @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
+	@Override
+	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+		JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
-        ThreadGroup threadGroup = JobUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
+		ThreadGroup threadGroup = JobUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
 
-        if (threadGroup == null) {
-            return;
-        }
+		if (threadGroup == null) {
+			return;
+		}
 
-        List<StreamThread> streamThreadList = JobUtils.getThreadsByClass(threadGroup, StreamThread.class);
+		List<StreamThread> streamThreadList = JobUtils.getThreadsByClass(threadGroup, StreamThread.class);
 
-        String agentPath = ZkTree.pathToAgent;
+		String agentPath = ZkTree.pathToAgent;
 
-        for (StreamThread streamThread : streamThreadList) {
-            String repositoryInfoPath = agentPath + "/" + streamThread.getTarget().getName() + "/" + "repositoryStatus";
-            Config config = JobUtils.createConfigObject(jobDataMap);
+		for (StreamThread streamThread : streamThreadList) {
+			String repositoryInfoPath = agentPath + "/" + streamThread.getTarget().getName() + "/" + "repositoryStatus";
+			Config config = JobUtils.createConfigObject(jobDataMap);
 
-            Properties properties = IoUtils.propertiesWrapper(System.getProperty("zkTree"));
+			Properties properties = IoUtils.propertiesWrapper(System.getProperty("zkTree"));
 
-            String link = properties.getProperty(streamThread.getTarget().getName() + ".repository");
+			String link = properties.getProperty(streamThread.getTarget().getName() + ".repository");
 
-            if (link == null) {
-                link = "";
-            }
+			if (link == null) {
+				link = "";
+			}
 
-            ConfigData configData = new ConfigData<>(config, link);
+			ConfigData configData = new ConfigData<>(config, link);
 
-            String json = JobUtils.toJson(configData);
+			String json = JobUtils.toJson(configData);
 
-            boolean wasSet = CuratorUtils.setData(repositoryInfoPath, json,
-                    CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
+			boolean wasSet = CuratorUtils.setData(repositoryInfoPath, json,
+					CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
 
-            if (!wasSet) {
-                LoggerWrapper.addQuartzJobLog(this.getClass().getName(), repositoryInfoPath, json);
-            }
-        }
-    }
+			if (!wasSet) {
+				LoggerWrapper.addQuartzJobLog(this.getClass().getName(), repositoryInfoPath, json);
+			}
+		}
+	}
 }

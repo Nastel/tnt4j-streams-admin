@@ -478,31 +478,34 @@ export class AgentRuntimeComponent implements OnInit {
          event.stopPropagation();
       }
 
-  startStopStream(streamState){
-    if(this.utilsSvc.compareStrings(streamState,"Stop")){
-      this.streamStartStop="Start";
+  startStopStream(streamState, streamName){
+    let path = this.pathToData  + "/" + streamName;
+    if(this.utilsSvc.compareStrings(streamState,"stop")){
+      console.log("Stopping ...");
+       this.controlUtils.stopStream(path);
     }
     else{
       console.log("Starting ...");
-      this.streamStartStop="Stop";
+       this.controlUtils.startStream(path);
     }
   }
 
-  pauseResumeStream(streamState){
-    if(this.utilsSvc.compareStrings(streamState,"Pause")){
-      this.streamPauseResume="Resume";
+  pauseResumeStream(streamState, streamName){
+    let path = this.pathToData  + "/" + streamName;
+    if(this.utilsSvc.compareStrings(streamState,"pause")){
+      console.log("Pausing service...");
+       this.controlUtils.pauseStream(path);
     }
     else{
       console.log("Resuming service...");
-      this.streamPauseResume="Pause";
+       this.controlUtils.resumeStream(path);
     }
   }
 
-  replayTheBlockFromInput(blockNumber){
-   //console.log("Trying to replay block "+ blockNumber+" ...");
-
-   //let activityName = blockNumber.replace(/,/g, '');
-   this.controlUtils.replayBlock(this.pathToData, blockNumber);
+  replayTheBlockFromInput(streamName, blockNumber){
+     console.log("Trying to replay block: ", blockNumber, " from stream: ", streamName)
+     let path = this.pathToData  + "/" + streamName;
+     this.controlUtils.replayBlock(path, blockNumber);
   }
 
 

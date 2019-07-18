@@ -42,9 +42,10 @@ export class DataService {
       let serviceUrl : string;
       if(!this.utilsSvc.compareStrings(zooKeeperPath, 'undefined')){
         let pathLink = zooKeeperPath.replace(this.configurationHandler.CONFIG["BasePathHide"],'');
-        let urlBuild = this.configurationHandler.CONFIG["ZooKeeperDataCall"];
+        let urlBuild = this.configurationHandler.CONFIG["ZooKeeperBasePath"];
+        let urlChoice = this.configurationHandler.CONFIG["ZooKeeperDataCall"];
         if(!this.utilsSvc.compareStrings(urlBuild, "undefined")){
-            serviceUrl = urlBuild[0] + pathLink + urlBuild[1];
+            serviceUrl = urlBuild + pathLink + urlChoice[0];
         }
       }
       else{
@@ -65,14 +66,16 @@ export class DataService {
     /**
       send the request to replay block or blocks and wait for response if the operation was successful
     */
-    sendBlockReplayRequest(zooKeeperPath){
+    sendControlsRequest(zooKeeperPath, controlChoice){
       let serviceUrl : string;
-
       if(!this.utilsSvc.compareStrings(zooKeeperPath, 'undefined')){
          let pathLink = zooKeeperPath.replace(this.configurationHandler.CONFIG["BasePathHide"],'');
-         let urlBuild = this.configurationHandler.CONFIG["ZooReplayRequest"];
-         if(!this.utilsSvc.compareStrings(urlBuild, "undefined")){
-             serviceUrl = urlBuild[0] + pathLink + urlBuild[1];
+         let urlBuild = this.configurationHandler.CONFIG["ZooKeeperBasePath"];
+         let urlChoice = this.configurationHandler.CONFIG["ZooKeeperDataCall"];
+         for(let choice of urlChoice){
+           if(choice.includes(controlChoice)){
+               serviceUrl = urlBuild + pathLink + choice;
+           }
          }
       }
       else{

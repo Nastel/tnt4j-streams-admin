@@ -8,6 +8,7 @@ import { MatPaginator , MatTableDataSource, MatSort } from '@angular/material';
 import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
 import { DataService } from '../data.service';
+import { ControlUtils } from "../utils/control.utils";
 
 @Component({
   selector: 'app-service-data',
@@ -36,17 +37,17 @@ export class ServiceDataComponent implements OnInit {
   valueThatChangesForSpinnerOnResponse = true;
 
  /** Stream control window properties */
-    streamStartStop = "Stop";
-    streamPauseResume = "Pause";
     blockNumber="";
-
+    streamState = "running";
     serviceControlList = [];
     someData = [];
 
   constructor(  private data: DataService,
                 private router: Router,
                 private configurationHandler:ConfigurationHandler,
-                public utilsSvc: UtilsService) { }
+                public utilsSvc: UtilsService,
+                private controlUtils : ControlUtils
+                ) { }
 
   ngOnInit() {
     this.pathToData = this.router.url.substring(1);
@@ -157,27 +158,33 @@ export class ServiceDataComponent implements OnInit {
       }
 
     startStopStream(streamState){
-      if(this.utilsSvc.compareStrings(streamState,"Stop")){
-        this.streamStartStop="Start";
+      if(this.utilsSvc.compareStrings(streamState,"stop")){
+         console.log("Stopping ...");
+         this.streamState = "running";
+         this.controlUtils.stopStream(this.pathToData);
       }
       else{
-        console.log("Starting ...");
-        this.streamStartStop="Stop";
+         console.log("Starting ...");
+         this.streamState = "running";
+         this.controlUtils.startStream(this.pathToData);
       }
     }
 
     pauseResumeStream(streamState){
-      if(this.utilsSvc.compareStrings(streamState,"Pause")){
-        this.streamPauseResume="Resume";
+      if(this.utilsSvc.compareStrings(streamState,"pause")){
+        console.log("Pausing service...");
+        this.streamState = "startStop";
+        this.controlUtils.pauseStream(this.pathToData);
       }
       else{
         console.log("Resuming service...");
-        this.streamPauseResume="Pause";
+        this.streamState = "startStop";
+        this.controlUtils.resumeStream(this.pathToData);
       }
     }
 
-    replayTheBlockFromInput(blockNumber){
-     console.log("Trying to replay block "+ blockNumber+" ...");
-     this.blockNumber = "";
-    }
+  public replayTheBlockFromInput(blockNumber){
+    console.log("Trying to replay block "+ blockNumber+" ...");
+    this.controlUtils.replayBlock(this.pathToData, blockNumber);
+  }
 }

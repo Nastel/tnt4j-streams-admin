@@ -25,97 +25,99 @@ import com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils;
 
 public class IoUtils {
 
-    public static JarInputStream getJarInputStream(File file) {
-        FileInputStream fileInputStream = null;
-        JarInputStream jarInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(file);
-            jarInputStream = new JarInputStream(fileInputStream);
+	public static JarInputStream getJarInputStream(File file) {
+		FileInputStream fileInputStream = null;
+		JarInputStream jarInputStream = null;
+		try {
+			fileInputStream = new FileInputStream(file);
+			jarInputStream = new JarInputStream(fileInputStream);
 
-        } catch (IOException e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR, e.getMessage());
-        } finally {
+		} catch (IOException e) {
+			LoggerWrapper.addMessage(OpLevel.ERROR, e.getMessage());
+		} finally {
 
-            try {
-                fileInputStream.close();
-            } catch (IOException e) {
-                LoggerWrapper.addMessage(OpLevel.ERROR, e.getMessage());
-            }
-        }
+			try {
+				fileInputStream.close();
+			} catch (IOException e) {
+				LoggerWrapper.addMessage(OpLevel.ERROR, e.getMessage());
+			}
+		}
 
-        return jarInputStream;
-    }
+		return jarInputStream;
+	}
 
-    public static File[] listAllFiles(String path) {
-        File file = new File(path);
+	public static File[] listAllFiles(String path) {
+		File file = new File(path);
 
-        File[] files = file.listFiles();
+		File[] files = file.listFiles();
 
-        return files;
-    }
+		return files;
+	}
 
-    public static List<String> getParsersList(String path) throws Exception {
-        List<String> parserNames = new ArrayList<>();
+	public static List<String> getParsersList(String path) throws Exception {
+		List<String> parserNames = new ArrayList<>();
 
-        DefaultHandler handler = new DefaultHandler();
+		DefaultHandler handler = new DefaultHandler();
 
-        SAXParser saxParser = null;
-        saxParser = SAXParserFactory.newInstance().newSAXParser();
-        DefaultHandler defaultHandler = new DefaultHandler() {
-            @Override
-            public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-                if (qName.equalsIgnoreCase("resource-ref")) {
-                    if (attributes.getValue("type").equalsIgnoreCase("Parser"))
-                        parserNames.add(attributes.getValue("uri"));
-                    handler.endDocument();
-                }
-            }
-        };
+		SAXParser saxParser = null;
+		saxParser = SAXParserFactory.newInstance().newSAXParser();
+		DefaultHandler defaultHandler = new DefaultHandler() {
+			@Override
+			public void startElement(String uri, String localName, String qName, Attributes attributes)
+					throws SAXException {
+				if (qName.equalsIgnoreCase("resource-ref")) {
+					if (attributes.getValue("type").equalsIgnoreCase("Parser"))
+						parserNames.add(attributes.getValue("uri"));
+					handler.endDocument();
+				}
+			}
+		};
 
-        saxParser.parse(path, defaultHandler);
+		saxParser.parse(path, defaultHandler);
 
-        return parserNames;
-    }
+		return parserNames;
+	}
 
-    public static Map<String, Object> getStreamsAndClasses(String path)
-            throws ParserConfigurationException, SAXException, IOException {
-        Map<String, Object> streamToClassMap = new HashMap<>();
+	public static Map<String, Object> getStreamsAndClasses(String path)
+			throws ParserConfigurationException, SAXException, IOException {
+		Map<String, Object> streamToClassMap = new HashMap<>();
 
-        SAXParser saxParser = null;
-        saxParser = SAXParserFactory.newInstance().newSAXParser();
-        DefaultHandler defaultHandler = new DefaultHandler() {
-            @Override
-            public void startElement(String uri, String localName, String qName, org.xml.sax.Attributes attributes) throws SAXException {
-                if (qName.equalsIgnoreCase("stream")) {
-                    String name = attributes.getValue("name");
-                    String clazz = attributes.getValue("class");
-                    streamToClassMap.put(name, clazz);
-                }
-            }
-        };
-        saxParser.parse(path, defaultHandler);
+		SAXParser saxParser = null;
+		saxParser = SAXParserFactory.newInstance().newSAXParser();
+		DefaultHandler defaultHandler = new DefaultHandler() {
+			@Override
+			public void startElement(String uri, String localName, String qName, org.xml.sax.Attributes attributes)
+					throws SAXException {
+				if (qName.equalsIgnoreCase("stream")) {
+					String name = attributes.getValue("name");
+					String clazz = attributes.getValue("class");
+					streamToClassMap.put(name, clazz);
+				}
+			}
+		};
+		saxParser.parse(path, defaultHandler);
 
-        return streamToClassMap;
-    }
+		return streamToClassMap;
+	}
 
-    public static Map<String, Object> getLibVersion(File[] files, List<String> libName) {
+	public static Map<String, Object> getLibVersion(File[] files, List<String> libName) {
 
-        Map<String, Object> searchResult = new HashMap<>();
+		Map<String, Object> searchResult = new HashMap<>();
 
-        for (File file : files) {
-            JarInputStream jarInputStream = IoUtils.getJarInputStream(file);
-            Manifest manifest = jarInputStream.getManifest();
-            java.util.jar.Attributes attribute = manifest.getMainAttributes();
+		for (File file : files) {
+			JarInputStream jarInputStream = IoUtils.getJarInputStream(file);
+			Manifest manifest = jarInputStream.getManifest();
+			java.util.jar.Attributes attribute = manifest.getMainAttributes();
 
-            String name = attribute.getValue("Implementation-Title");
+			String name = attribute.getValue("Implementation-Title");
 
-            if (name != null && libName.contains(name.toLowerCase())) {
-                String value = attribute.getValue("Implementation-Version");
-                searchResult.put(name, value);
-            }
-        }
-        return searchResult;
-    }
+			if (name != null && libName.contains(name.toLowerCase())) {
+				String value = attribute.getValue("Implementation-Version");
+				searchResult.put(name, value);
+			}
+		}
+		return searchResult;
+	}
 
     /*
 
@@ -150,84 +152,84 @@ public class IoUtils {
 
         return execOutput.toString();
     }
-    */
+	 */
 
-    public static Map<String, Object> FileNameAndContentToMap(File file, String filenameKey, String fileContentKey) {
-        String fileContent = null;
-        String fileName = file.getName();
-        try {
-            fileContent = FileUtils.readFile(file.getPath(), Charset.defaultCharset());
-        } catch (IOException e) {
-            LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
-        }
-        Map<String, Object> response = new HashMap<>();
-        response.put(filenameKey, fileName);
-        response.put(fileContentKey, fileContent);
+	public static Map<String, Object> FileNameAndContentToMap(File file, String filenameKey, String fileContentKey) {
+		String fileContent = null;
+		String fileName = file.getName();
+		try {
+			fileContent = FileUtils.readFile(file.getPath(), Charset.defaultCharset());
+		} catch (IOException e) {
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+		}
+		Map<String, Object> response = new HashMap<>();
+		response.put(filenameKey, fileName);
+		response.put(fileContentKey, fileContent);
 
-        return response;
-    }
+		return response;
+	}
 
-    public static List<Map<String, Object>> getConfigs(String path) {
+	public static List<Map<String, Object>> getConfigs(String path) {
 
-        List<File> fileList = new ArrayList<>();
-        FileUtils.listf(path, fileList);
+		List<File> fileList = new ArrayList<>();
+		FileUtils.listf(path, fileList);
 
-        List<Map<String, Object>> list = new ArrayList<>();
+		List<Map<String, Object>> list = new ArrayList<>();
 
-        for (File file : fileList) {
-            Map<String, Object> response = FileNameAndContentToMap(file, "name", "config");
-            list.add(response);
-        }
+		for (File file : fileList) {
+			Map<String, Object> response = FileNameAndContentToMap(file, "name", "config");
+			list.add(response);
+		}
 
-        return list;
-    }
+		return list;
+	}
 
-    public static List<String> getAvailableFiles(String path) {
-        List<File> fileList = new ArrayList<>();
+	public static List<String> getAvailableFiles(String path) {
+		List<File> fileList = new ArrayList<>();
 
-        FileUtils.listf(path, fileList);
+		FileUtils.listf(path, fileList);
 
-        List<String> fileNames = fileList.stream().map(file -> file.getName()).collect(Collectors.toList());
+		List<String> fileNames = fileList.stream().map(file -> file.getName()).collect(Collectors.toList());
 
-        return fileNames;
-    }
+		return fileNames;
+	}
 
-    public static Properties propertiesWrapper(String path) {
+	public static Properties propertiesWrapper(String path) {
 
-        Properties properties = new Properties();
+		Properties properties = new Properties();
 
-        try (FileInputStream stream = new FileInputStream(path)) {
-            properties.load(stream);
-        } catch (IOException e) {
-            LoggerWrapper.addMessage(OpLevel.ERROR, e.getMessage());
-        }
+		try (FileInputStream stream = new FileInputStream(path)) {
+			properties.load(stream);
+		} catch (IOException e) {
+			LoggerWrapper.addMessage(OpLevel.ERROR, e.getMessage());
+		}
 
-        return properties;
-    }
+		return properties;
+	}
 
-    public static String findFile(String dir, String fileName) {
-        List<File> files = new ArrayList<>();
+	public static String findFile(String dir, String fileName) {
+		List<File> files = new ArrayList<>();
 
-        FileUtils.listf(dir, files);
+		FileUtils.listf(dir, files);
 
-        for (File file : files) {
-            if (file.getName().equals(fileName)) {
-                return file.getAbsolutePath();
-            }
-        }
-        return null;
-    }
+		for (File file : files) {
+			if (file.getName().equals(fileName)) {
+				return file.getAbsolutePath();
+			}
+		}
+		return null;
+	}
 
-    public static byte[] compress(byte[] b, String name) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ZipOutputStream zos = new ZipOutputStream(baos);
-        ZipEntry entry = new ZipEntry(name);
-        entry.setSize(b.length);
-        zos.putNextEntry(entry);
-        zos.write(b);
-        zos.closeEntry();
-        zos.close();
-        return baos.toByteArray();
-    }
+	public static byte[] compress(byte[] b, String name) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ZipOutputStream zos = new ZipOutputStream(baos);
+		ZipEntry entry = new ZipEntry(name);
+		entry.setSize(b.length);
+		zos.putNextEntry(entry);
+		zos.write(b);
+		zos.closeEntry();
+		zos.close();
+		return baos.toByteArray();
+	}
 
 }

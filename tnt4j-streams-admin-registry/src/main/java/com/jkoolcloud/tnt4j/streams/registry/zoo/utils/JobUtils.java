@@ -26,13 +26,14 @@ public class JobUtils {
 		String streamsIcon = (String) jobDataMap.get("streamsIcon");
 		String capabilities = (String) jobDataMap.get("capabilities");
 		String showBottomLog = (String) jobDataMap.get("showBottomLog");
+		String blockchain = (String) jobDataMap.get("blockchain");
 
 		config.setNodeName(nodeName);
 		config.setComponentLoad(componentLoad);
 		config.setStreamsIcon(streamsIcon);
 		config.setCapabilities(capabilities);
 		config.setshowBottomLog(showBottomLog);
-        String blockchain = (String) jobDataMap.get("blockchain");
+		config.setBlockchain(blockchain);
 
 		return config;
 	}

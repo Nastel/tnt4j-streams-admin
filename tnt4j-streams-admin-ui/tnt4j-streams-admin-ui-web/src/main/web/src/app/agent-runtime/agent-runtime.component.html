@@ -114,18 +114,21 @@
                 <div class="small-marginLeftRight rounded-corners display-content">
                   <div *ngIf="serviceControlList[element.Stream].includes('replay')"  class="display-inlineFlex">
                     <mat-form-field (click)="onEvent($event)">
-                      <input matInput   matTooltip="Insert item id to replay" type="number" placeholder="Item id" [(ngModel)]="blockNumber" />
+                      <input matInput   matTooltip="Insert item id to replay" type="number" placeholder="Item id" [(ngModel)]="element.Stream_name" [name]="element.Stream" />
                     </mat-form-field>
-                    <mat-icon  svgIcon="{{'replay'}}" class="background-svgColorChange" (click)="onEvent($event)"  (click)="replayTheBlockFromInput(blockNumber)"></mat-icon>
+                    <mat-icon  svgIcon="{{'replay'}}" class="background-svgColorChange" (click)="onEvent($event)"  (click)="replayTheBlockFromInput(element.Stream, element.Stream_name)"></mat-icon>
                   </div>
                   <div *ngIf="serviceControlList[element.Stream].includes('stop')" class="display-inlineFlex">
-                    <mat-icon  svgIcon="{{'stop'}}" class="background-svgColorChange" (click)="onEvent($event)"  (click)="startStopStream(streamStartStop)"></mat-icon>
+                    <mat-icon  svgIcon="{{'stop'}}" class="background-svgColorChange" (click)="onEvent($event)" (click)="startStopStream('stop', element.Stream)"></mat-icon>
                   </div>
                   <div *ngIf="serviceControlList[element.Stream].includes('start')" class="display-inlineFlex">
-                    <mat-icon  svgIcon="{{'start'}}" class="background-svgColorChange" (click)="onEvent($event)"  (click)="startStopStream(streamStartStop)"></mat-icon>
+                    <mat-icon  svgIcon="{{'start'}}" class="background-svgColorChange" (click)="onEvent($event)" (click)="startStopStream('start', element.Stream)"></mat-icon>
                   </div>
                   <div *ngIf="serviceControlList[element.Stream].includes('pause')" class="display-inlineFlex">
-                    <mat-icon  svgIcon="{{'pause'}}" class="background-svgColorChange" (click)="onEvent($event)"></mat-icon>
+                    <mat-icon  svgIcon="{{'pause'}}" class="background-svgColorChange" (click)="onEvent($event)" (click)="pauseResumeStream('pause', element.Stream)"></mat-icon>
+                  </div>
+                  <div *ngIf="serviceControlList[element.Stream].includes('resume')" class="display-inlineFlex">
+                    <mat-icon  svgIcon="{{'start'}}" class="background-svgColorChange" (click)="onEvent($event)" (click)="pauseResumeStream('resume', element.Stream)"></mat-icon>
                   </div>
                 </div>
               </div>

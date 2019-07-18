@@ -16,6 +16,8 @@
 
 package com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper;
 
+import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -30,8 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.List;
-
 /**
  * The type Zookeeper registry endpoint.
  */
@@ -39,10 +39,6 @@ import java.util.List;
 @Path("/registry")
 public class ZookeeperRegistryEndpoint {
 	private static final Logger LOG = LoggerFactory.getLogger(ZookeeperRegistryEndpoint.class);
-
-	private static final String ZOOKEEPER_URL = "172.16.6.51:2181";
-
-	// Logger.getLogger(ZookeeperRegistryEndpoint.class.getName()) ;
 
 	@Inject
 	private ZookeeperAccessService zookeeperAccessService;
@@ -55,26 +51,6 @@ public class ZookeeperRegistryEndpoint {
 	@GET
 	public String getInfo() {
 		return "Streams Services Registry endpoint";
-	}
-
-	/**
-	 * Gets streams services.
-	 *
-	 * @return the streams services
-	 */
-	@GET
-	@Path("/services")
-	@Produces("application/json")
-	public String getStreamsServices() {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			LOG.info("-------->Accessing zookeeper:{}", zookeeperAccessService);
-			return mapper.writeValueAsString(zookeeperAccessService.getStreamServices());
-
-		} catch (Exception e) {
-			LOG.error("Error on services registry access from zookeeper", e);
-			return null;
-		}
 	}
 
 	/**
@@ -99,9 +75,8 @@ public class ZookeeperRegistryEndpoint {
 		}
 	}
 
-
 	/**
-	 * Gets stream services node information
+	 * Create request to replay item ( block) data
 	 *
 	 * @return the node information
 	 */
@@ -110,21 +85,125 @@ public class ZookeeperRegistryEndpoint {
 	public Response catchRequestWildcardReplay(@PathParam("nodePath") List<PathSegment> nodePath) {
 		LOG.info("Call url parameters{}", nodePath);
 		ObjectMapper mapper = new ObjectMapper();
-		String pathToNode ="";
+		StringBuilder pathToNode = new StringBuilder();
 		try {
 			for (PathSegment node : nodePath) {
-				pathToNode = pathToNode + "/" + node;
+				pathToNode.append("/").append(node);
 			}
-			LOG.info("Path created from URL: {}", pathToNode);
-			String value = mapper.writeValueAsString(zookeeperAccessService.sendControlRequest(pathToNode, "replayBlock"));
+			LOG.info("Path created from URL: {}", pathToNode.toString());
+			String value = mapper.writeValueAsString(
+					zookeeperAccessService.sendControlRequest(pathToNode.toString(), "replayBlocks"));
 
 			return Response.status(200).entity(value).build();
 		} catch (Exception e) {
-			LOG.error("Error on reading node from ZooKeeper", e);
+			LOG.error("Error on trying to replay item (block): ", e);
 			return null;
 		}
 	}
 
+	/**
+	 * Create request to pause stream
+	 *
+	 * @return the node information
+	 */
+	@GET
+	@Path("{nodePath:.*}/pause")
+	public Response catchRequestWildcardPause(@PathParam("nodePath") List<PathSegment> nodePath) {
+		LOG.info("Call url parameters{}", nodePath);
+		ObjectMapper mapper = new ObjectMapper();
+		StringBuilder pathToNode = new StringBuilder();
+		try {
+			for (PathSegment node : nodePath) {
+				pathToNode.append("/").append(node);
+			}
+			LOG.info("Path created from URL: {}", pathToNode.toString());
+			String value = mapper.writeValueAsString(
+					zookeeperAccessService.sendControlRequest(pathToNode.toString(), "pauseStream"));
+
+			return Response.status(200).entity(value).build();
+		} catch (Exception e) {
+			LOG.error("Error on reading pausing stream", e);
+			return null;
+		}
+	}
+
+	/**
+	 * Create request to start stream
+	 *
+	 * @return the node information
+	 */
+	@GET
+	@Path("{nodePath:.*}/start")
+	public Response catchRequestWildcardStart(@PathParam("nodePath") List<PathSegment> nodePath) {
+		LOG.info("Call url parameters{}", nodePath);
+		ObjectMapper mapper = new ObjectMapper();
+		StringBuilder pathToNode = new StringBuilder();
+		try {
+			for (PathSegment node : nodePath) {
+				pathToNode.append("/").append(node);
+			}
+			LOG.info("Path created from URL: {}", pathToNode.toString());
+			String value = mapper.writeValueAsString(
+					zookeeperAccessService.sendControlRequest(pathToNode.toString(), "startStream"));
+
+			return Response.status(200).entity(value).build();
+		} catch (Exception e) {
+			LOG.error("Error on reading starting stream", e);
+			return null;
+		}
+	}
+
+	/**
+	 * Create request to stop stream
+	 *
+	 * @return the node information
+	 */
+	@GET
+	@Path("{nodePath:.*}/stop")
+	public Response catchRequestWildcardStop(@PathParam("nodePath") List<PathSegment> nodePath) {
+		LOG.info("Call url parameters{}", nodePath);
+		ObjectMapper mapper = new ObjectMapper();
+		StringBuilder pathToNode = new StringBuilder();
+		try {
+			for (PathSegment node : nodePath) {
+				pathToNode.append("/").append(node);
+			}
+			LOG.info("Path created from URL: {}", pathToNode.toString());
+			String value = mapper
+					.writeValueAsString(zookeeperAccessService.sendControlRequest(pathToNode.toString(), "stopStream"));
+
+			return Response.status(200).entity(value).build();
+		} catch (Exception e) {
+			LOG.error("Error on reading stopping stream", e);
+			return null;
+		}
+	}
+
+	/**
+	 * Create request to resume stream
+	 *
+	 * @return the node information
+	 */
+	@GET
+	@Path("{nodePath:.*}/resume")
+	public Response catchRequestWildcardResume(@PathParam("nodePath") List<PathSegment> nodePath) {
+		LOG.info("Call url parameters{}", nodePath);
+		ObjectMapper mapper = new ObjectMapper();
+		StringBuilder pathToNode = new StringBuilder();
+		try {
+			for (PathSegment node : nodePath) {
+				pathToNode.append("/").append(node);
+			}
+			LOG.info("Path created from URL: {}", pathToNode.toString());
+			String value = mapper.writeValueAsString(
+					zookeeperAccessService.sendControlRequest(pathToNode.toString(), "resumeStream"));
+
+			return Response.status(200).entity(value).build();
+		} catch (Exception e) {
+			LOG.error("Error on reading resuming stream", e);
+			return null;
+		}
+	}
 
 	/**
 	 * Gets stream services node information
@@ -136,13 +215,13 @@ public class ZookeeperRegistryEndpoint {
 	public Response getWildcardList(@PathParam("nodePath") List<PathSegment> nodePath) {
 		LOG.info("Call url parameters{}", nodePath);
 		ObjectMapper mapper = new ObjectMapper();
-		String pathToNode ="";
+		StringBuilder pathToNode = new StringBuilder();
 		try {
 			for (PathSegment node : nodePath) {
-				pathToNode = pathToNode + "/" + node;
+				pathToNode.append("/").append(node);
 			}
-			LOG.info("Path created from URL: {}", pathToNode);
-			String value = mapper.writeValueAsString(zookeeperAccessService.getServiceNodeData(pathToNode));
+			LOG.info("Path created from URL: {}", pathToNode.toString());
+			String value = mapper.writeValueAsString(zookeeperAccessService.getServiceNodeData(pathToNode.toString()));
 
 			return Response.status(200).entity(value).build();
 		} catch (Exception e) {

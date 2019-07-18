@@ -26,11 +26,17 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZookeeperAccessService;
 
 /**
  * The type Curator utils.
  */
 public class CuratorUtils {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ZookeeperAccessService.class);
 
 	/**
 	 * Does node exist boolean.
@@ -66,6 +72,7 @@ public class CuratorUtils {
 			// System.out.println("Node created: " + result);
 
 		} catch (Exception e) {
+			LOG.error("Node with path: " + path + " was not created successfully");
 			e.printStackTrace();
 		}
 	}
@@ -101,9 +108,8 @@ public class CuratorUtils {
 	public static void deleteNode(String path, CuratorFramework curator) {
 		try {
 			curator.delete().forPath(path);
-			// System.out.println("Node deleted:");
-
 		} catch (Exception e) {
+			LOG.error("Node with path: " + path + " was not deleted successfully");
 			e.printStackTrace();
 		}
 	}
