@@ -66,8 +66,9 @@ public class IoUtils {
 			public void startElement(String uri, String localName, String qName, Attributes attributes)
 					throws SAXException {
 				if (qName.equalsIgnoreCase("resource-ref")) {
-					if (attributes.getValue("type").equalsIgnoreCase("Parser"))
+					if (attributes.getValue("type").equalsIgnoreCase("Parser")) {
 						parserNames.add(attributes.getValue("uri"));
+					}
 					handler.endDocument();
 				}
 			}
@@ -119,39 +120,29 @@ public class IoUtils {
 		return searchResult;
 	}
 
-    /*
-
-    public static String extractPathFromRegistry(String line) {
-
-        String fileArgument = "-f:";
-        int start = line.indexOf(fileArgument);
-
-        return line.substring(start + fileArgument.length());
-    }
-
-    public static String executeExternalCommandAndReceiveOutput(String command) throws IOException {
-
-        Process process = Runtime.getRuntime().exec(command);
-
-        try {
-            process.waitFor();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        InputStream inputStream = process.getInputStream();
-
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-        StringBuilder execOutput = new StringBuilder();
-
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            execOutput.append(line);
-        }
-
-        return execOutput.toString();
-    }
+	/*
+	 * 
+	 * public static String extractPathFromRegistry(String line) {
+	 * 
+	 * String fileArgument = "-f:"; int start = line.indexOf(fileArgument);
+	 * 
+	 * return line.substring(start + fileArgument.length()); }
+	 * 
+	 * public static String executeExternalCommandAndReceiveOutput(String command) throws IOException {
+	 * 
+	 * Process process = Runtime.getRuntime().exec(command);
+	 * 
+	 * try { process.waitFor(); } catch (InterruptedException e) { e.printStackTrace(); }
+	 * 
+	 * InputStream inputStream = process.getInputStream();
+	 * 
+	 * BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+	 * 
+	 * StringBuilder execOutput = new StringBuilder();
+	 * 
+	 * String line; while ((line = bufferedReader.readLine()) != null) { execOutput.append(line); }
+	 * 
+	 * return execOutput.toString(); }
 	 */
 
 	public static Map<String, Object> FileNameAndContentToMap(File file, String filenameKey, String fileContentKey) {
@@ -181,6 +172,25 @@ public class IoUtils {
 			list.add(response);
 		}
 
+		return list;
+	}
+
+	public static List<Map<String, Object>> getConfigFilesSystemProp() {
+		List<Map<String, Object>> list = new ArrayList<>();
+
+		Set configFileNames = System.getProperties().keySet();
+
+		for (Object configProperty : configFileNames) {
+			String propertiesPath = System.getProperty((String) configProperty);
+			if (propertiesPath.startsWith("file:")) {
+				propertiesPath = propertiesPath.substring(5);
+			}
+			File file = new File(propertiesPath);
+			if (file.isFile() && !configProperty.toString().equals("mainCfg")) {
+				Map<String, Object> response = IoUtils.FileNameAndContentToMap(file, "name", "config");
+				list.add(response);
+			}
+		}
 		return list;
 	}
 

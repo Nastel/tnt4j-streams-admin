@@ -119,27 +119,18 @@ export class ThreadDumpComponent implements OnInit {
     }
    }
 
-  animal: string;
-  name: string;
 
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
       width: '150em',
-      height: '82em',
-      data: {name: this.name, animal: this.animal}
+      height: '82em'
     });
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
-      this.animal = result;
     });
   }
 
-}
-
-export interface DialogData {
-  animal: string;
-  name: string;
 }
 
 @Component({
@@ -166,7 +157,6 @@ export class DialogOverviewExampleDialog {
                public utilsSvc: UtilsService,
                private router: Router,
                public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
-               @Inject(MAT_DIALOG_DATA) public data: DialogData,
                private dataService: DataService,) {}
 
   onNoClick(): void {

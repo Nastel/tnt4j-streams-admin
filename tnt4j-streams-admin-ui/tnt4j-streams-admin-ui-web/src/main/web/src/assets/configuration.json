@@ -111,12 +111,12 @@
 	"excludeFromTreeView" : [
 		"requests",
 		"downloaded",
-		"response"
+		"responses"
 	],
 	
 	"excludeFromReadingOnTreeLoad" : [
 		"requests",
-		"response",
+		"responses",
 		"downloaded",
 		"threadDump",
 		"downloadables",

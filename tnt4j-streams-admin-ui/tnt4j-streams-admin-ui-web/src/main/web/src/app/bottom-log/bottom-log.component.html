@@ -1,37 +1,41 @@
-
 <!-----service log------------------------------------------------------------------------------------------------------------->
 
-  <div class=" text-center headerFont" >
-    <b> Service logs  </b>
-    <div *ngIf="iconsRegistered.includes('/'+pathToData)" class="display-inline" >
-      <mat-icon svgIcon="{{'/'+pathToData}}" class="serviceIcon"></mat-icon>
-    </div>
+<div class=" text-center headerFont">
+  <b> Service logs </b>
+  <div *ngIf="iconsRegistered.includes('/'+pathToData)" class="display-inline">
+    <mat-icon svgIcon="{{'/'+pathToData}}" class="serviceIcon"></mat-icon>
   </div>
-  <div class="input-group border3 small-marginBottom" >
+</div>
+<div class="input-group border3 small-marginBottom">
 
-    <div *ngIf="updateLogs; then update else doNotUpdate"></div>
-    <ng-template #update>
-      <input #autoUpdatteOnOff type="checkbox" checked (click)="turnOnOffAutoLogUpdate()"  matTooltip="Log auto update ON/OFF">
-    </ng-template>
-    <ng-template #doNotUpdate>
-      <input #autoUpdatteOnOff type="checkbox" (click)="turnOnOffAutoLogUpdate()"  matTooltip="Log auto update ON/OFF">
-    </ng-template>
-    <!--<button class="btn2 green"   [ngClass]="{'red' : this.utilsSvc.compareStrings(autoUpdate,'Auto update On')}" (click)="turnOnOffAutoLogUpdate()">{{ autoUpdate }}</button>-->
+  <div *ngIf="updateLogs; then update else doNotUpdate"></div>
+  <ng-template #update>
+    <input #autoUpdatteOnOff type="checkbox" checked (click)="turnOnOffAutoLogUpdate()"
+           matTooltip="Log auto update ON/OFF">
+  </ng-template>
+  <ng-template #doNotUpdate>
+    <input #autoUpdatteOnOff type="checkbox" (click)="turnOnOffAutoLogUpdate()" matTooltip="Log auto update ON/OFF">
+  </ng-template>
+  <!--<button class="btn2 green"   [ngClass]="{'red' : this.utilsSvc.compareStrings(autoUpdate,'Auto update On')}" (click)="turnOnOffAutoLogUpdate()">{{ autoUpdate }}</button>-->
 
 
-    <input class="inputHighlight form-control"   placeholder="Filter Data" [(ngModel)]="findValueBottomLog" />
-    <mat-icon  svgIcon="{{'search'}}" (click)="filterLogs(findValueBottomLog)"></mat-icon>
-    <mat-icon  svgIcon="{{'clearSearch'}}" (click)="filterLogs('')"></mat-icon>
-  </div>
-  <!--<div *ngIf="logDataBottomHasData">-->
-  <div #scrollMe class="logBorderBottom hiddenOverflow">
-    <div  *ngFor="let item of logDataBottom" >
-      <div  class="hoverWhite small-paddingBottom">
+  <input class="inputHighlight form-control" placeholder="Filter Data" [(ngModel)]="findValueBottomLog"/>
+  <mat-icon svgIcon="{{'search'}}" (click)="filterLogs(findValueBottomLog)"></mat-icon>
+  <mat-icon svgIcon="{{'clearSearch'}}" (click)="filterLogs('')"></mat-icon>
+</div>
+<!--<div *ngIf="logDataBottomHasData">-->
+<div #scrollMe class="logBorderBottom hiddenOverflow">
+
+  <div *ngIf="!utilsSvc.compareStrings(logDataBottom, 'undefined')">
+    <div *ngFor="let item of logDataBottom">
+      <div class="hoverWhite small-paddingBottom">
         <div class="d-inline-block col-12">
           <div class="threads">
-            <div [innerHTML]="item | highlight: findValueBottomLog" ></div>
+            <div [innerHTML]="item | highlight: findValueBottomLog"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+</div>

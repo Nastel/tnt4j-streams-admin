@@ -2,6 +2,11 @@ import {Injectable} from '@angular/core';
 import { MatIconRegistry } from "@angular/material";
 import {ConfigurationHandler} from '../config/configuration-handler';
 import { DataService } from '../data.service';
+import { popupMessage } from './popup.message';
+
+
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+
 import * as moment from 'moment';
 
 declare var jsPDF: any;
@@ -11,19 +16,15 @@ declare var jsPDF: any;
 export class ControlUtils
 {
 
-  public repositoryDefaultNoPathName = "repository";
-  public serviceResponds = "ServiceResponds";
-  public theValueUsedIsNotSet = "undefined";
-  public activeRepoShow = "activeRepo";
-  public materialTableForRepositoryBigScreen = "StreamsRepo";
-  public materialTableForStreamingServiceBigScreen = "StreamsData";
-  public serviceDataGetDone = "SpinnerFalse"
+  /** parameters for response */
 
-  public existingLinksForStreams = "ExistingStreamsLinksGenerate";
+  responseResult = "";
+
 
   constructor (private configurationHandler: ConfigurationHandler,
                private matIconRegistry: MatIconRegistry,
-               private data: DataService){}
+               private data: DataService,
+               public dialog: MatDialog){}
 
   public getCurrentTime (): Date{
    let jsonDate = new Date ();
@@ -35,8 +36,8 @@ export class ControlUtils
      this.data.sendControlsRequest(path, "stop").subscribe( data => {
           try{
             let result = data;
-            result =  JSON.parse(result.toString());
-            console.log("Response to stream stop ", result);
+             this.responseResult =  JSON.parse(result.toString());
+            console.log("Response to stream stop ",  this.responseResult);
           }catch(err){
             console.log("Problem while trying to stop stream" , err);
           }
@@ -52,8 +53,8 @@ export class ControlUtils
      this.data.sendControlsRequest(path, "start").subscribe( data => {
           try{
             let result = data;
-            result =  JSON.parse(result.toString());
-             console.log("Response to stream start ", result);
+             this.responseResult =  JSON.parse(result.toString());
+             console.log("Response to stream start ",  this.responseResult);
           }catch(err){
             console.log("Problem while trying to start stream" , err);
           }
@@ -69,8 +70,8 @@ export class ControlUtils
      this.data.sendControlsRequest(path, "pause").subscribe( data => {
           try{
             let result = data;
-            result =  JSON.parse(result.toString());
-            console.log("Response to stream pause ", result);
+             this.responseResult =  JSON.parse(result.toString());
+            console.log("Response to stream pause ",  this.responseResult);
           }catch(err){
              console.log("Problem while trying to pause stream" , err);
           }
@@ -86,8 +87,8 @@ export class ControlUtils
      this.data.sendControlsRequest(path, "resume").subscribe( data => {
           try{
             let result = data;
-            result =  JSON.parse(result.toString());
-            console.log("Response to stream resume ", result);
+             this.responseResult =  JSON.parse(result.toString());
+            console.log("Response to stream resume ",  this.responseResult);
           }catch(err){
             console.log("Problem while trying to resume stream" , err);
           }
@@ -104,8 +105,9 @@ export class ControlUtils
      this.data.sendControlsRequest(path, "blockReplay").subscribe( data => {
           try{
             let result = data;
-            result =  JSON.parse(result.toString());
-            console.log("Response to block replay ", result);
+             this.responseResult =  JSON.parse(result.toString());
+            console.log("Response to block replay ",  this.responseResult);
+            this.openDialog();
           }catch(err){
             console.log("Problem while trying to replay block "+ blockNumber, err);
           }
@@ -116,8 +118,18 @@ export class ControlUtils
       );
   }
 
-/** TODO : Implement if needed not sure yet */
+  openDialog(): void {
+    const dialogRef = this.dialog.open(popupMessage, {
+      width: '50em',
+      data: { response: this.responseResult }
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
+/** TODO : Implement if query block replay will be needed*/
   public replayBlocks(path : String, blockList){
       for(let block in blockList){
         path = path

@@ -50,6 +50,8 @@ import { TreeViewComponent } from './tree-view/tree-view.component';
 import { ThreadDumpComponent } from './thread-dump/thread-dump.component';
 
 import { DialogOverviewExampleDialog } from './thread-dump/thread-dump.component';
+import { popupMessage } from './utils/popup.message';
+
 
 
 import { ServerConfigurationFileComponent } from './server-configuration-file/server-configuration-file.component';
@@ -70,6 +72,7 @@ import { ConfigurableComponentNodeComponent } from './configurable-component-nod
     FooterComponent,
     IncompleteBlocksComponent,
     DialogOverviewExampleDialog,
+    popupMessage,
     NavigationTreeComponent,
     TreeViewComponent,
     ThreadDumpComponent,
@@ -85,7 +88,8 @@ import { ConfigurableComponentNodeComponent } from './configurable-component-nod
   ],
   entryComponents: [
     TreeViewComponent,
-    DialogOverviewExampleDialog
+    DialogOverviewExampleDialog,
+    popupMessage
   ],
   imports: [
   CdkTreeModule,

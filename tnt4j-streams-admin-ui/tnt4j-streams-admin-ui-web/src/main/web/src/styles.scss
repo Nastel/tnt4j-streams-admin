@@ -31,6 +31,11 @@
   word-break: break-all;
   }
 
+  /* -----------Dialog popup-----------------------------------------------*/
+  .cdk-global-scrollblock{
+    overflow-y: auto;
+  }
+
   /* -----------Material TABLE component style changes-----------------------------------------------*/
   .mat-paginator-container {
   display: flex;

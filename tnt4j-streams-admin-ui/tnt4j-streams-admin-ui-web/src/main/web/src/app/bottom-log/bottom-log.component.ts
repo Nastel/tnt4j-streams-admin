@@ -31,7 +31,7 @@ export class BottomLogComponent implements OnInit, OnDestroy{
   findValueBottomLog = "";
 
   /** Service logs data */
-  logDataBottom: string[] = [];
+  logDataBottom = [];
   logDataFull = [];
   logDataBottomFiltered = [];
 
