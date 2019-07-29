@@ -13,8 +13,6 @@ import com.jkoolcloud.tnt4j.streams.inputs.StreamThread;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.Config;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.ConfigData;
 
-;
-
 public class JobUtils {
 
 	public static Config createConfigObject(JobDataMap jobDataMap) {
@@ -32,7 +30,7 @@ public class JobUtils {
 		config.setComponentLoad(componentLoad);
 		config.setStreamsIcon(streamsIcon);
 		config.setCapabilities(capabilities);
-		config.setshowBottomLog(showBottomLog);
+		config.setShowBottomLog(showBottomLog);
 		config.setBlockchain(blockchain);
 
 		return config;
@@ -52,11 +50,6 @@ public class JobUtils {
 		}
 
 		return response;
-	}
-
-	public static String getRegCommand(JobDataMap jobDataMap) {
-		String command = (String) jobDataMap.get("regCommand");
-		return command;
 	}
 
 	public static ThreadGroup getThreadGroupByName(String group) {

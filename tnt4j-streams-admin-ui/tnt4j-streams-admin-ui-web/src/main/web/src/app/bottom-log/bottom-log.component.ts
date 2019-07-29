@@ -15,7 +15,7 @@ import { incompleteBlocks }  from '../incomplete-blocks/incomplete-blocks.compon
 export class BottomLogComponent implements OnInit, OnDestroy{
 
 
-  @ViewChild('scrollMe')private myLogScroll: ElementRef;
+  @ViewChild('scrollMe', { static: true })private myLogScroll: ElementRef;
 
  /** Url address */
   pathToData : string;
@@ -48,6 +48,8 @@ export class BottomLogComponent implements OnInit, OnDestroy{
   firstScrollToBottom = true;
 
   interval:any;
+
+  logCount = this.configurationHandler.CONFIG["LazyLoadDataLines"]["bottomLog"];
   logReloadTime = this.configurationHandler.CONFIG["LazyLoadDataLines"]["bottomLogLoadIntervalMS"];
 
 
@@ -138,15 +140,15 @@ export class BottomLogComponent implements OnInit, OnDestroy{
                result = result['data'];
                if(!this.utilsSvc.compareStrings(result[this.logChoiceName], "undefined")){
                   result = result[this.logChoiceName];
-                  this.logDataBottom = result;
-                  this.logDataFull = result;
+                //  this.logDataFull = result;
+                  this.logDataBottom = result.slice(-1*tempVal);
                }
             }
             else{
               this.valueThatChangesForSpinnerOnResponse = false;
               this.valueThatChangesOnDataLoad = true;
-              this.logDataBottom = result;
-              this.logDataFull = result;
+             // this.logDataFull = result;
+              this.logDataBottom = result.slice(-1*tempVal);
             }
           }
           catch(e){
@@ -185,7 +187,7 @@ export class BottomLogComponent implements OnInit, OnDestroy{
         if(this.utilsSvc.compareStrings(findValue, "")){
           this.findValueBottomLog = "";
         }
-        this.logDataBottomFiltered = this.logDataFull.filter(function(el) {
+        this.logDataBottomFiltered = this.logDataBottom.filter(function(el) {
           return el.toLowerCase().indexOf(findValue.toLowerCase()) > -1;
         })
          this.logDataBottom = this.logDataBottomFiltered;

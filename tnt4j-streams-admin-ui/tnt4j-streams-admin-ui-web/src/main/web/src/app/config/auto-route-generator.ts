@@ -6,6 +6,8 @@ import { Resolve, ActivatedRouteSnapshot,RouterStateSnapshot } from '@angular/ro
 
 import {ConfigurationHandler} from './configuration-handler';
 import {TreeViewComponent} from '../tree-view/tree-view.component';
+
+import {LoginComponent} from '../login/login.component';
 import {UtilsService} from "../utils/utils.service";
 
 
@@ -77,6 +79,7 @@ export class AutoRouteGenerator
               this.zooKeeperData = data;
               let result =  JSON.parse(this.zooKeeperData.toString());
               this.nodeConf = result["config"];
+   //             console.log(node, result["config"]);
               if(!this.utilsSvc.compareStrings(this.nodeConf, "undefined")){
                 if(!this.utilsSvc.compareStrings(this.nodeConf["streamsIcon"], "undefined")){
                   this.getAllImageSvgZooKeeper(node, this.nodeConf["streamsIcon"]);
@@ -148,7 +151,7 @@ export class AutoRouteGenerator
 
 
   createDynamic ()
-  {
+    {
     try{
       const router = this.injector.get (Router);
       const template = '';
@@ -156,26 +159,33 @@ export class AutoRouteGenerator
       const tmpModule = NgModule ({declarations: [tmpCmp]}) (class {});
       let elementsToExcludeFromTreeView = this.configurationHandler.CONFIG["excludeFromTreeView"];
       let nodesToExcludeArray = this.getArrayOfNodesToExclude(elementsToExcludeFromTreeView);
-      for (let name in this.zooKeeperTreeNodeList)
-      {
+
+      for (let name in this.zooKeeperTreeNodeList) {
         if(!nodesToExcludeArray.includes(name)){ //!elementsToExcludeFromTreeView.includes(this.utilsSvc.getNodePathEnd(name))){
-        name = name.substring(1);
-        this.compiler.compileModuleAsync (tmpModule).then ((module) => {
-          const appRoutes = [...router.config];
-          let route;
-          route = {path: name, component: TreeViewComponent, runGuardsAndResolvers: 'always'};
-          appRoutes.push (route);
-          router.resetConfig (appRoutes);
-        });
+          name = name.substring(1);
+          this.compiler.compileModuleAsync (tmpModule).then ((module) => {
+            const appRoutes = [...router.config];
+            let route;
+            route = {path: name, component: TreeViewComponent, runGuardsAndResolvers: 'always'};
+            appRoutes.push (route);
+            router.resetConfig (appRoutes);
+          });
         }
       }
+//        this.compiler.compileModuleAsync (tmpModule).then ((module) => {
+//           const appRoutes = [...router.config];
+//           let route;
+//           route = {path: "**", component: LoginComponent, runGuardsAndResolvers: 'always'};
+//           appRoutes.push (route);
+//           router.resetConfig (appRoutes);
+//         });
       this.compiler.compileModuleAsync (tmpModule).then ((module) => {
-          const appRoutes = [...router.config];
-          let route;
-          route = {path: "**", redirectTo: '/streams/v1/clusters', runGuardsAndResolvers: 'always'};
-          appRoutes.push (route);
-          router.resetConfig (appRoutes);
-        });
+        const appRoutes = [...router.config];
+        let route;
+        route = {path: "**", redirectTo: '/streams/v1/clusters', runGuardsAndResolvers: 'always'};
+        appRoutes.push (route);
+        router.resetConfig (appRoutes);
+      });
     }
     catch(err){
       console.log("Problem while creating dynamic routes ", err);

@@ -18,6 +18,7 @@ export class popupMessage {
   /** Url address */
   pathToData : string;
   responseData : string;
+  responseHeaderMessage : string;
 
 
   /** Values for showing data loading properties */
@@ -37,6 +38,8 @@ export class popupMessage {
 
   ngOnInit() {
     this.responseData = this.data.response;
+    this.responseHeaderMessage = this.data.header;
+    //console.log(this.responseData);
     this.pathToData = this.router.url.substring(1);
 
   }

@@ -9,14 +9,16 @@
 
     <div class="col-12 col-sm -12 col-md-8 col-lg-8 col-xl-9 padding small-paddingTopBottom">
       <div #viewComponent   class = "fullBorder" >
-        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, undefined)">
-          <div [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center headerFont">
+
+
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'undefined')">
+          <div (click)="loadZooKeeperNodeData(pathToData)" [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" class="text-center headerFont">
             <div class="justify-content-center small-marginLeftRight">
               <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
              </div>
           </div>
           <div class="row justify-content-center medium-paddingTop" >
-            <mat-progress-spinner *ngIf="true" mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>
+            <mat-progress-spinner *ngIf="true" [diameter]="150" [ngStyle]="{ margin: auto }"  mode="indeterminate" strokeWidth="15"></mat-progress-spinner>
           </div>
         </div>
 
@@ -48,7 +50,9 @@
         <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'downloadables')">
           <app-downloads></app-downloads>
         </div>
-
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'default')">
+          <app-configurable-component-node></app-configurable-component-node>
+        </div>
       </div>
     </div>
   </div>

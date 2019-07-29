@@ -38,6 +38,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
+import com.jkoolcloud.tnt4j.streams.admin.backend.utils.HttpUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 @PrepareForTest({ ServiceData.class })
@@ -69,12 +70,12 @@ public class TestsServiceDataEndpointsResponse {
 
 	@Test
 	public void testResponseFromCorrectLink() throws Exception {
-		ServiceData.readURL("https://www.gocypher.com/gocypher/status");
+		HttpUtils.readURLData("https://www.gocypher.com/gocypher/status");
 	}
 
 	@Test(expected = NotFoundException.class)
 	public void testResponseFromIncorrectink() throws Exception {
-		ServiceData.readURL("http://local/bchRepair");
+		HttpUtils.readURLData("http://local/bchRepair");
 	}
 
 	// TODO try to realise and test 404 exception for endpoints

@@ -9,6 +9,7 @@ import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
 import { DataService } from '../data.service';
 import { ControlUtils } from "../utils/control.utils";
+import { TreeViewComponent } from '../tree-view/tree-view.component'
 
 @Component({
   selector: 'app-service-data',
@@ -21,15 +22,14 @@ export class ServiceDataComponent implements OnInit {
  displayedColumns = ['name', 'value'];
  dataSourceServiceBaseStats = new MatTableDataSource<any>();
 
- @ViewChild('paginatorServiceBaseStat') paginatorServiceBaseData: MatPaginator;
- @ViewChild('matServiceBaseSort') sortServiceData: MatSort;
+ @ViewChild('paginatorServiceBaseStat', { static: false }) paginatorServiceBaseData: MatPaginator;
+ @ViewChild('matServiceBaseSort', { static: false }) sortServiceData: MatSort;
 
   /** Url address */
   pathToData : string;
 
   /** Service base data */
   serviceBaseData: Object;
-  zooKeeperData: Object;
   serviceConfiguration = [];
 
   /** Values for showing data loading properties */
@@ -42,58 +42,89 @@ export class ServiceDataComponent implements OnInit {
     serviceControlList = [];
     someData = [];
 
+  /** ZooKeeper loaded data */
+ zooKeeperData: Object;
+ nodeConf : string;
+
   constructor(  private data: DataService,
                 private router: Router,
                 private configurationHandler:ConfigurationHandler,
                 public utilsSvc: UtilsService,
-                private controlUtils : ControlUtils
-                ) { }
+                private controlUtils : ControlUtils,
+                public treeView: TreeViewComponent) { }
 
   ngOnInit() {
     this.pathToData = this.router.url.substring(1);
     //console.log("the call to ZooKeeper from URL address",  this.pathToData)
     this.loadZooKeeperNodeData(this.pathToData);
   }
-
-//    blockNumberFormControl = new FormControl('', [
-//     // Validators.required
-//    ]);
-
-   loadZooKeeperNodeData(pathToData){
-      this.valueThatChangesOnDataLoad = false;
-      this.valueThatChangesForSpinnerOnResponse = true;
-      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
-        try{
-          this.zooKeeperData = data;
-          let result =  JSON.parse(this.zooKeeperData.toString());
-          this.serviceConfiguration = result['config']
-          result = result['data'];
-          this.neededServiceControls( this.serviceConfiguration);
-          if(this.utilsSvc.isObject(result)){
-            console.log("BASE SERVICE DATA", result);
-            this.valueThatChangesForSpinnerOnResponse = false;
-            this.valueThatChangesOnDataLoad = true;
-            this.serviceBaseData = this.provideFormattingForData(result);
-            this.prepareServiceBaseData(result);
-            setTimeout(() => this.dataSourceServiceBaseStats.paginator = this.paginatorServiceBaseData);
-            setTimeout(() => this.dataSourceServiceBaseStats.sort = this.sortServiceData);
-          }
-          else{
-            console.log("NON JSON TEXT DATA", result);
-            this.valueThatChangesForSpinnerOnResponse = false;
-            this.valueThatChangesOnDataLoad = true;
-            this.serviceBaseData = result;
-          }
-        }catch(err){
-          console.log("Problem while reading data from ZooKeeper path for base service stats ", err);
+  reloadData(){
+      this.treeView.loadZooKeeperNodeData(this.pathToData);
+      this.ngOnInit();
+  }
+  loadZooKeeperNodeData(pathToData){
+    this.valueThatChangesOnDataLoad = false;
+    this.valueThatChangesForSpinnerOnResponse = true;
+    try{
+      this.nodeConf = this.treeView.nodeConf;
+      this.zooKeeperData = this.treeView.zooKeeperData["data"];
+      let agentNode = this.pathToData.substr(0, this.pathToData.lastIndexOf('/'));
+      console.log( this.zooKeeperData )
+      this.data.getZooKeeperNodeData(agentNode).subscribe( data => {
+            let result = JSON.parse(data.toString());
+            let config = result["config"];
+            this.neededServiceControls(config);
+        },
+        err =>{
+         this.responseShow("bad");
+         console.log("Problem on reading controls from agent: ", err);
         }
-      },
-       err =>{
-         this.valueThatChangesForSpinnerOnResponse = false;
-         this.valueThatChangesOnDataLoad = false;
-         console.log("Problem on reading threads data: ", err);
-       }
       );
+      this.serviceBaseData = this.provideFormattingForData(this.zooKeeperData);
+      this.prepareServiceBaseData(this.zooKeeperData);
+      setTimeout(() => this.dataSourceServiceBaseStats.paginator = this.paginatorServiceBaseData);
+      setTimeout(() => this.dataSourceServiceBaseStats.sort = this.sortServiceData);
+      this.responseShow("good")
+    }
+    catch (err){
+      this.responseShow("bad");
+      console.log("Problem on default node while trying to prepare the showing of node data AGENT LOGS", err);
+    }
+
+
+
+//      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
+//        try{
+//          this.zooKeeperData = data;
+//          let result =  JSON.parse(this.zooKeeperData.toString());
+//          this.serviceConfiguration = result['config']
+//          result = result['data'];
+//          this.neededServiceControls( this.serviceConfiguration);
+//          if(this.utilsSvc.isObject(result)){
+//            console.log("BASE SERVICE DATA", result);
+//            this.valueThatChangesForSpinnerOnResponse = false;
+//            this.valueThatChangesOnDataLoad = true;
+//            this.serviceBaseData = this.provideFormattingForData(result);
+//            this.prepareServiceBaseData(result);
+//            setTimeout(() => this.dataSourceServiceBaseStats.paginator = this.paginatorServiceBaseData);
+//            setTimeout(() => this.dataSourceServiceBaseStats.sort = this.sortServiceData);
+//          }
+//          else{
+//            console.log("NON JSON TEXT DATA", result);
+//            this.valueThatChangesForSpinnerOnResponse = false;
+//            this.valueThatChangesOnDataLoad = true;
+//            this.serviceBaseData = result;
+//          }
+//        }catch(err){
+//          console.log("Problem while reading data from ZooKeeper path for base service stats ", err);
+//        }
+//      },
+//       err =>{
+//         this.valueThatChangesForSpinnerOnResponse = false;
+//         this.valueThatChangesOnDataLoad = false;
+//         console.log("Problem on reading threads data: ", err);
+//       }
+//      );
    }
 
   /*The information about agent runtime prepared for material table*/
@@ -187,4 +218,20 @@ export class ServiceDataComponent implements OnInit {
     console.log("Trying to replay block "+ blockNumber+" ...");
     this.controlUtils.replayBlock(this.pathToData, blockNumber);
   }
+
+   /*Response variables set to good, bad or else for showing the data loading state*/
+    responseShow(responseData){
+     if(this.utilsSvc.compareStrings(responseData, "good")){
+       this.valueThatChangesForSpinnerOnResponse = false;
+       this.valueThatChangesOnDataLoad = true;
+     }
+     else if(this.utilsSvc.compareStrings(responseData, "bad")){
+       this.valueThatChangesForSpinnerOnResponse = false;
+       this.valueThatChangesOnDataLoad = false;
+     }
+     else{ //still loading
+       this.valueThatChangesOnDataLoad = false;
+       this.valueThatChangesForSpinnerOnResponse = true;
+     }
+    }
 }

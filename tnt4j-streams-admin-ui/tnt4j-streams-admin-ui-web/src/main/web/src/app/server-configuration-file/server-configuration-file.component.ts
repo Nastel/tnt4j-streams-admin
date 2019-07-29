@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked  } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked , ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { DomSanitizer } from "@angular/platform-browser";
 
@@ -6,6 +6,7 @@ import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
 import { DataService } from '../data.service';
 import { incompleteBlocks }  from '../incomplete-blocks/incomplete-blocks.component';
+import { TreeViewComponent } from '../tree-view/tree-view.component'
 
 @Component({
   selector: 'app-server-configuration-file',
@@ -15,14 +16,13 @@ import { incompleteBlocks }  from '../incomplete-blocks/incomplete-blocks.compon
 export class ServerConfigurationFileComponent implements OnInit {
 
 
-@ViewChild('viewComponent')private viewComponent: ElementRef;
+@ViewChild('viewComponent', { static: false })private viewComponent: ElementRef;
 
   /** Url address */
   pathToData : string;
 
   /** Service configuration data */
   serviceConfigParent : string;
-  zooKeeperData: Object;
   objectKeys = Object.keys;
   configChoiceData= "";
 
@@ -31,15 +31,21 @@ export class ServerConfigurationFileComponent implements OnInit {
   valueThatChangesForSpinnerOnResponse = false;
   dataHeight = 0;
 
+  /** ZooKeeper loaded data */
+ zooKeeperData: Object;
+ nodeConf : string;
+
   constructor(  private data: DataService,
                 private router: Router,
                 private configurationHandler:ConfigurationHandler,
                 public utilsSvc: UtilsService,
-                public incBlocks: incompleteBlocks) { }
+                public incBlocks: incompleteBlocks,
+                public treeView: TreeViewComponent,
+                private changeDetectionRef : ChangeDetectorRef) { }
 
   ngOnInit() {
     this.dataHeight = parseInt(localStorage.getItem("dataComponentHeight"), 10);
-    this.dataHeight = this.dataHeight - 50;
+    this.dataHeight = this.dataHeight - 150;
     console.log("Logs component data height", this.dataHeight)
     this.pathToData = this.router.url.substring(1);
     this.loadZooKeeperNodeData(this.pathToData);
@@ -56,28 +62,42 @@ export class ServerConfigurationFileComponent implements OnInit {
       if(this.dataHeight<height){
         this.dataHeight = height;
       }
+     this.changeDetectionRef.detectChanges();
   }
+  reloadData(){
+      this.treeView.loadZooKeeperNodeData(this.pathToData);
+      this.ngOnInit();
+  }
+  loadZooKeeperNodeData(pathToData){
+    try{
+      this.nodeConf = this.treeView.nodeConf;
+      this.zooKeeperData = this.treeView.zooKeeperData["data"];
+      this.configChoiceData =  this.zooKeeperData[0]['name'];
+      this.responseShow("good")
+    }
+    catch (err){
+      this.responseShow("bad");
+      console.log("Problem on default node while trying to prepare the showing of node data AGENT LOGS", err);
+    }
 
-   loadZooKeeperNodeData(pathToData){
-      this.valueThatChangesOnDataLoad = false;
-      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
-        try{
-          this.zooKeeperData = data;
-          this.serviceConfigParent =  JSON.parse(this.zooKeeperData.toString());
-          console.log("CONFIGURATIONS DATA", this.serviceConfigParent);
-          this.serviceConfigParent = this.serviceConfigParent['data'];
-          this.configChoiceData =  this.serviceConfigParent[0]['name'];
-          this.valueThatChangesOnDataLoad = true;
-        }catch(err){
-          console.log("Problem on getting server configurations ", err);
-        }
-      },
-       err =>{
-         this.valueThatChangesForSpinnerOnResponse = true;
-         this.valueThatChangesOnDataLoad = false;
-         console.log("Service Config data was not loaded correctly: ", err);
-       }
-      );
+//      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
+//        try{
+//          this.zooKeeperData = data;
+//          this.serviceConfigParent =  JSON.parse(this.zooKeeperData.toString());
+//          console.log("CONFIGURATIONS DATA", this.serviceConfigParent);
+//          this.serviceConfigParent = this.serviceConfigParent['data'];
+//          this.configChoiceData =  this.serviceConfigParent[0]['name'];
+//          this.valueThatChangesOnDataLoad = true;
+//        }catch(err){
+//          console.log("Problem on getting server configurations ", err);
+//        }
+//      },
+//       err =>{
+//         this.valueThatChangesForSpinnerOnResponse = true;
+//         this.valueThatChangesOnDataLoad = false;
+//         console.log("Service Config data was not loaded correctly: ", err);
+//       }
+//      );
    }
 
    configFileChoice(choice){
@@ -85,7 +105,7 @@ export class ServerConfigurationFileComponent implements OnInit {
      this.scrollToTop();
    }
 
-   @ViewChild('configuration')private configFiles: ElementRef;
+   @ViewChild('configuration', { static: false })private configFiles: ElementRef;
 
    scrollToTop(): void {
       try {
@@ -94,5 +114,21 @@ export class ServerConfigurationFileComponent implements OnInit {
           console.log("Problem while scrolling to bottom of log" , err);
        }
    }
+   /*Response variables set to good, bad or else for showing the data loading state*/
+      responseShow(responseData){
+       if(this.utilsSvc.compareStrings(responseData, "good")){
+         this.valueThatChangesForSpinnerOnResponse = false;
+         this.valueThatChangesOnDataLoad = true;
+       }
+       else if(this.utilsSvc.compareStrings(responseData, "bad")){
+         this.valueThatChangesForSpinnerOnResponse = false;
+         this.valueThatChangesOnDataLoad = false;
+       }
+       else{ //still loading
+         this.valueThatChangesOnDataLoad = false;
+         this.valueThatChangesForSpinnerOnResponse = true;
+       }
+      }
+
 
 }

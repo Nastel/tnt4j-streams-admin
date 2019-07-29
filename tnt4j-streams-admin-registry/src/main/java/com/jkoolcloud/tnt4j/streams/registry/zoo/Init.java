@@ -16,128 +16,156 @@
 
 package com.jkoolcloud.tnt4j.streams.registry.zoo;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
-import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
-import org.quartz.impl.StdSchedulerFactory;
+import org.apache.commons.text.StringSubstitutor;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.JsonRpcGeneric;
+import com.jkoolcloud.tnt4j.streams.StreamsAgent;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.CuratorUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.IoUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StaticObjectMapper;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.*;
 
 /**
  * The type Init.
  */
 public class Init {
 
-	private Properties getProperties(String path) {
-		Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(path));
-		} catch (IOException e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
-		}
-		return properties;
-	}
+	private void startJetty() {
+		Server server = new Server(8899);
 
-	private void configureDistributedQueue(CuratorFramework curatorFramework, String path) {
-		DistributedQueueManagerSingleton.Init(curatorFramework, path);
-	}
+		ServletContextHandler servletHandler = new ServletContextHandler();
 
-	private void configureAndStartRequestListener(CuratorFramework curatorFramework, String path, Boolean cacheData) {
-		PathCacheManagerSingleton.Init(curatorFramework, path, cacheData);
-		ZookeeperRequestProcessor zkRequestProcessor = new ZookeeperRequestProcessor();
+		servletHandler.addServlet(new ServletHolder(HttpServletDispatcher.class), "/");
+		servletHandler.setInitParameter("javax.ws.rs.Application",
+				"com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint.RestScanner");
 
-		PathCacheManagerSingleton.getPathCacheManager().addListenerToPath(new PathChildrenCacheListener() {
-			@Override
-			public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+		HandlerCollection handlers = new HandlerCollection();
+		handlers.setHandlers(new Handler[] { servletHandler, new DefaultHandler() });
+		server.setHandler(handlers);
 
-				switch (event.getType()) {
-				case CHILD_ADDED:
-					LoggerWrapper.addMessage(OpLevel.INFO, "Received request");
-
-					byte[] bytes = DistributedQueueManagerSingleton.getDistributedQueueManager().consume();
-					JsonRpcGeneric jsonRpc = StaticObjectMapper.mapper.readValue(bytes, JsonRpcGeneric.class);
-
-					zkRequestProcessor.methodSelector(jsonRpc);
-
-					PathCacheManagerSingleton.getPathCacheManager().clear();
-					break;
-				default:
-					break;
-				}
-
-			}
-		});
+		// SslContextFactory sslContextFactory = new SslContextFactory.Server();
+		// sslContextFactory.setKeyStorePath("C:\\Users\\Tomaš\\Desktop\\server.cer");
+		// sslContextFactory.setKeyStorePassword("123456789");
 
 		try {
-			PathCacheManagerSingleton.getPathCacheManager().startPathCacheListener();
+			server.start();
 		} catch (Exception e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
+
 	}
 
-	/**
-	 * Start.
-	 */
-	private void configureAndStartScheduler() {
-		SchedulerFactory factory = null;
-		try {
-			factory = new StdSchedulerFactory(System.getProperty("quartz"));
-		} catch (SchedulerException e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
-			LoggerWrapper.addMessage(OpLevel.INFO, String.format("CWD: %s", new File("./").getAbsolutePath()));
-		}
-		Scheduler scheduler = null;
+	public void createZkTree(Properties properties) {
+		String[] nodeList = properties.getProperty("nodeList").split(",");
 
-		try {
-			scheduler = factory.getScheduler();
-		} catch (SchedulerException e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
-		}
+		for (String node : nodeList) {
 
-		try {
-			scheduler.start();
-		} catch (SchedulerException e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			String nodeDescription = properties.getProperty(node);
+
+			String[] nodePathAndEndpoint = nodeDescription.split(",");
+
+			// nodePathAndEndpoint must always contain a path, but an rest endpoint is optional
+			// 0 = zk path, 1 = rest endpoint
+			if (nodePathAndEndpoint.length == 2) {
+				if (!CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
+					CuratorUtils.createNode(nodePathAndEndpoint[0]);
+					CuratorUtils.setData(nodePathAndEndpoint[0], nodePathAndEndpoint[1]);
+				} else if (CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
+					CuratorUtils.setData(nodePathAndEndpoint[0], nodePathAndEndpoint[1]);
+				}
+			} else {
+				if (!CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
+					CuratorUtils.createNode(nodePathAndEndpoint[0]);
+				}
+			}
 		}
 	}
 
-	/**
-	 * Init.
-	 */
+	private void publishStreams(Properties properties) {
+		String[] streamNodeNames = properties.getProperty("streamsNodeList").split(",");
+
+		Collection<String> streams = StreamsAgent.getRunningStreamNames();
+
+		for (String stream : streams) {
+			Map<String, Object> placeholders = new HashMap<>();
+			placeholders.put("streamName", stream);
+
+			for (String streamNodeName : streamNodeNames) {
+				String templateNodePath = properties.getProperty(streamNodeName);
+
+				String resolvedNodePath = StringSubstitutor.replace(templateNodePath, placeholders);
+
+				String[] nodePathAndEndpoint = resolvedNodePath.split(",");
+
+				// nodePathAndEndpoint must always contain a path, but an rest endpoint is optional
+				// 0 = zk path, 1 = rest endpoint
+				if (nodePathAndEndpoint.length == 2) {
+					if (!CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
+						CuratorUtils.createNode(nodePathAndEndpoint[0]);
+						CuratorUtils.setData(nodePathAndEndpoint[0], nodePathAndEndpoint[1]);
+					} else if (CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
+						CuratorUtils.setData(nodePathAndEndpoint[0], nodePathAndEndpoint[1]);
+					}
+				} else {
+					if (!CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
+						CuratorUtils.createNode(nodePathAndEndpoint[0]);
+					}
+				}
+			}
+		}
+	}
+
+	private void setStreamPublisherDaemon(Properties properties) {
+		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread t = Executors.defaultThreadFactory().newThread(r);
+				t.setDaemon(true);
+				return t;
+			}
+		});
+
+		executorService.scheduleAtFixedRate(new Runnable() {
+			@Override
+			public void run() {
+				publishStreams(properties);
+			}
+		}, 1000, 1000, TimeUnit.MILLISECONDS);
+	}
+
 	public Init() {
-		String path = System.getProperty("zkTree");
 
-		Properties properties = getProperties(path);
+		/*
+		 * KeyStore keyStore = null; try { keyStore = KeyStore.getInstance("JKS"); } catch (KeyStoreException e) {
+		 * e.printStackTrace(); }
+		 * 
+		 * Key key = null; try { key = keyStore.getKey("mykey", "".toCharArray()); } catch (KeyStoreException e) {
+		 * e.printStackTrace(); } catch (NoSuchAlgorithmException e) { e.printStackTrace(); } catch
+		 * (UnrecoverableKeyException e) { e.printStackTrace(); }
+		 */
 
-		String connectString = properties.getProperty("connectString");
-		int baseSleepTimeMs = Integer.parseInt(properties.getProperty("baseSleepTimeMs"));
-		int maxRetries = Integer.parseInt(properties.getProperty("maxRetries"));
+		Properties properties = IoUtils.getProperties(System.getProperty("streamsAdmin"));
 
-		CuratorSingleton.init(connectString, baseSleepTimeMs, maxRetries);
-		CuratorSingleton.getSynchronizedCurator().start();
+		createZkTree(properties);
 
-		ZkTree.setProperties(properties);
+		setStreamPublisherDaemon(properties);
 
-		String pathToAgent = ZkTree.createZkTree(CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
-		ZkTree.registerStreams(pathToAgent, CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
+		startJetty();
 
-		configureDistributedQueue(CuratorSingleton.getSynchronizedCurator().getCuratorFramework(),
-				properties.getProperty("requestNode"));
-		configureAndStartRequestListener(CuratorSingleton.getSynchronizedCurator().getCuratorFramework(),
-				properties.getProperty("requestNode"), false);
-
-		configureAndStartScheduler();
 	}
 }

@@ -8,6 +8,7 @@ import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
 import { DataService } from '../data.service';
 import { incompleteBlocks }  from '../incomplete-blocks/incomplete-blocks.component';
+import { TreeViewComponent } from '../tree-view/tree-view.component'
 
 @Component({
   selector: 'app-service-metrics',
@@ -17,8 +18,8 @@ import { incompleteBlocks }  from '../incomplete-blocks/incomplete-blocks.compon
 export class ServiceMetricsComponent implements OnInit {
 
 
-  @ViewChild('paginatorRuntime') paginator: MatPaginator;
-  @ViewChild(MatSort) sortMetrics: MatSort;
+  @ViewChild('paginatorRuntime', { static: false }) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sortMetrics: MatSort;
 
  displayedColumns = ['name', 'value', 'name1', 'value1'];
  dataSourceMetrics = new MatTableDataSource<any>();
@@ -28,7 +29,10 @@ export class ServiceMetricsComponent implements OnInit {
 
   /** Service metrics data */
   serviceMetricsData = [];
-  zooKeeperData: Object;
+
+  /** ZooKeeper loaded data */
+ zooKeeperData: Object;
+ nodeConf : string;
 
  /** Service separated data */
   timerData = [];
@@ -40,7 +44,8 @@ export class ServiceMetricsComponent implements OnInit {
   constructor(  private data: DataService,
                 private router: Router,
                 private configurationHandler:ConfigurationHandler,
-                public utilsSvc: UtilsService) { }
+                public utilsSvc: UtilsService,
+                public treeView: TreeViewComponent) { }
 
   ngOnInit() {
     this.pathToData = this.router.url.substring(1);
@@ -82,42 +87,61 @@ export class ServiceMetricsComponent implements OnInit {
       }
       this.dataSourceMetrics = new MatTableDataSource(value);
   }
-
+  reloadData(){
+      this.treeView.loadZooKeeperNodeData(this.pathToData);
+      this.ngOnInit();
+  }
    loadZooKeeperNodeData(pathToData){
-      this.valueThatChangesOnDataLoad = false;
-      this.valueThatChangesForSpinnerOnResponse = true;
-      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
-        try{
-          this.zooKeeperData = data;
-          let result =  JSON.parse(this.zooKeeperData.toString());
-          console.log("SERVICE METRICS DATA", result);
-          result = result['data'];
-          if(this.utilsSvc.isObject(result)){
-            this.valueThatChangesForSpinnerOnResponse = false;
-            this.valueThatChangesOnDataLoad = true;
-            this.serviceMetricsData = result;
-            this.formatData();
-           // this.separateTimerMeterData();
-            this.prepareMetricsData( this.serviceMetricsData);
-            setTimeout(() => this.dataSourceMetrics.paginator = this.paginator);
-            setTimeout(() => this.dataSourceMetrics.sort = this.sortMetrics);
-          }
-          else{
-           // console.log("NON JSON TEXT DATA", result);
-            this.valueThatChangesForSpinnerOnResponse = false;
-            this.valueThatChangesOnDataLoad = true;
-            this.serviceMetricsData = result;
-          }
-        }catch(err){
-          console.log("Problem while reading data from ZooKeeper path for service metrics ", err);
-        }
-      },
-       err =>{
-         this.valueThatChangesForSpinnerOnResponse = false;
-         this.valueThatChangesOnDataLoad = false;
-         console.log("Problem on reading threads data: ", err);
+       this.responseShow("")
+       try{
+         this.nodeConf = this.treeView.nodeConf;
+         this.zooKeeperData = this.treeView.zooKeeperData["data"];
+        // this.serviceMetricsData =  this.zooKeeperData;
+         this.formatData();
+         this.prepareMetricsData( this.zooKeeperData);
+         setTimeout(() => this.dataSourceMetrics.paginator = this.paginator);
+         setTimeout(() => this.dataSourceMetrics.sort = this.sortMetrics);
+         this.responseShow("good")
        }
-      );
+       catch (err){
+         this.responseShow("bad");
+         console.log("Problem on default node while trying to prepare the showing of node data AGENT LOGS", err);
+       }
+
+//      this.valueThatChangesOnDataLoad = false;
+//      this.valueThatChangesForSpinnerOnResponse = true;
+//      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
+//        try{
+//          this.zooKeeperData = data;
+//          let result =  JSON.parse(this.zooKeeperData.toString());
+//          console.log("SERVICE METRICS DATA", result);
+//          result = result['data'];
+//          if(this.utilsSvc.isObject(result)){
+//            this.valueThatChangesForSpinnerOnResponse = false;
+//            this.valueThatChangesOnDataLoad = true;
+//            this.serviceMetricsData = result;
+//            this.formatData();
+//           // this.separateTimerMeterData();
+//            this.prepareMetricsData( this.serviceMetricsData);
+//            setTimeout(() => this.dataSourceMetrics.paginator = this.paginator);
+//            setTimeout(() => this.dataSourceMetrics.sort = this.sortMetrics);
+//          }
+//          else{
+//           // console.log("NON JSON TEXT DATA", result);
+//            this.valueThatChangesForSpinnerOnResponse = false;
+//            this.valueThatChangesOnDataLoad = true;
+//            this.serviceMetricsData = result;
+//          }
+//        }catch(err){
+//          console.log("Problem while reading data from ZooKeeper path for service metrics ", err);
+//        }
+//      },
+//       err =>{
+//         this.valueThatChangesForSpinnerOnResponse = false;
+//         this.valueThatChangesOnDataLoad = false;
+//         console.log("Problem on reading threads data: ", err);
+//       }
+//      );
    }
 
    applyFilter(filterValue: string) {
@@ -126,18 +150,18 @@ export class ServiceMetricsComponent implements OnInit {
 
    formatData(){
      let value = [];
-     for(let key in this.serviceMetricsData){
-     //console.log("full metrics data",key, this.serviceMetricsData[key]);
-        if(this.utilsSvc.isObject(this.serviceMetricsData[key])){
-          for(let keyInner in this.serviceMetricsData[key]){
-            // console.log("full metrics data",keyInner, this.serviceMetricsData[key][keyInner]);
+     for(let key in this.zooKeeperData){
+     //console.log("full metrics data",key, this.zooKeeperData[key]);
+        if(this.utilsSvc.isObject(this.zooKeeperData[key])){
+          for(let keyInner in this.zooKeeperData[key]){
+            // console.log("full metrics data",keyInner, this.zooKeeperData[key][keyInner]);
              // let tempKeyInner = this.utilsSvc.insertSpaces(keyInner);
                if(!this.getIfSnapshotTimer(keyInner)){
-                 let convertedTime = this.utilsSvc.convertNanoToSeconds(this.serviceMetricsData[key][keyInner]);
-                 this.serviceMetricsData[key][keyInner] = convertedTime;
+                 let convertedTime = this.utilsSvc.convertNanoToSeconds(this.zooKeeperData[key][keyInner]);
+                 this.zooKeeperData[key][keyInner] = convertedTime;
                }
                else{
-                this.serviceMetricsData[key][keyInner] = this.utilsSvc.formatData(keyInner , this.serviceMetricsData[key][keyInner]);
+                this.zooKeeperData[key][keyInner] = this.utilsSvc.formatData(keyInner , this.zooKeeperData[key][keyInner]);
               }
            }
          }
@@ -165,14 +189,14 @@ export class ServiceMetricsComponent implements OnInit {
      let objTimer= [];
      let objMeter= [];
      try{
-      // console.log("Formatted data: ", this.serviceMetricsData);
-       for(let dataObj in this.serviceMetricsData){
-         if(this.utilsSvc.isObject(this.serviceMetricsData[dataObj])){
+      // console.log("Formatted data: ", this.zooKeeperData);
+       for(let dataObj in this.zooKeeperData){
+         if(this.utilsSvc.isObject(this.zooKeeperData[dataObj])){
             if( this.checkIfTimer(dataObj)){
-              objTimer[dataObj] = this.serviceMetricsData[dataObj];
+              objTimer[dataObj] = this.zooKeeperData[dataObj];
             }
             else{
-               objMeter[dataObj] = this.serviceMetricsData[dataObj];
+               objMeter[dataObj] = this.zooKeeperData[dataObj];
             }
          }
        }
@@ -195,5 +219,21 @@ export class ServiceMetricsComponent implements OnInit {
      }
      else{ return false;}
    }
+
+    /*Response variables set to good, bad or else for showing the data loading state*/
+         responseShow(responseData){
+          if(this.utilsSvc.compareStrings(responseData, "good")){
+            this.valueThatChangesForSpinnerOnResponse = false;
+            this.valueThatChangesOnDataLoad = true;
+          }
+          else if(this.utilsSvc.compareStrings(responseData, "bad")){
+            this.valueThatChangesForSpinnerOnResponse = false;
+            this.valueThatChangesOnDataLoad = false;
+          }
+          else{ //still loading
+            this.valueThatChangesOnDataLoad = false;
+            this.valueThatChangesForSpinnerOnResponse = true;
+          }
+         }
 
 }

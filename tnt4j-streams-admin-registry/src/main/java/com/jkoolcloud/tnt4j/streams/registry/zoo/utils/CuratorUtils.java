@@ -18,9 +18,12 @@ package com.jkoolcloud.tnt4j.streams.registry.zoo.utils;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Properties;
 
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.PathUtils;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
@@ -34,7 +37,23 @@ import com.jkoolcloud.tnt4j.core.OpLevel;
  */
 public class CuratorUtils {
 
-	private static boolean validateCuratorParam(CuratorFramework curatorFramework) {
+	private static final CuratorFramework curatorFramework;
+
+	static {
+		Properties properties = IoUtils.getProperties(System.getProperty("streamsAdmin"));
+
+		String connectString = properties.getProperty("connectString");
+		int baseSleepTimeMs = Integer.parseInt(properties.getProperty("baseSleepTimeMs"));
+		int maxRetries = Integer.parseInt(properties.getProperty("maxRetries"));
+
+		curatorFramework = CuratorFrameworkFactory.newClient(connectString,
+				new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries));
+
+		curatorFramework.start();
+	}
+
+	private static boolean validateCuratorParam() {
+
 		if (curatorFramework == null) {
 			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
 			LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Curator framework is NULL \n %s", stackTrace));
@@ -70,7 +89,7 @@ public class CuratorUtils {
 		return true;
 	}
 
-	private static boolean validatePath(String path, CuratorFramework curatorFramework) {
+	private static boolean validatePath(String path) {
 		if (path == null) {
 			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
 			LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Path is NULL \n %s", stackTrace));
@@ -86,7 +105,7 @@ public class CuratorUtils {
 			isPathValid = false;
 		}
 
-		if (!isPathValid || !doesNodeExist(path, curatorFramework)) {
+		if (!isPathValid || !doesNodeExist(path)) {
 			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
 			LoggerWrapper.addMessage(OpLevel.WARNING,
 					String.format("Invalid parameter path: %s \n %s", path, stackTrace));
@@ -96,15 +115,15 @@ public class CuratorUtils {
 		return true;
 	}
 
-	private static boolean areParameterValid(CuratorFramework curatorFramework, String path, String payload) {
+	private static boolean areParameterValid(String path, String payload) {
 
-		if (!validateCuratorParam(curatorFramework)) {
+		if (!validateCuratorParam()) {
 			return false;
 		}
 		if (!validatePayload(payload)) {
 			return false;
 		}
-		return validatePath(path, curatorFramework);
+		return validatePath(path);
 	}
 
 	/**
@@ -112,14 +131,12 @@ public class CuratorUtils {
 	 *
 	 * @param path
 	 *            the path
-	 * @param curator
-	 *            the curator
 	 * @return the boolean
 	 */
-	public static boolean doesNodeExist(String path, CuratorFramework curator) {
+	public static boolean doesNodeExist(String path) {
 		Stat stat = null;
 		try {
-			stat = curator.checkExists().forPath(path);
+			stat = curatorFramework.checkExists().forPath(path);
 		} catch (Exception e) {
 			System.out.println(path);
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
@@ -133,13 +150,11 @@ public class CuratorUtils {
 	 *
 	 * @param path
 	 *            the path
-	 * @param curator
-	 *            the curator
 	 */
-	public static void createNode(String path, CuratorFramework curator) {
+	public static void createNode(String path) {
 		try {
-			if (!doesNodeExist(path, curator)) {
-				String result = curator.create().forPath(path);
+			if (!doesNodeExist(path)) {
+				String result = curatorFramework.create().forPath(path);
 			}
 		} catch (Exception e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
@@ -153,15 +168,13 @@ public class CuratorUtils {
 	 *            the path
 	 * @param data
 	 *            the data
-	 * @param curator
-	 *            the curator
 	 * @return the data
 	 */
-	public static boolean setData(String path, String data, CuratorFramework curator) {
+	public static boolean setData(String path, String data) {
 		Stat stat = null;
 		try {
-			if (areParameterValid(curator, path, data)) {
-				stat = curator.setData().forPath(path, data.getBytes());
+			if (areParameterValid(path, data)) {
+				stat = curatorFramework.setData().forPath(path, data.getBytes());
 			}
 		} catch (Exception e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
@@ -176,15 +189,13 @@ public class CuratorUtils {
 	 *            the path
 	 * @param data
 	 *            the data
-	 * @param curator
-	 *            the curator
 	 * @return the data
 	 */
-	public static boolean CheckIfNodeExistsAndSetData(String path, String data, CuratorFramework curator) {
+	public static boolean CheckIfNodeExistsAndSetData(String path, String data) {
 		Stat stat = null;
 		try {
-			if (doesNodeExist(path, curator)) {
-				stat = curator.setData().forPath(path, data.getBytes());
+			if (doesNodeExist(path)) {
+				stat = curatorFramework.setData().forPath(path, data.getBytes());
 			}
 		} catch (Exception e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
@@ -197,12 +208,10 @@ public class CuratorUtils {
 	 *
 	 * @param path
 	 *            the path
-	 * @param curator
-	 *            the curator
 	 */
-	public static void deleteNode(String path, CuratorFramework curator) {
+	public static void deleteNode(String path) {
 		try {
-			curator.delete().forPath(path);
+			curatorFramework.delete().forPath(path);
 		} catch (Exception e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
@@ -213,14 +222,12 @@ public class CuratorUtils {
 	 *
 	 * @param path
 	 *            the path
-	 * @param curator
-	 *            the curator
 	 * @return the byte [ ]
 	 */
-	public static byte[] getData(String path, CuratorFramework curator) {
+	public static byte[] getData(String path) {
 		byte[] bytes = null;
 		try {
-			bytes = curator.getData().forPath(path);
+			bytes = curatorFramework.getData().forPath(path);
 		} catch (Exception e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
@@ -234,12 +241,10 @@ public class CuratorUtils {
 	 *            the service
 	 * @param offeredServicesPath
 	 *            the offered services path
-	 * @param curator
-	 *            the curator
 	 */
-	public static void getOfferedServicePath(String service, String offeredServicesPath, CuratorFramework curator) {
-		ServiceDiscovery<String> serviceDiscovery = ServiceDiscoveryBuilder.builder(String.class).client(curator)
-				.basePath(offeredServicesPath).build();
+	public static void getOfferedServicePath(String service, String offeredServicesPath) {
+		ServiceDiscovery<String> serviceDiscovery = ServiceDiscoveryBuilder.builder(String.class)
+				.client(curatorFramework).basePath(offeredServicesPath).build();
 		try {
 			serviceDiscovery.start();
 			Collection<String> serviceNames = serviceDiscovery.queryForNames();
@@ -254,17 +259,15 @@ public class CuratorUtils {
 	 *
 	 * @param head
 	 *            the head
-	 * @param curator
-	 *            the curator
 	 * @return the string
 	 */
-	public static String createHead(String head, CuratorFramework curator) {
+	public static String createHead(String head) {
 		if (head.startsWith("/")) {
-			CuratorUtils.createNode(head, curator);
+			CuratorUtils.createNode(head);
 			return head;
 		} else {
 			String headPath = "/" + head;
-			CuratorUtils.createNode(headPath, curator);
+			CuratorUtils.createNode(headPath);
 			return headPath;
 		}
 	}
@@ -276,24 +279,22 @@ public class CuratorUtils {
 	 *            the path
 	 * @param name
 	 *            the name
-	 * @param curator
-	 *            the curator
 	 * @return the string
 	 */
-	public static String createChild(String path, String name, CuratorFramework curator) {
+	public static String createChild(String path, String name) {
 		if (path.endsWith("/")) {
-			CuratorUtils.createNode(path + name, curator);
+			CuratorUtils.createNode(path + name);
 			return path;
 		} else {
 			String childPath = path + "/" + name;
-			CuratorUtils.createNode(childPath, curator);
+			CuratorUtils.createNode(childPath);
 			return childPath;
 		}
 	}
 
 	public static void createEphemeralNode(String path, CuratorFramework curator) {
 		try {
-			if (!doesNodeExist(path, curator)) {
+			if (!doesNodeExist(path)) {
 				String result = curator.create().withMode(CreateMode.EPHEMERAL).forPath(path);
 			}
 		} catch (Exception e) {

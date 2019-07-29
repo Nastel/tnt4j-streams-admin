@@ -71,7 +71,7 @@ export class NavigationTreeComponent implements OnInit  {
     this.treeControl = new FlatTreeControl<FileFlatNode>(this.getLevel, this.isExpandable);
 
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
-    console.log( this.dataSource)
+  //  console.log( this.dataSource)
   }
 
   getChildren = (node: FileNode): Observable<FileNode[]> => node.childrenChange;

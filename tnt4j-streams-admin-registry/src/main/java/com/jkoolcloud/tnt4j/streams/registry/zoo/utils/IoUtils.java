@@ -149,7 +149,8 @@ public class IoUtils {
 		String fileContent = null;
 		String fileName = file.getName();
 		try {
-			fileContent = FileUtils.readFile(file.getPath(), Charset.defaultCharset());
+
+			fileContent = FileUtils.readFile(file.getPath().trim(), Charset.defaultCharset());
 		} catch (IOException e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
@@ -204,16 +205,13 @@ public class IoUtils {
 		return fileNames;
 	}
 
-	public static Properties propertiesWrapper(String path) {
-
+	public static Properties getProperties(String path) {
 		Properties properties = new Properties();
-
-		try (FileInputStream stream = new FileInputStream(path)) {
-			properties.load(stream);
+		try (FileInputStream fileInputStream = new FileInputStream(path)) {
+			properties.load(fileInputStream);
 		} catch (IOException e) {
-			LoggerWrapper.addMessage(OpLevel.ERROR, e.getMessage());
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
-
 		return properties;
 	}
 

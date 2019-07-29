@@ -9,6 +9,8 @@ import { ControlUtils } from "../utils/control.utils";
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginator , MatTableDataSource, MatSort } from '@angular/material';
 
+import { TreeViewComponent } from '../tree-view/tree-view.component'
+
 
 @Injectable({
   providedIn: 'root'
@@ -28,21 +30,14 @@ export class incompleteBlocks {
 })
 export class IncompleteBlocksComponent implements OnInit {
 
-  constructor(  private data: DataService,
-                private router: Router,
-                private configurationHandler:ConfigurationHandler,
-                public utilsSvc: UtilsService,
-                private matSpinner: MatProgressSpinnerModule,
-                private controlUtils : ControlUtils) {
-  }
   /** Url address */
   pathToData : string;
 
 /** Data table properties */
   displayedColumns: string[] = ['reason', 'activityName','startTime',  'count',  'control'];
   dataSource = new MatTableDataSource();
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
 
 /** incomplete blocks transaction properties */
   message = '';
@@ -56,7 +51,6 @@ export class IncompleteBlocksComponent implements OnInit {
 
 
 /** Object to read data from node */
-  zooKeeperData: Object;
   serviceControlList = [];
 
 /** Service stream needed properties */
@@ -67,32 +61,58 @@ export class IncompleteBlocksComponent implements OnInit {
   valueThatChangesOnDataLoad = true;
   valueThatChangesForSpinnerOnResponse = false;
 
+    /** ZooKeeper loaded data */
+   zooKeeperData: Object;
+   nodeConf : string;
+
+  constructor(  private data: DataService,
+                private router: Router,
+                private configurationHandler:ConfigurationHandler,
+                public utilsSvc: UtilsService,
+                private matSpinner: MatProgressSpinnerModule,
+                private controlUtils : ControlUtils,
+                public treeView: TreeViewComponent) {
+  }
+
   public ngOnInit() {
     this.responseShow("");
     this.pathToData = this.router.url.substring(1);
     this.loadZooKeeperNodeData(this.pathToData);
   }
-
+  reloadData(){
+      this.treeView.loadZooKeeperNodeData(this.pathToData);
+      this.ngOnInit();
+  }
    loadZooKeeperNodeData(pathToData){
-      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
-        try{
-          this.zooKeeperData = data;
-          let result =  JSON.parse(this.zooKeeperData.toString());
-           console.log( result)
-          this.serviceName = result["config"]["blockchain"];
-          this.result = result["data"];
-          this.loadIncompleteBlocksData(this.result);
-        }catch(err){
-          this.responseShow("bad");
-          console.log("Problem while trying to read data from incomplete blocks", err);
-        }
-
-      },
-       err =>{
-         this.responseShow("bad");
-         console.log("Problem on reading incomplete blocks data: ", err);
-       }
-      );
+    try{
+      this.nodeConf = this.treeView.nodeConf;
+      this.zooKeeperData = this.treeView.zooKeeperData["data"];
+      this.serviceName =  this.nodeConf["blockchain"];
+      this.loadIncompleteBlocksData(this.zooKeeperData);
+    }
+    catch (err){
+      this.responseShow("bad");
+      console.log("Problem on default node while trying to prepare the showing of node data AGENT LOGS", err);
+    }
+//      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
+//        try{
+//          this.zooKeeperData = data;
+//          let result =  JSON.parse(this.zooKeeperData.toString());
+//           console.log( result)
+//          this.serviceName = result["config"]["blockchain"];
+//          this.result = result["data"];
+//          this.loadIncompleteBlocksData(this.result);
+//        }catch(err){
+//          this.responseShow("bad");
+//          console.log("Problem while trying to read data from incomplete blocks", err);
+//        }
+//
+//      },
+//       err =>{
+//         this.responseShow("bad");
+//         console.log("Problem on reading incomplete blocks data: ", err);
+//       }
+//      );
    }
 
 /** Methods for No Receipt data ----------------------------------------------*/
@@ -100,6 +120,7 @@ export class IncompleteBlocksComponent implements OnInit {
     let re1 = new RegExp("jk_maxrows=100");
     let queryToJkool = linkUrlAddress.replace(re1, "jk_maxrows=1000");
     console.log(" <-----> JKool  Blocks No Receipt", linkUrlAddress);
+    this.responseShow("");
     this.data.getLinkData(linkUrlAddress).subscribe(data => {
       try{
         setTimeout(() => this.dataSource.paginator = this.paginator);
@@ -112,6 +133,7 @@ export class IncompleteBlocksComponent implements OnInit {
         this.responseShow("bad");
         console.log("Problem while trying to read data from incomplete blocks no receipt", err);
       }
+      this.responseShow("good")
     },
      err =>{
        this.responseShow("bad");
@@ -159,6 +181,7 @@ export class IncompleteBlocksComponent implements OnInit {
 
 /** Methods for wrong event count data ----------------------------------------------*/
   loadIncompleteBlocksData(linkUrlAddress){
+      this.responseShow("");
       let re1 = new RegExp("jk_maxrows=100");
       let queryToJkool = linkUrlAddress.replace(re1, "jk_maxrows=1000");
       this.data.getLinkData(queryToJkool).subscribe(data => {
@@ -173,6 +196,7 @@ export class IncompleteBlocksComponent implements OnInit {
         }catch(err){
           console.log("Problem while trying to read data from incomplete blocks", err);
         }
+        this.responseShow("good");
      },
      err =>{
        this.responseShow("bad");

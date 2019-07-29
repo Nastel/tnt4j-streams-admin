@@ -51,7 +51,7 @@ export class DataService {
       else{
         console.log("No path call defined");
       }
-      console.log("link to back end", serviceUrl);
+      //console.log("link to back end", serviceUrl);
       return this.http.get(serviceUrl, {responseType: 'text'} );
     }
 
@@ -81,8 +81,12 @@ export class DataService {
       else{
         console.log("No path call defined");
       }
-      console.log(serviceUrl)
+     // console.log(serviceUrl)
       return   this.http.get(serviceUrl, {responseType: 'text'} );
+    }
+
+    pingStream(streamPath : string){
+
     }
 
 }

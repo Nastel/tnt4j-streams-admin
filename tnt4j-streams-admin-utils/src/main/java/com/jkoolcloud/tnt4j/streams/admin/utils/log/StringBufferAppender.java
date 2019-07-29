@@ -47,7 +47,7 @@ public class StringBufferAppender extends AppenderSkeleton {
 	/**
 	 * The Out buf size.
 	 */
-	static final int OUT_BUF_SIZE = 400;
+	static final int OUT_BUF_SIZE = 10_000;
 
 	@Override
 	public void close() {

@@ -1,11 +1,15 @@
 <div class="sticky-top align-alignEnd">
   <!--<span class="small-margin headerFont"><b> Last update: {{threadsTimeStamp}}</b></span>-->
-  <!--<mat-icon (click)="loadZooKeeperNodeData(pathToData)"svgIcon="{{'update'}}" matTooltip="Reload data"></mat-icon>-->
-  <mat-icon (click)="onNoClick()" svgIcon="{{'closeModal'}}" matTooltip="Close"
-            class="small-marginLeftRight"></mat-icon>
+  <!--<mat-icon (click)="loadZooKeeperNodeData(pathToData)"svgIcon="{{'update'}}" matTooltip="Reload dataReading"></mat-icon>-->
+  <mat-icon (click)="onNoClick()" class="small-marginLeftRight" matTooltip="Close"
+            svgIcon="{{'closeModal'}}"></mat-icon>
+</div>
+<div class="row small-marginBottom">
+  <span class="large-fontSize boldFont">  {{responseHeaderMessage}}</span>
 </div>
 <div class="text-alignCenter">
-  <span class="large-fontSize">{{responseData['Error']}}</span>
+
+  <span class="large-fontSize wordBreak hiddenOverflowComponents  small-paddingLeftRight">{{responseData}}</span>
 </div>
 <!--<div>-->
 <!--<div #scrollMeLog id="scrollElementLog" class="medium-marginLeftRight hiddenOverflow full-height threads wordWrap">-->

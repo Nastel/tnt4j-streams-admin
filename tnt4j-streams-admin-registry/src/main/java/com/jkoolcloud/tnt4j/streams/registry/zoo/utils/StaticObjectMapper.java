@@ -16,6 +16,11 @@
 
 package com.jkoolcloud.tnt4j.streams.registry.zoo.utils;
 
+import java.io.IOException;
+import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -30,6 +35,26 @@ public class StaticObjectMapper {
 
 	private StaticObjectMapper() {
 
+	}
+
+	public static Map<String, Object> jsonToMap(String value, TypeReference typeReference) {
+		Map<String, Object> data = null;
+		try {
+			data = StaticObjectMapper.mapper.readValue(value, typeReference);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+	public static String objectToString(Object json) {
+		String jsonStr = null;
+		try {
+			jsonStr = StaticObjectMapper.mapper.writeValueAsString(json);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return jsonStr;
 	}
 
 }

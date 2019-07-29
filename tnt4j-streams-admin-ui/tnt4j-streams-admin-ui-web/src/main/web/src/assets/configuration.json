@@ -16,10 +16,7 @@
     "loadMore": "assets/iconControls/loadMore.svg",
     "download" : "assets/iconControls/download.svg",
 	"fullScreen" : "assets/iconControls/fullScreen.svg",
-	"update" : "assets/iconControls/update.svg",
-	"/streams/v1/clusters" : "assets/iconControls/clusters.svg",
-	"/streams/v1/clusters/clusterBlockchainMainnets" : "assets/iconControls/clusterMainnet.svg",
-	"/streams/v1/clusters/clusterBlockchainTestnet" : "assets/iconControls/clusterTestnet.svg"
+	"update" : "assets/iconControls/update.svg"
   },
     "StreamsDataForAgentPage": {
 		"latest block" : {"Last Streamed": "N/A"},
@@ -104,28 +101,34 @@
 	"LazyLoadDataLines" : {
 		"log" : 50,
 		"logErr" : 200,
-		"bottomLog" : 200,
+		"bottomLog" : 100,
 		"bottomLogLoadIntervalMS" : 10000
 	},
 	
 	"excludeFromTreeView" : [
-		"requests",
+		"download",
 		"downloaded",
-		"responses"
+		"requests",
+		"responses",
+		"response",
+		"start",
+		"stop",
+		"replay"
 	],
 	
 	"excludeFromReadingOnTreeLoad" : [
 		"requests",
 		"responses",
 		"downloaded",
-		"threadDump",
-		"downloadables",
-		"logs"
+		"download",
+		"start",
+		"stop",
+		"replay"
 	],
-	
+
 	"StartTreeNodeParentName" : "BaseNode",
 	"BasePathHide" : "streams/v1",
-	
+	"activeStreamRegistryNode" : "_streamsAndMetrics",
 			
 	"ZooKeeperTreeNodes" : "//localhost:8080/test/registry/nodeTree",
 	

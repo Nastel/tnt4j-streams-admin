@@ -76,7 +76,7 @@ public class ZookeeperRegistryEndpoint {
 	}
 
 	/**
-	 * Create request to replay item ( block) data
+	 * Create request to replay item ( block) dataReading
 	 *
 	 * @return the node information
 	 */
@@ -92,7 +92,7 @@ public class ZookeeperRegistryEndpoint {
 			}
 			LOG.info("Path created from URL: {}", pathToNode.toString());
 			String value = mapper.writeValueAsString(
-					zookeeperAccessService.sendControlRequest(pathToNode.toString(), "replayBlocks"));
+					zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString()));
 
 			return Response.status(200).entity(value).build();
 		} catch (Exception e) {
@@ -118,7 +118,7 @@ public class ZookeeperRegistryEndpoint {
 			}
 			LOG.info("Path created from URL: {}", pathToNode.toString());
 			String value = mapper.writeValueAsString(
-					zookeeperAccessService.sendControlRequest(pathToNode.toString(), "pauseStream"));
+					zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString()));
 
 			return Response.status(200).entity(value).build();
 		} catch (Exception e) {
@@ -144,7 +144,7 @@ public class ZookeeperRegistryEndpoint {
 			}
 			LOG.info("Path created from URL: {}", pathToNode.toString());
 			String value = mapper.writeValueAsString(
-					zookeeperAccessService.sendControlRequest(pathToNode.toString(), "startStream"));
+					zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString()));
 
 			return Response.status(200).entity(value).build();
 		} catch (Exception e) {
@@ -169,8 +169,8 @@ public class ZookeeperRegistryEndpoint {
 				pathToNode.append("/").append(node);
 			}
 			LOG.info("Path created from URL: {}", pathToNode.toString());
-			String value = mapper
-					.writeValueAsString(zookeeperAccessService.sendControlRequest(pathToNode.toString(), "stopStream"));
+			String value = mapper.writeValueAsString(
+					zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString()));
 
 			return Response.status(200).entity(value).build();
 		} catch (Exception e) {
@@ -196,7 +196,7 @@ public class ZookeeperRegistryEndpoint {
 			}
 			LOG.info("Path created from URL: {}", pathToNode.toString());
 			String value = mapper.writeValueAsString(
-					zookeeperAccessService.sendControlRequest(pathToNode.toString(), "resumeStream"));
+					zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString()));
 
 			return Response.status(200).entity(value).build();
 		} catch (Exception e) {
@@ -221,8 +221,8 @@ public class ZookeeperRegistryEndpoint {
 				pathToNode.append("/").append(node);
 			}
 			LOG.info("Path created from URL: {}", pathToNode.toString());
-			String value = mapper.writeValueAsString(zookeeperAccessService.getServiceNodeData(pathToNode.toString()));
-
+			//String value = mapper.writeValueAsString(zookeeperAccessService.getServiceNodeData(pathToNode.toString()));
+			String value = mapper.writeValueAsString(zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString()));
 			return Response.status(200).entity(value).build();
 		} catch (Exception e) {
 			LOG.error("Error on reading node from ZooKeeper", e);

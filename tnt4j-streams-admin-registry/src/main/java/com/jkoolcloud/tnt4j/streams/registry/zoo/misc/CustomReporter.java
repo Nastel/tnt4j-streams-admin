@@ -118,7 +118,7 @@ public class CustomReporter implements Reporter {
 
 		LOGGER_ZOOKEEPER.log(OpLevel.INFO, String.format("Created message for ZK: %s", metricsStr));
 
-		boolean wasDataSet = CuratorUtils.setData(responseDir, metricsStr, curatorFramework);
+		boolean wasDataSet = CuratorUtils.setData(responseDir, metricsStr);
 
 		LOGGER_ZOOKEEPER.log(OpLevel.INFO, String.format("Message sent to ZK successfully: %b", wasDataSet));
 	}

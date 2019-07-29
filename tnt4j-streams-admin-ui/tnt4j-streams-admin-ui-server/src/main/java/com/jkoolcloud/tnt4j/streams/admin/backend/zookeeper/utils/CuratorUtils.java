@@ -78,12 +78,12 @@ public class CuratorUtils {
 	}
 
 	/**
-	 * Sets data.
+	 * Sets dataReading.
 	 *
 	 * @param path
 	 *            the path
 	 * @param data
-	 *            the data
+	 *            the dataReading
 	 * @param curator
 	 *            the curator
 	 */
@@ -115,7 +115,7 @@ public class CuratorUtils {
 	}
 
 	/**
-	 * Get data byte [ ].
+	 * Get dataReading byte [ ].
 	 *
 	 * @param path
 	 *            the path

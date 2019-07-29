@@ -63,6 +63,7 @@ import { ServiceMetricsComponent } from './service-metrics/service-metrics.compo
 import { BottomLogComponent } from './bottom-log/bottom-log.component';
 import { DownloadsComponent } from './downloads/downloads.component';
 import { ConfigurableComponentNodeComponent } from './configurable-component-node/configurable-component-node.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -84,12 +85,14 @@ import { ConfigurableComponentNodeComponent } from './configurable-component-nod
     ServiceMetricsComponent,
     BottomLogComponent,
     DownloadsComponent,
-    ConfigurableComponentNodeComponent
+    ConfigurableComponentNodeComponent,
+    LoginComponent
   ],
   entryComponents: [
     TreeViewComponent,
     DialogOverviewExampleDialog,
-    popupMessage
+    popupMessage,
+    LoginComponent
   ],
   imports: [
   CdkTreeModule,

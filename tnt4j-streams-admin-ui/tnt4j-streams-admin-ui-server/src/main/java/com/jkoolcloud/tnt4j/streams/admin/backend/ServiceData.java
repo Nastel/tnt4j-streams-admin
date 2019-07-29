@@ -16,16 +16,12 @@
 
 package com.jkoolcloud.tnt4j.streams.admin.backend;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.NotFoundException;
 
@@ -36,23 +32,83 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
+import com.jkoolcloud.tnt4j.streams.admin.backend.utils.HttpUtils;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.PropertyData;
-import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZookeeperAccessService;
 
 /**
- * The type Service data.
+ * The type Service dataReading.
  */
 @Singleton
 public class ServiceData {
 	private static final Logger LOG = LoggerFactory.getLogger(ServiceData.class);
 
-	@Inject
-	private ZookeeperAccessService zooKeeper;
-
 	/**
-	 * Instantiates a new Service data.
+	 * Instantiates a new Service dataReading.
 	 */
 	public ServiceData() {
+	}
+
+	/**
+	 * Parse json dataReading into simple format zoo keeper map.
+	 *
+	 * @param serviceDataFromJson
+	 *            the service dataReading from json
+	 * @return the map
+	 * @throws IOException
+	 *             the io exception
+	 */
+	public static Map<String, Object> parseJsonDataIntoSimpleFormatZooKeeper(Map<String, Object> serviceDataFromJson,
+			String serviceName) {
+		Map<String, Object> serviceData = new HashMap<>();
+		try {
+			HashMap<String, Object> serviceDataFromJson1, serviceDataFromJson2, serviceDataFromJson3;
+			ObjectMapper objMapper = new ObjectMapper();
+			ObjectWriter writer = objMapper.writer();
+			String jsonInString, jsonInString1, jsonInString2;
+			for (HashMap.Entry<String, Object> entry : serviceDataFromJson.entrySet()) {
+				if (entry.getValue() instanceof Map && !entry.getKey().equals("config")) {
+					jsonInString = writer.writeValueAsString(entry.getValue());
+					jsonInString = jsonInString.replace(serviceName + " ", "");
+					serviceDataFromJson1 = objMapper.readValue(jsonInString, new TypeReference<Map<String, Object>>() {
+					});
+					// Getting the 14 values
+					for (HashMap.Entry<String, Object> entry1 : serviceDataFromJson1.entrySet()) {
+						jsonInString1 = writer.writeValueAsString(entry1.getValue());
+						serviceDataFromJson2 = objMapper.readValue(jsonInString1,
+								new TypeReference<Map<String, Object>>() {
+								});
+						if (entry1.getValue() instanceof Map) {
+							for (HashMap.Entry<String, Object> entry2 : serviceDataFromJson2.entrySet()) {
+								if (entry2.getValue() instanceof Map) {
+									jsonInString2 = writer.writeValueAsString(entry2.getValue());
+									serviceDataFromJson3 = objMapper.readValue(jsonInString2,
+											new TypeReference<Map<String, Object>>() {
+											});
+									for (HashMap.Entry<String, Object> entry3 : serviceDataFromJson3.entrySet()) {
+										if (!(entry3.getValue() instanceof Map)) {
+											serviceData.put(entry2.getKey() + " " + entry1.getKey(), entry2.getValue());
+										}
+									}
+								} else {
+									if (serviceDataFromJson2.size() > 1) {
+										serviceData.put(entry1.getKey(), entry1.getValue());
+									} else {
+										serviceData.put(entry1.getKey(), entry2.getValue());
+									}
+								}
+							}
+						} else {
+							serviceData.put(entry.getKey().replaceAll("\\s", ""), entry1.getValue());
+						}
+					}
+				} else {
+					serviceData.put(entry.getKey(), entry.getValue());
+				}
+			}
+		} catch (Exception e) {
+			LOG.error("Problem with ZooKeeper metrics formatting ", e);
+		}
+		return serviceData;
 	}
 
 	/**
@@ -66,7 +122,7 @@ public class ServiceData {
 	 * @throws IOException
 	 *             the io exception
 	 */
-	// Reads the data from ones service and puts everything into JSON format
+	// Reads the dataReading from ones service and puts everything into JSON format
 	public String serviceInfoParseToJSON(String serviceName, Boolean allServiceCall) throws IOException {
 
 		String[] serviceDataNames = PropertyData.getProperty(ClsConstants.KEY_SERVICE_INFO_NAME)
@@ -86,11 +142,11 @@ public class ServiceData {
 		String serviceDataName, serviceInfoData, jsonInString;
 
 		for (String serviceLink : serviceLinks) {
-			serviceInfoData = readURL(serviceLink);
+			serviceInfoData = HttpUtils.readURLData(serviceLink);
 			serviceDataName = checkServiceDataType(serviceLink, serviceDataNames);
 			if (serviceInfoData != null && !serviceInfoData.isEmpty()
 					&& serviceInfoData.compareTo(" java.net.ConnectException: Connection refused: connect") != 0) {
-				LOG.info("Service data start_________________" + serviceInfoData);
+				LOG.info("Service dataReading start_________________" + serviceInfoData);
 				atLeastOneResponds = true;
 				if (serviceInfoData.charAt(1) == '{' || serviceInfoData.charAt(0) == '{') {
 					serviceDataFromJson = objMapper.readValue(serviceInfoData,
@@ -99,10 +155,10 @@ public class ServiceData {
 					// serviceData.putAll(parseJsonDataIntoSimpleFormatZooKeeper(serviceDataFromJson)); //
 					// parseJsonDataIntoSimpleFormat(serviceDataFromJson,
 					// serviceData);
-					// System.out.println("Service data _________________" + serviceData);
+					// System.out.println("Service dataReading _________________" + serviceData);
 				} else {
 					serviceData.put(serviceDataName, serviceInfoData);
-					// System.out.println("Service data _________________" + serviceData);
+					// System.out.println("Service dataReading _________________" + serviceData);
 				}
 			}
 		}
@@ -112,12 +168,12 @@ public class ServiceData {
 		if (atLeastOneResponds) {
 			return jsonInString;
 		} else {
-			throw new NotFoundException("client connection failed no data got");
+			throw new NotFoundException("client connection failed no dataReading got");
 		}
 	}
 
 	/**
-	 * Service info parse to json zoo keeper data string.
+	 * Service info parse to json zoo keeper dataReading string.
 	 *
 	 * @param serviceName
 	 *            the service name
@@ -127,7 +183,7 @@ public class ServiceData {
 	 */
 	public String serviceInfoParseToJSONZooKeeperData(String serviceName) throws IOException {
 
-		LOG.info("Trying to get Zookeeper data from all command directly from ZooKeeper");
+		LOG.info("Trying to get Zookeeper dataReading from all command directly from ZooKeeper");
 		// String[] serviceDataNames =
 		// PropertyData.getProperty(ClsConstants.KEY_SERVICE_INFO_NAME).split(ClsConstants.KEY_LIST_SEPARATOR);
 		ObjectMapper objMapper = new ObjectMapper();
@@ -140,16 +196,16 @@ public class ServiceData {
 		Map<String, Object> serviceData = new HashMap<>();
 		String jsonInString;
 
-		LOG.info("Initializing components getting " + serviceName + " data");
-		// serviceInfoData = readURL(serviceLink);
+		LOG.info("Initializing components getting " + serviceName + " dataReading");
+		// serviceInfoData = HttpUtils.readURLData(serviceLink);
 		// ZookeeperAccessService.init();
 		// serviceData = zooKeeper.sendRequestAndWaitForResponse(serviceName, "getAllStats");
 
-		LOG.info("Trying to get Zookeeper data from all command directly from ZooKeeper");
+		LOG.info("Trying to get Zookeeper dataReading from all command directly from ZooKeeper");
 		Map<String, Object> tempMapAll = new HashMap<>();
 		if (serviceData != null && !serviceData.isEmpty()) {
 			for (Map.Entry<String, Object> entry : serviceData.entrySet()) {
-				LOG.info("Service data from ALl ZooKeeper" + entry.getKey() + "  " + entry.getValue());
+				LOG.info("Service dataReading from ALl ZooKeeper" + entry.getKey() + "  " + entry.getValue());
 				atLeastOneResponds = true;
 				if (entry.getValue().toString().charAt(0) == '{') {
 					serviceDataFromJson = objMapper.readValue(entry.getValue().toString(),
@@ -158,10 +214,10 @@ public class ServiceData {
 					// tempMapAll.putAll(parseJsonDataIntoSimpleFormatZooKeeper(serviceDataFromJson)); //
 					// parseJsonDataIntoSimpleFormat(serviceDataFromJson,
 					// serviceData);
-					// System.out.println("Service data _________________" + serviceData);
+					// System.out.println("Service dataReading _________________" + serviceData);
 				} else {
 					tempMapAll.put(entry.getKey(), entry.getValue());
-					// System.out.println("Service data _________________" + serviceData);
+					// System.out.println("Service dataReading _________________" + serviceData);
 				}
 			}
 		}
@@ -170,12 +226,12 @@ public class ServiceData {
 		if (atLeastOneResponds) {
 			return jsonInString;
 		} else {
-			throw new NotFoundException("client connection failed no data got");
+			throw new NotFoundException("client connection failed no dataReading got");
 		}
 	}
 
 	/**
-	 * Service info parse to json from all data string.
+	 * Service info parse to json from all dataReading string.
 	 *
 	 * @param serviceName
 	 *            the service name
@@ -183,7 +239,7 @@ public class ServiceData {
 	 * @throws IOException
 	 *             the io exception
 	 */
-	// Reads the data from ones service and puts everything into JSON format
+	// Reads the dataReading from ones service and puts everything into JSON format
 	public String serviceInfoParseToJSONFromAllData(String serviceName) throws IOException {
 		String serviceDataNames = PropertyData.getProperty(ClsConstants.KEY_SERVICE_ENDPOINT_FOR_ZOOKEEPER_ALL);
 		// String[] serviceDataNames = .split(ClsConstants.KEY_LIST_SEPARATOR);
@@ -202,7 +258,7 @@ public class ServiceData {
 		String serviceDataName, serviceInfoData, jsonInString;
 
 		// for (String serviceLink : serviceLinks) {
-		serviceInfoData = readURL(serviceLink);
+		serviceInfoData = HttpUtils.readURLData(serviceLink);
 		Map<String, Object> tempMapMetrics = new HashMap<>();
 		tempMapMetrics = objMapper.readValue(serviceInfoData, new TypeReference<Map<String, Object>>() {
 		});
@@ -212,7 +268,7 @@ public class ServiceData {
 				&& serviceInfoData.compareTo(" java.net.ConnectException: Connection refused: connect") != 0) {
 			for (Map.Entry<String, Object> entry : tempMapMetrics.entrySet()) {
 
-				LOG.info("Service data start_________________" + serviceInfoData);
+				LOG.info("Service dataReading start_________________" + serviceInfoData);
 				atLeastOneResponds = true;
 				if (entry.getValue().toString().charAt(1) == '{' || entry.getValue().toString().charAt(0) == '{') {
 					serviceDataFromJson = objMapper.readValue(serviceInfoData,
@@ -221,10 +277,10 @@ public class ServiceData {
 					// serviceData.putAll(parseJsonDataIntoSimpleFormatZooKeeper(serviceDataFromJson)); //
 					// parseJsonDataIntoSimpleFormat(serviceDataFromJson,
 					// serviceData);
-					// System.out.println("Service data _________________" + serviceData);
+					// System.out.println("Service dataReading _________________" + serviceData);
 				} else {
 					serviceData.put(entry.getKey(), entry.getValue());
-					// System.out.println("Service data _________________" + serviceData);
+					// System.out.println("Service dataReading _________________" + serviceData);
 				}
 			}
 		}
@@ -235,18 +291,18 @@ public class ServiceData {
 		if (atLeastOneResponds) {
 			return jsonInString;
 		} else {
-			throw new NotFoundException("client connection failed no data got");
+			throw new NotFoundException("client connection failed no dataReading got");
 		}
 	}
 
 	/**
-	 * Read all data string.
+	 * Read all dataReading string.
 	 *
 	 * @return the string
 	 * @throws IOException
 	 *             the io exception
 	 */
-	// Reads all the data from the services and returns in JSON
+	// Reads all the dataReading from the services and returns in JSON
 	public String readAllData() throws IOException {
 
 		ObjectMapper objMapper = new ObjectMapper();
@@ -305,70 +361,6 @@ public class ServiceData {
 		return serviceData;
 	}
 
-	/**
-	 * Parse json data into simple format zoo keeper map.
-	 *
-	 * @param serviceDataFromJson
-	 *            the service data from json
-	 * @return the map
-	 * @throws IOException
-	 *             the io exception
-	 */
-	public static Map<String, Object> parseJsonDataIntoSimpleFormatZooKeeper(Map<String, Object> serviceDataFromJson,
-			String serviceName) {
-		Map<String, Object> serviceData = new HashMap<>();
-		try {
-			HashMap<String, Object> serviceDataFromJson1, serviceDataFromJson2, serviceDataFromJson3;
-			ObjectMapper objMapper = new ObjectMapper();
-			ObjectWriter writer = objMapper.writer();
-			String jsonInString, jsonInString1, jsonInString2;
-			for (HashMap.Entry<String, Object> entry : serviceDataFromJson.entrySet()) {
-				if (entry.getValue() instanceof Map) {
-					jsonInString = writer.writeValueAsString(entry.getValue());
-					jsonInString = jsonInString.replace(serviceName + " ", "");
-					serviceDataFromJson1 = objMapper.readValue(jsonInString, new TypeReference<Map<String, Object>>() {
-					});
-					// Getting the 14 values
-					for (HashMap.Entry<String, Object> entry1 : serviceDataFromJson1.entrySet()) {
-						jsonInString1 = writer.writeValueAsString(entry1.getValue());
-						serviceDataFromJson2 = objMapper.readValue(jsonInString1,
-								new TypeReference<Map<String, Object>>() {
-								});
-						if (entry1.getValue() instanceof Map) {
-							for (HashMap.Entry<String, Object> entry2 : serviceDataFromJson2.entrySet()) {
-								if (entry2.getValue() instanceof Map) {
-									jsonInString2 = writer.writeValueAsString(entry2.getValue());
-									serviceDataFromJson3 = objMapper.readValue(jsonInString2,
-											new TypeReference<Map<String, Object>>() {
-											});
-									for (HashMap.Entry<String, Object> entry3 : serviceDataFromJson3.entrySet()) {
-										if (!(entry3.getValue() instanceof Map)) {
-											serviceData.put(entry2.getKey() + " " + entry1.getKey(), entry2.getValue());
-										}
-									}
-								} else {
-									if (serviceDataFromJson2.size() > 1) {
-										serviceData.put(entry1.getKey(), entry1.getValue());
-									} else {
-										serviceData.put(entry1.getKey(), entry2.getValue());
-									}
-								}
-							}
-						} else {
-							serviceData.put(entry.getKey().replaceAll("\\s", ""), entry1.getValue());
-						}
-					}
-				} else {
-					serviceData.put(entry.getKey(), entry.getValue());
-				}
-			}
-
-		} catch (Exception e) {
-			LOG.error("Problem with ZooKeeper metrics formatting ", e);
-		}
-		return serviceData;
-	}
-
 	// Takes the information from the serviceInfoLinkCfg.properties and puts it together into a list of service links
 	private List<String> createLinksToServiceData(String serviceName) throws IOException {
 		List<String> serviceLinks = new ArrayList<>();
@@ -394,33 +386,4 @@ public class ServiceData {
 		return dataType.replaceAll("\\s", "");
 	}
 
-	/**
-	 * Read url string.
-	 *
-	 * @param serviceLink
-	 *            the service link
-	 * @return the string
-	 */
-	// Reads http or https URL returns all the data from the page
-	public static String readURL(String serviceLink) {
-		LOG.error(serviceLink);
-		String line;
-		String response = "";
-		try {
-			URL url = new URL(serviceLink);
-			// open the url stream, wrap it an a few "readers"
-			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-
-			while ((line = reader.readLine()) != null) {
-				response += line;
-			}
-
-			reader.close();
-
-		} catch (Exception e) {
-			LOG.error("The link provided " + serviceLink + " was wrong or can not be accessed at the moment");
-			// throw new NotFoundException("client connection to " + serviceLink + " fail: no connection");
-		}
-		return response;
-	}
 }

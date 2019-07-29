@@ -11,7 +11,7 @@ public class TimeUtils {
 		return localDateTime;
 	}
 
-	public static String getCurrentTimeStr(String timeZone) {
+	public static String getCurrentTimeStr() {
 		return getCurrentTime(Clock.systemUTC()).toString() + "[UTC]";
 	}
 

@@ -3,7 +3,8 @@ import { MatIconRegistry } from "@angular/material";
 import {ConfigurationHandler} from '../config/configuration-handler';
 import { DataService } from '../data.service';
 import { popupMessage } from './popup.message';
-
+import { UtilsService } from "./utils.service";
+import { Router } from '@angular/router';
 
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
@@ -17,14 +18,21 @@ export class ControlUtils
 {
 
   /** parameters for response */
-
   responseResult = "";
 
+  /** Url address */
+  pathToData : string;
 
   constructor (private configurationHandler: ConfigurationHandler,
                private matIconRegistry: MatIconRegistry,
                private data: DataService,
-               public dialog: MatDialog){}
+               private router: Router,
+               public dialog: MatDialog,
+               public utilsSvc: UtilsService){}
+
+  ngOnInit() {
+    this.pathToData = this.router.url.substring(1);
+  }
 
   public getCurrentTime (): Date{
    let jsonDate = new Date ();
@@ -55,6 +63,7 @@ export class ControlUtils
             let result = data;
              this.responseResult =  JSON.parse(result.toString());
              console.log("Response to stream start ",  this.responseResult);
+             this.openDialog("Start stream has not yet been implemented", this.pathToData);
           }catch(err){
             console.log("Problem while trying to start stream" , err);
           }
@@ -72,6 +81,7 @@ export class ControlUtils
             let result = data;
              this.responseResult =  JSON.parse(result.toString());
             console.log("Response to stream pause ",  this.responseResult);
+             this.openDialog("Pause has not yet been implemented", this.pathToData);
           }catch(err){
              console.log("Problem while trying to pause stream" , err);
           }
@@ -87,8 +97,9 @@ export class ControlUtils
      this.data.sendControlsRequest(path, "resume").subscribe( data => {
           try{
             let result = data;
-             this.responseResult =  JSON.parse(result.toString());
+            this.responseResult =  JSON.parse(result.toString());
             console.log("Response to stream resume ",  this.responseResult);
+            this.openDialog("Resume has not yet been implemented", this.pathToData);
           }catch(err){
             console.log("Problem while trying to resume stream" , err);
           }
@@ -106,8 +117,15 @@ export class ControlUtils
           try{
             let result = data;
              this.responseResult =  JSON.parse(result.toString());
-            console.log("Response to block replay ",  this.responseResult);
-            this.openDialog();
+             if( !this.utilsSvc.compareStrings(this.responseResult,"undefined")){
+                result = this.responseResult["Error"];
+                if(this.utilsSvc.compareStrings(result,"undefined")){
+                  result = this.responseResult["success"];
+                }
+             }
+            this.responseResult = result;
+            console.log(this.responseResult);
+            this.openDialog(this.responseResult, this.pathToData);
           }catch(err){
             console.log("Problem while trying to replay block "+ blockNumber, err);
           }
@@ -118,7 +136,9 @@ export class ControlUtils
       );
   }
 
-  openDialog(): void {
+  /** A popup message that shows the response returned for stream control calls*/
+  openDialogNoArguments(): void {
+   console.log("Response to block replay ",  this.responseResult);
     const dialogRef = this.dialog.open(popupMessage, {
       width: '50em',
       data: { response: this.responseResult }
@@ -127,6 +147,39 @@ export class ControlUtils
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
+  }
+
+  /** A popup message that shows a string that is passed as variable "message"*/
+  openDialog(message :String, dataPathStart :string): void {
+  let currentPath = this.router.url.substring(1);
+  console.log(currentPath, dataPathStart);
+    if(this.utilsSvc.compareStrings(currentPath, dataPathStart)){
+      let data = "ERROR"
+      const dialogRef = this.dialog.open(popupMessage, {
+        width: '50em',
+        data: { response: message, header : data }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        console.log('The dialog was closed');
+      });
+    }
+  }
+
+  /** A popup message that shows a string that is passed as variable "message" and has a header "headerMessage" */
+  openDialogWithHeader(message :string, headerMessage :string, dataPathStart: string): void {
+   let currentPath = this.router.url.substring(1);
+    console.log(currentPath, dataPathStart);
+    if(this.utilsSvc.compareStrings(currentPath, dataPathStart)){
+      const dialogRef = this.dialog.open(popupMessage, {
+        width: '50em',
+        data: { response: message, header : headerMessage }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        console.log('The dialog was closed');
+      });
+    }
   }
 
 /** TODO : Implement if query block replay will be needed*/

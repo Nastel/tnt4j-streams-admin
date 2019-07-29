@@ -1,15 +1,11 @@
-
-
-
-
-
-<div [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center headerFont  small-marginBottom">
-  <div class="justify-content-center small-marginLeftRight  display-inlineFlex" >
-    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
-    <mat-icon (click)="openDialog()" svgIcon="{{'fullScreen'}}" matTooltip="Expand Window" class="small-marginLeft"></mat-icon>
-   </div>
-
+<div (click)="reloadData()"
+     [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" class="text-center headerFont">
+  <div class="justify-content-center small-marginLeftRight">
+    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize">{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+    <mat-icon (click)="openDialog()" class="small-marginLeft" matTooltip="Expand Window" svgIcon="{{'fullScreen'}}"></mat-icon>
+  </div>
 </div>
+
 
 
 

@@ -21,8 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +29,13 @@ import org.slf4j.LoggerFactory;
 import com.jkoolcloud.tnt4j.streams.admin.backend.ServiceData;
 
 /**
- * The type Property data.
+ * The type Property dataReading.
  */
 public class PropertyData {
 	private static final Logger LOG = LoggerFactory.getLogger(ServiceData.class);
 
 	/**
-	 * Instantiates a new Property data.
+	 * Instantiates a new Property dataReading.
 	 */
 	private PropertyData() {
 	}
@@ -50,7 +49,7 @@ public class PropertyData {
 	 * @throws IOException
 	 *             the io exception
 	 */
-	// Gets the data from property file or throws an exception if property key does not exist
+	// Gets the dataReading from property file or throws an exception if property key does not exist
 	public static String getProperty(String key) throws IOException {
 		// LOG.info("the property key: | " + key +" |");
 
@@ -96,5 +95,20 @@ public class PropertyData {
 
 		return property;
 	}
+
+
+	public static List<String> splitPropertiesList(String propertySet, String separator) {
+		List<String> propertyData = new LinkedList<>();
+		try{
+			propertyData = Arrays.asList(propertySet.split(separator));
+
+		}catch(Throwable e){
+			LOG.error("Problem on separating properties list:  {}!", propertySet);
+			e.printStackTrace();
+		}
+		return propertyData;
+	}
+
+
 
 }

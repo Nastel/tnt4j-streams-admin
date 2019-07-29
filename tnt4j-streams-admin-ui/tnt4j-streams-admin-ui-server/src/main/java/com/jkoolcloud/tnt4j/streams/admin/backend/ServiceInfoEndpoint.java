@@ -27,8 +27,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import com.jkoolcloud.tnt4j.streams.admin.backend.data.JKoolData;
-import com.jkoolcloud.tnt4j.streams.admin.backend.data.LogData;
+import com.jkoolcloud.tnt4j.streams.admin.backend.dataReading.JKoolData;
+import com.jkoolcloud.tnt4j.streams.admin.backend.dataReading.LogData;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
 
 /**
@@ -38,6 +38,11 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
 @Path("/health_services")
 public class ServiceInfoEndpoint extends HttpServlet {
 
+	@Inject
+	private LogData logData;
+
+	@Inject
+	private JKoolData jKoolData;
 	// private static Logger LOG = LoggerFactory.getLogger(ServiceInfoEndpoint.class);
 
 	@Inject
@@ -101,7 +106,7 @@ public class ServiceInfoEndpoint extends HttpServlet {
 	@Path("/{serviceName}/log")
 	@Produces(ClsConstants.MIME_TYPE_JSON)
 	public Response doGetLogInfo(@PathParam("serviceName") String serviceName) throws IOException {
-		String log = LogData.getDataFromLogs(serviceName);
+		String log = logData.getDataFromLogs(serviceName);
 		return Response.status(200).entity(log).build();
 	}
 
@@ -118,7 +123,7 @@ public class ServiceInfoEndpoint extends HttpServlet {
 	@Path("/{serviceName}/errLog")
 	@Produces(ClsConstants.MIME_TYPE_JSON)
 	public Response doGetErrLogInfo(@PathParam("serviceName") String serviceName) throws IOException {
-		String errLog = LogData.getDataFromErrorLogs(serviceName);
+		String errLog = logData.getDataFromErrorLogs(serviceName);
 		return Response.status(200).entity(errLog).build();
 	}
 
@@ -166,7 +171,7 @@ public class ServiceInfoEndpoint extends HttpServlet {
 	 *             the exception
 	 */
 	@GET
-	@Path("/{serviceName}/data")
+	@Path("/{serviceName}/dataReading")
 	@Produces(ClsConstants.MIME_TYPE_JSON)
 	public Response doGetServiceInfoZooKeeper(@PathParam("serviceName") String serviceName) throws Exception {
 		String jsonServiceData = readAndParseData.serviceInfoParseToJSONZooKeeperData(serviceName);
@@ -189,10 +194,10 @@ public class ServiceInfoEndpoint extends HttpServlet {
 	}
 
 	/**
-	 * Sets service data.
+	 * Sets service dataReading.
 	 *
 	 * @param readAndParseData
-	 *            the read and parse data
+	 *            the read and parse dataReading
 	 */
 	public void setServiceData(ServiceData readAndParseData) {
 		this.readAndParseData = readAndParseData;

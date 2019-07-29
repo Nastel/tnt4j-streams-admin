@@ -7,14 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "nodeName",
-        "componentLoad",
-        "logNavigation",
-        "streamsIcon",
-        "capabilities",
-        "showBottomLog"
-})
+@JsonPropertyOrder({ "nodeName", "componentLoad", "logNavigation", "streamsIcon", "capabilities", "showBottomLog" })
 public class Config {
 
 	@JsonProperty("nodeName")
@@ -73,12 +66,12 @@ public class Config {
 	}
 
 	@JsonProperty("showBottomLog")
-	public String getshowBottomLog() {
+	public String getShowBottomLog() {
 		return showBottomLog;
 	}
 
 	@JsonProperty("showBottomLog")
-	public void setshowBottomLog(String showBottomLog) {
+	public void setShowBottomLog(String showBottomLog) {
 		this.showBottomLog = showBottomLog;
 	}
 

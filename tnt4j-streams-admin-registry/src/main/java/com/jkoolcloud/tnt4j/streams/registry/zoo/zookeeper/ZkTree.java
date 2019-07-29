@@ -6,7 +6,6 @@ import java.util.Properties;
 
 import org.apache.curator.framework.CuratorFramework;
 
-import com.jkoolcloud.tnt4j.streams.registry.zoo.misc.StreamManagerSingleton;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.CuratorUtils;
 
 public class ZkTree {
@@ -27,8 +26,8 @@ public class ZkTree {
 
 		for (String node : nodeList) {
 			String nodePath = properties.getProperty(node);
-			if (!CuratorUtils.doesNodeExist(nodePath, curatorFramework)) {
-				CuratorUtils.createNode(nodePath, curatorFramework);
+			if (!CuratorUtils.doesNodeExist(nodePath)) {
+				CuratorUtils.createNode(nodePath);
 			}
 		}
 
@@ -54,8 +53,8 @@ public class ZkTree {
 					CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
 		}
 
-		StreamManagerSingleton.getInstance().putStream(streamName,
-				CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
+		// StreamManagerSingleton.getInstance().putStream(streamName,
+		// CuratorSingleton.getSynchronizedCurator().getCuratorFramework());
 	}
 
 	public static void registerStreams(String pathToAgent, CuratorFramework curatorFramework) {
@@ -72,8 +71,8 @@ public class ZkTree {
 		for (String stream : streamsArray) {
 			String path = pathToAgent + "/" + stream;
 
-			if (!CuratorUtils.doesNodeExist(path, curatorFramework)) {
-				CuratorUtils.createNode(path, curatorFramework);
+			if (!CuratorUtils.doesNodeExist(path)) {
+				CuratorUtils.createNode(path);
 			}
 
 			publishStreamServices(stream, path);

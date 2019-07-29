@@ -50,7 +50,6 @@ public class ZookeeperRequestProcessor {
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	private void processRequest(String method, JsonRpcGeneric jsonRpcRequest, Properties properties) {
 		Map<String, Object> params = (Map<String, Object>) jsonRpcRequest.getParams();
 		params.put("properties", properties);
@@ -63,7 +62,7 @@ public class ZookeeperRequestProcessor {
 	}
 
 	public void methodSelector(JsonRpcGeneric jsonRpcRequest) {
-		Properties properties = IoUtils.propertiesWrapper(System.getProperty("listeners"));
+		Properties properties = IoUtils.getProperties(System.getProperty("listeners"));
 
 		String method = properties.getProperty(jsonRpcRequest.getMethod());
 

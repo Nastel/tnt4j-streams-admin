@@ -20,6 +20,9 @@
         <javax.transaction.version>1.1</javax.transaction.version>
         <quartz-jobs.version>2.3.1</quartz-jobs.version>
         <quartz.version>2.3.1</quartz.version>
+        <jetty.version>9.4.19.v20190610</jetty.version>
+        <resteasy-jaxrs.version>3.8.1.Final</resteasy-jaxrs.version>
+        <resteasy-servlet-initializer.version>4.1.1.Final</resteasy-servlet-initializer.version>
     </properties>
 
     <build>
@@ -81,6 +84,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
 
     </build>
@@ -91,6 +95,7 @@
             <artifactId>tnt4j-streams-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.jkoolcloud.tnt4j.streams.admin</groupId>
             <artifactId>tnt4j-streams-admin-utils</artifactId>
@@ -119,6 +124,30 @@
             <artifactId>jta</artifactId>
             <version>${javax.transaction.version}</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <version>${resteasy-jaxrs.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-servlet-initializer</artifactId>
+            <version>${resteasy-servlet-initializer.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>${jetty.version}</version>
         </dependency>
 
         <!-- Quartz  -->

@@ -6,6 +6,9 @@ import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
 import { DataService } from '../data.service';
 
+import { TreeViewComponent } from '../tree-view/tree-view.component'
+
+
 @Component({
   selector: 'app-service-repository-status',
   templateUrl: './service-repository-status.component.html',
@@ -18,15 +21,14 @@ export class ServiceRepositoryStatusComponent implements OnInit {
  displayedColumns = ['name', 'value'];
  dataSourceRepositoryData = new MatTableDataSource<any>();
 
- @ViewChild('matRepositoryData') sortRepositoryData: MatSort;
- @ViewChild('paginatorRepository') paginatorRepoData: MatPaginator;
+ @ViewChild('matRepositoryData', { static: false }) sortRepositoryData: MatSort;
+ @ViewChild('paginatorRepository', { static: false }) paginatorRepoData: MatPaginator;
 
   /** Url address */
   pathToData : string;
 
   /** Service repository status data */
   repositoryData: [];
-  zooKeeperData: Object;
 
   /** Values for showing data loading properties */
   valueThatChangesOnDataLoad = false;
@@ -38,45 +40,64 @@ export class ServiceRepositoryStatusComponent implements OnInit {
     dataNeededFromRepositories = [];
     serviceRepo = "";
 
+  /** ZooKeeper loaded data */
+   zooKeeperData: Object;
+   nodeConf : string;
+
   constructor(  private data: DataService,
                 private router: Router,
                 private configurationHandler:ConfigurationHandler,
-                public utilsSvc: UtilsService) { }
+                public utilsSvc: UtilsService,
+                public treeView: TreeViewComponent) { }
 
   ngOnInit() {
     this.prepareRepositoryDefaultData("ReposDataForAllPage");
     this.pathToData = this.router.url.substring(1);
     this.loadZooKeeperNodeData(this.pathToData);
   }
-
+  reloadData(){
+      this.treeView.loadZooKeeperNodeData(this.pathToData);
+      this.ngOnInit();
+  }
    loadZooKeeperNodeData(pathToData){
-      this.valueThatChangesOnDataLoad = false;
-      this.valueThatChangesForSpinnerOnResponse = true;
-      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
-          this.zooKeeperData = data;
-          let result =  JSON.parse(this.zooKeeperData.toString());
-          console.log("REPOSITORY DATA", result );
-          result = result['data'];
-          this.getRepositoryData(result)
-      },
-       err =>{
-         this.valueThatChangesForSpinnerOnResponse = false;
-         this.valueThatChangesOnDataLoad = false;
-         console.log("Problem on reading repository data: ", err);
+       try{
+         this.nodeConf = this.treeView.nodeConf;
+         this.zooKeeperData = this.treeView.zooKeeperData["data"];
+         this.getRepositoryData(this.zooKeeperData );
        }
-      );
+       catch (err){
+         this.responseShow("bad");
+         console.log("Problem on default node while trying to prepare the showing of node data AGENT LOGS", err);
+       }
+
+//      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
+//          this.zooKeeperData = data;
+//          let result =  JSON.parse(this.zooKeeperData.toString());
+//          console.log("REPOSITORY DATA", result );
+//          result = result['data'];
+//          this.getRepositoryData(result)
+//      },
+//       err =>{
+//         this.valueThatChangesForSpinnerOnResponse = false;
+//         this.valueThatChangesOnDataLoad = false;
+//         console.log("Problem on reading repository data: ", err);
+//       }
+//      );
    }
 
    getRepositoryData(linkUrlAddress){
+    this.responseShow("");
     this.data.getLinkData(linkUrlAddress).subscribe(data => {
            this.tempServiceRepo = data;
            //console.log("REPOSITORY DATA", this.tempServiceRepo );
            this.getAllNeededInfoAboutRepos(this.tempServiceRepo, "ReposDataForAllPage");
            this.dataFromRepositories = this.tempServiceRepo;
            this.prepareRepositoryData( this.dataNeededFromRepositories);
-            setTimeout(() => this.dataSourceRepositoryData.paginator = this.paginatorRepoData);
-            setTimeout(() => this.dataSourceRepositoryData.sort = this.sortRepositoryData);
+          setTimeout(() => this.dataSourceRepositoryData.paginator = this.paginatorRepoData);
+          setTimeout(() => this.dataSourceRepositoryData.sort = this.sortRepositoryData);
+          this.responseShow("good");
          }, err =>{
+            this.responseShow("bad");
             this.valueThatChangesForSpinnerOnResponse = false;
             this.valueThatChangesOnDataLoad = false;
             console.log("Problem on reading repository data: ", err);
@@ -191,5 +212,19 @@ export class ServiceRepositoryStatusComponent implements OnInit {
        this.dataSourceRepositoryData.filter = filterValue.trim().toLowerCase();
      }
 
-
+    /*Response variables set to good, bad or else for showing the data loading state*/
+         responseShow(responseData){
+          if(this.utilsSvc.compareStrings(responseData, "good")){
+            this.valueThatChangesForSpinnerOnResponse = false;
+            this.valueThatChangesOnDataLoad = true;
+          }
+          else if(this.utilsSvc.compareStrings(responseData, "bad")){
+            this.valueThatChangesForSpinnerOnResponse = false;
+            this.valueThatChangesOnDataLoad = false;
+          }
+          else{ //still loading
+            this.valueThatChangesOnDataLoad = false;
+            this.valueThatChangesForSpinnerOnResponse = true;
+          }
+         }
 }

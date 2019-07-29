@@ -1,5 +1,5 @@
 
-<div [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="loadZooKeeperNodeData(pathToData)" class="text-center small-marginBottom headerFont">
+<div (click)="reloadData()" [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" class="text-center small-marginBottom headerFont">
   <div class="justify-content-center small-marginLeftRight">
     <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
   </div>
@@ -11,27 +11,27 @@
   </div>
 </div>
 <div  *ngIf="!valueThatChangesForSpinnerOnResponse" class="medium-marginLeftRight" >
-  <div *ngIf="!this.utilsSvc.compareStrings(serviceConfigParent, 'undefined')">
+  <div *ngIf="!this.utilsSvc.compareStrings(zooKeeperData, 'undefined')">
     <div class="row">
        <div class="col-12 col-sm-12 col-lg-4 col-xl-3 small-paddingBottom">
          <div #viewComponent  class=" justify-content-center mat-elevation-z8 rounded-corners extraSmall-paddingTopBottom">
-            <div  *ngFor="let key of objectKeys(serviceConfigParent)">
-              <div  *ngFor="let key1 of objectKeys(serviceConfigParent[key])" >
+            <div  *ngFor="let key of objectKeys(zooKeeperData)">
+              <div  *ngFor="let key1 of objectKeys(zooKeeperData[key])" >
                 <div *ngIf="this.utilsSvc.compareStrings(key1, 'name')">
-                  <div *ngIf="this.utilsSvc.compareStrings(serviceConfigParent[key][key1], this.configChoiceData); then notSelected; else selected"></div>
+                  <div *ngIf="this.utilsSvc.compareStrings(zooKeeperData[key][key1], this.configChoiceData); then notSelected; else selected"></div>
                   <ng-template #notSelected>
-                    <div class="borderConfNav backgroundWhite" (click)="configFileChoice(serviceConfigParent[key][key1])" >
+                    <div class="borderConfNav backgroundWhite" (click)="configFileChoice(zooKeeperData[key][key1])" >
                       <mat-nav-list >
                         <div >
-                          <span class="configNav agentRuntimeServiceInformationTableHeader">{{serviceConfigParent[key][key1]}}</span>
+                          <span class="configNav agentRuntimeServiceInformationTableHeader">{{zooKeeperData[key][key1]}}</span>
                         </div>
                       </mat-nav-list>
                     </div>
                   </ng-template>
                   <ng-template #selected>
-                    <div class="borderConfNav" (click)="configFileChoice(serviceConfigParent[key][key1])" >
+                    <div class="borderConfNav" (click)="configFileChoice(zooKeeperData[key][key1])" >
                       <mat-nav-list>
-                        <span class="configNav agentRuntimeServiceInformationTableHeader" (click)="configFileChoice(serviceConfigParent[key][key1])" >{{serviceConfigParent[key][key1]}}</span>
+                        <span class="configNav agentRuntimeServiceInformationTableHeader" (click)="configFileChoice(zooKeeperData[key][key1])" >{{zooKeeperData[key][key1]}}</span>
                       </mat-nav-list>
                     </div>
                   </ng-template>
@@ -41,13 +41,13 @@
           </div>
        </div>
       <div class="col-12 col-sm-12 col-lg-8 col-xl-9">
-        <div  *ngFor="let key of objectKeys(serviceConfigParent)"   #configuration >
-          <div  *ngFor="let key1 of objectKeys(serviceConfigParent[key])" >
+        <div  *ngFor="let key of objectKeys(zooKeeperData)"   #configuration >
+          <div  *ngFor="let key1 of objectKeys(zooKeeperData[key])" >
             <div *ngIf="!this.utilsSvc.compareStrings(key1, 'name')">
-              <div *ngIf="this.utilsSvc.compareStrings(serviceConfigParent[key]['name'], configChoiceData)" [style.max-height.px]="dataHeight" class="hiddenOverflow">
+              <div *ngIf="this.utilsSvc.compareStrings(zooKeeperData[key]['name'], configChoiceData)" [style.max-height.px]="dataHeight" class="hiddenOverflow">
                 <div class="small-marginRight" style="cursor: context-menu;" >
-                  <div  class="hoverWhite">
-                    <PRE><span class="threads wordWrap">{{serviceConfigParent[key][key1]}}</span></PRE>
+                  <div  class="hoverWhite small-padding">
+                    <PRE><span class="threads wordWrap"> {{zooKeeperData[key][key1]}}</span></PRE>
                   </div>
                 </div>
               </div>

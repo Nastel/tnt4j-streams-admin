@@ -7,7 +7,9 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
 import { DataService } from '../data.service';
+import { TreeViewComponent } from '../tree-view/tree-view.component'
 
+import { ControlUtils } from "../utils/control.utils";
 import { Zlib } from 'zlibt';
 
 
@@ -18,8 +20,8 @@ import { Zlib } from 'zlibt';
 })
 export class DownloadsComponent implements OnInit {
 
- @ViewChild('downloadsPaging') downloadsPaging: MatPaginator;
- @ViewChild('downloadsSorting') downloadsSorting: MatSort;
+ @ViewChild('downloadsPaging', { static: false }) downloadsPaging: MatPaginator;
+ @ViewChild('downloadsSorting', { static: false }) downloadsSorting: MatSort;
 
   dataSource = new MatTableDataSource<any>();
 
@@ -32,7 +34,7 @@ export class DownloadsComponent implements OnInit {
   navigationChoice = "";
 
   /** Data for downloads table*/
-  fullDownloadableData = [];
+  fullDownloadableData = Object;
   navDataTable = [];
   displayedColumns = ['name', 'value'];
   tableData = [];
@@ -43,47 +45,77 @@ export class DownloadsComponent implements OnInit {
   /** For URL address calls */
   pathToData = "";
 
+  /** ZooKeeper loaded data */
+ zooKeeperData: Object;
+ nodeConf : string;
+
   constructor(  private data: DataService,
                 private router: Router,
                 private configurationHandler:ConfigurationHandler,
                 public utilsSvc: UtilsService,
                 private matIconRegistry: MatIconRegistry,
-                private domSanitizer: DomSanitizer) { }
+                private domSanitizer: DomSanitizer,
+                private controlUtils: ControlUtils,
+                public treeView: TreeViewComponent) { }
 
   ngOnInit() {
     this.pathToData = this.router.url.substring(1);
     this.loadZooKeeperNodeData();
   }
 
+  reloadData(){
+      this.treeView.loadZooKeeperNodeData(this.pathToData);
+      this.ngOnInit();
+  }
+
   loadZooKeeperNodeData(){
-    this.tableData = [];
     this.responseShow("");
-    this.data.getZooKeeperNodeData(this.pathToData).subscribe( data => {
-      try{
-        let result = data;
-        result =  JSON.parse(result.toString());
-        console.log("DOWNLOADS DATA", result);
-        this.navNamesArray = Object.keys(result["data"]);
-        this.fullDownloadableData = result["data"] ;
-        if(this.utilsSvc.compareStrings(this.navigationChoice, "")){
-          this.navigationChoice = this.navNamesArray[0];
-        }
-        if(!this.utilsSvc.compareStrings(this.fullDownloadableData [this.navigationChoice], "undefined")){
-          result = this.fullDownloadableData[this.navigationChoice];
-          this.loadDownloadsTable(result);
-        }
-        this.responseShow("good");
-      }
-      catch{
-          this.responseShow("bad");
-          console.log("Problem on reading downloads data from : ", this.pathToData);
-        }
-    },
-     err =>{
-       this.responseShow("bad");
-       console.log("Problem on reading downloads data from : ", this.pathToData);
-     }
-    );
+    this.tableData = [];
+    try{
+       this.nodeConf = this.treeView.nodeConf;
+       this.zooKeeperData = this.treeView.zooKeeperData["data"];
+       this.navNamesArray = Object.keys(this.zooKeeperData);
+       if(this.utilsSvc.compareStrings(this.navigationChoice, "")){
+         this.navigationChoice = this.navNamesArray[0];
+       }
+       if(!this.utilsSvc.compareStrings(this.zooKeeperData[this.navigationChoice], "undefined")){
+         let result = this.zooKeeperData[this.navigationChoice];
+         this.loadDownloadsTable(result);
+       }
+       this.responseShow("good")
+    }
+    catch (err){
+      this.responseShow("bad");
+      console.log("Problem on default node while trying to prepare the showing of node data AGENT LOGS", err);
+    }
+
+
+//    this.data.getZooKeeperNodeData(this.pathToData).subscribe( data => {
+//      try{
+//        let result = data;
+//        result =  JSON.parse(result.toString());
+//        console.log("DOWNLOADS DATA", result);
+//        this.navNamesArray = Object.keys(result["data"]);
+//        this.fullDownloadableData = result["data"] ;
+//        if(this.utilsSvc.compareStrings(this.navigationChoice, "")){
+//          this.navigationChoice = this.navNamesArray[0];
+//        }
+//        if(!this.utilsSvc.compareStrings(this.fullDownloadableData[this.navigationChoice], "undefined")){
+//          result = this.fullDownloadableData[this.navigationChoice];
+//          this.loadDownloadsTable(result);
+//        }
+//        this.responseShow("good");
+//      }
+//      catch{
+//          this.responseShow("bad");
+//          console.log("Problem on reading downloads data from : ", this.pathToData);
+//        }
+//    },
+//     err =>{
+//       this.responseShow("bad");
+//       console.log("Problem on reading downloads data from : ", this.pathToData);
+//     }
+//    );
   }
 
 
@@ -143,7 +175,8 @@ export class DownloadsComponent implements OnInit {
           this.fileZipData = JSON.parse(result.toString());
           if(!this.utilsSvc.compareStrings(this.fileZipData, "undefined")){
             if( this.fileZipData['data'].includes("Error")){
-                console.log("File download failed : File size to big")
+              this.controlUtils.openDialog("Error: File download failed - File size to big", this.pathToData);
+                console.log("File download failed : File size to big");
             }
             else{
               let dataRaw = this.fileZipData["data"];
@@ -162,10 +195,12 @@ export class DownloadsComponent implements OnInit {
             }
           }
         } catch(err) {
+                 this.controlUtils.openDialog("Error: Problem while trying to download the file"+err, this.pathToData);
                  console.log("Problem while trying to download the file" , err);
               }
       },
       err =>{
+        this.controlUtils.openDialog("Error:Problem on reading downloads data from : "+ this.pathToData, this.pathToData);
         this.responseShow("bad");
         console.log("Problem on reading downloads data from : ", this.pathToData);
       });

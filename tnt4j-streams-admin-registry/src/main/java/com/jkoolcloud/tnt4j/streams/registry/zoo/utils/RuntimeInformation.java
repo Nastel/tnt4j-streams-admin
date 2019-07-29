@@ -191,8 +191,6 @@ public class RuntimeInformation {
 	}
 
 	public static String getMainConfigPath() {
-		String externalProcResponse = "";
-
 		String mainConfigPath = System.getProperty("mainCfg");
 
 		return mainConfigPath;

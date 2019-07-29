@@ -16,16 +16,14 @@
 
 package com.jkoolcloud.tnt4j.streams.admin.backend.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.net.URLConnection;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.ws.rs.NotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,26 +68,44 @@ public class HttpUtils {
 		return baos;
 	}
 
-	/**
-	 * Parse endpoints map.
-	 *
-	 * @param endpointStr
-	 *            the endpoint str
-	 * @return the map
-	 */
-	public static Map<String, String> parseEndpoints(String endpointStr) {
-		Map<String, String> result = new HashMap<>();
-		try {
-			result = Arrays.stream(endpointStr.split(";")).map(s -> s.split("=")).collect(Collectors.toMap(a -> a[0], // key
-					a -> a[1] // value
-			));
 
+	/**
+	 * Read the data from provided URL address without address status information
+	 * @param serviceLink
+	 * 			The provided URL address, to read data from
+	 * @return
+	 */
+	public static String readURLData(String serviceLink) {
+		String response = "";
+		LOG.info("Trying to read dataReading from {}", serviceLink);
+		try {
+			URL url = new URL(serviceLink);
+			URLConnection con = url.openConnection();
+			con.setConnectTimeout(5000);
+			con.setReadTimeout(5000);
+			InputStream in = con.getInputStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			while (true) {
+				String line;
+				if ((line = reader.readLine()) == null) {
+					reader.close();
+					break; }
+				line = line.replaceFirst("^,", "");
+				response = response + line;
+				response = response + "\n";
+			}
+		} catch (SocketTimeoutException e) {
+			LOG.error("The provided endpoint: "+ serviceLink + " took to long to respond ( > 5s )");
+			return "The provided endpoint took to long to respond ( > 5s )";
+		} catch (MalformedURLException e) {
+			LOG.error("The provided endpoint: "+ serviceLink + " returned an empty string MalformedURLException");
+			return "MalformedURLException";
 		} catch (Exception e) {
-			result.put(ClsConstants.KEY_ENDPOINT_PULL, endpointStr);
-			result.put(ClsConstants.KEY_ENDPOINT_SUBSCRIBE, endpointStr);
-			result.put(ClsConstants.KEY_ENDPOINT_PUSH, endpointStr);
+			LOG.error("The link provided " + serviceLink + " was wrong or can not be accessed at the moment");
+			throw new NotFoundException("client connection to " + serviceLink + " fail: no connection"+ e);
 		}
-		return result;
+
+		return response;
 	}
 
 }

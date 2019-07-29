@@ -115,7 +115,7 @@ public class RuntimeInfoWrapper {
 		return cpuInfoMap;
 	}
 
-	public static Map<String, Object> getDiscProperties() {
+	public static Map<String, Object> getDiskProperties() {
 		Map<String, Object> discInfo = new HashMap<>();
 
 		Long totalDiskSpace = RuntimeInformation.getSystemTotalDiskSpace();

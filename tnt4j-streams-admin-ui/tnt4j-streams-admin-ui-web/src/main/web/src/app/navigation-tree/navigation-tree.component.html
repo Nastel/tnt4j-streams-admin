@@ -1,7 +1,7 @@
 
-  <div fxLayout fxLayoutAlign="center center" class=" small-paddingTop extraSmall-marginTop">
+  <div class=" small-paddingTop extraSmall-marginTop" fxLayout fxLayoutAlign="center center">
       <mat-form-field   class="filterInputField" fxFlex="40%">
-          <input  matInput placeholder="Search" (keyup)="searchNodeTree($event.target.value)" type="text"  matTooltip="Search for nodes in tree">
+          <input  (keyup)="searchNodeTree($event.target.value)" matInput matTooltip="Search for nodes in tree" placeholder="Search"  type="text">
       </mat-form-field>
   </div>
   <div class="small-marginLeftRight">
@@ -76,7 +76,7 @@
                     </div>
                   </ng-template>
                   <ng-template #noSvg>
-                    {{this.utilsSvc.getNodePathEnd(node.item)}}
+                     {{this.utilsSvc.getNodePathEnd(node.item)}}
                   </ng-template>
               </a>
           </ng-template>
