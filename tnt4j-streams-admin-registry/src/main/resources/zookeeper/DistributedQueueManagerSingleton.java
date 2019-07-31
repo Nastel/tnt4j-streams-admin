@@ -1,4 +1,4 @@
-package com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper;
+package zookeeper;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.queue.SimpleDistributedQueue;

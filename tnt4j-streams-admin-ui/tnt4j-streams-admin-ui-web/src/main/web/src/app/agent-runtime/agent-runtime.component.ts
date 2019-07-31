@@ -27,22 +27,22 @@ import { ControlUtils } from "../utils/control.utils";
 export class AgentRuntimeComponent implements OnInit {
 
   /*Table for data from Clusters runtime info*/
-  @ViewChild('paginatorClusters', { static: false }) paginatorClusters: MatPaginator;
-  @ViewChild('sortClusters', { static: false }) sortClusters: MatSort;
+  @ViewChild('paginatorClusters') paginatorClusters: MatPaginator;
+  @ViewChild('sortClusters') sortClusters: MatSort;
   dataSourceClusters = new MatTableDataSource<any>();
   columnsToDisplayClusters = [];
 
 
   /*Table for data from Cluster runtime info*/
-  @ViewChild('paginatorCluster', { static: false }) paginatorCluster: MatPaginator;
-  @ViewChild('sortCluster', { static: false }) sortCluster: MatSort;
+  @ViewChild('paginatorCluster') paginatorCluster: MatPaginator;
+  @ViewChild('sortCluster') sortCluster: MatSort;
   dataSourceCluster = new MatTableDataSource<any>();
   columnsToDisplayCluster = [];
 
 
 /*Table for data from service*/
- @ViewChild('paginatorService', { static: false }) paginatorService: MatPaginator;
- @ViewChild('matServiceSort', { static: false }) sortService: MatSort;
+ @ViewChild('paginatorService') paginatorService: MatPaginator;
+ @ViewChild('matServiceSort') sortService: MatSort;
 
 /*Table for clusters and cluster view page*/
   healthyServices = [];
@@ -58,8 +58,8 @@ export class AgentRuntimeComponent implements OnInit {
   dataSourceService= new MatTableDataSource<any>();
 
 /*Table for data from agent runtime info*/
-  @ViewChild('paginatorRuntime', { static: false }) paginatorAgent: MatPaginator;
-  @ViewChild('matServiceAgentSort', { static: false }) sortAgentRuntime: MatSort;
+  @ViewChild('paginatorRuntime') paginatorAgent: MatPaginator;
+  @ViewChild('matServiceAgentSort') sortAgentRuntime: MatSort;
 
  displayedColumns = ['name', 'value'];
  dataSourceRuntime = new MatTableDataSource<any>();
@@ -130,7 +130,7 @@ export class AgentRuntimeComponent implements OnInit {
         this.agentRuntimeInfo = this.zooKeeperData["data"];
         this.prepareRuntimeData(this.agentRuntimeInfo);
      } catch (err){
-       this.controlUtils.openDialogWithHeader("A problem occurred while trying to load ZooKeeper node data", "Error", this.pathToData);
+       this.controlUtils.openDialogWithHeader("A problem occurred while trying to load ZooKeeper node data: "+this.pathToData, "Error", this.pathToData);
        this.responseShow("bad");
        console.log("Problem on default node while trying to prepare the showing of node data AGENT RUNTIME", err);
      }
@@ -152,27 +152,27 @@ export class AgentRuntimeComponent implements OnInit {
         },
         err =>{
            this.healthyServices[parentName+'/'+this.utilsSvc.getNodePathEnd(tempPath)] = false;
-           this.responseShow("bad");
-
-               });
+           this.responseShow("bad"); });
      }
    }
 
   checkStreamStatus(agentNodeName: string, streamName: string){
     let streamRegistryNode = this.configurationHandler.CONFIG["activeStreamRegistryNode"];
       let tempPath = agentNodeName+'/'+streamRegistryNode;
-      console.log(tempPath)
+      let healthyPath = streamName+'/'+this.utilsSvc.getNodePathEnd(agentNodeName);
       this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
           let result = JSON.parse(data.toString());
           if(Object.keys(result).length === 0){
-            this.healthyServices[streamName+'/'+this.utilsSvc.getNodePathEnd(agentNodeName)] = false;
+            this.healthyServices[healthyPath] = false;
           }
           else{
             for( let serviceName in result){
-              if(Object.keys(result[serviceName]).length !== 0){
-                  this.healthyServices[streamName+'/'+this.utilsSvc.getNodePathEnd(agentNodeName)] = true;
+              if(Object.keys(result[serviceName]).length !== 0 &&  this.healthyServices[healthyPath]){
+                  this.healthyServices[healthyPath] = true;
+                  console.log(this.healthyServices[healthyPath]);
               }else{
-                  this.healthyServices[streamName+'/'+this.utilsSvc.getNodePathEnd(agentNodeName)] = false;
+                  this.healthyServices[healthyPath] = false;
+                  console.log(this.healthyServices[healthyPath]);
               }
             }
           }
@@ -197,10 +197,10 @@ export class AgentRuntimeComponent implements OnInit {
             let tempServiceDataValue =  this.serviceDataForCluster(result[serviceName], pathToServiceNode,"StreamsDataForClusterPage");
             if(Object.keys(result[serviceName]).length !== 0 && result[serviceName].constructor === Object){
               this.prepareTableForClusterView(tempServiceDataValue, pathToServiceNode, parentName, true);
-              this.healthyServices[pathToServiceNode] = true;
+              this.healthyServices[parentName+"/"+serviceName] = true;
             } else{
               this.prepareTableForClusterView(tempServiceDataValue, pathToServiceNode, parentName, false);
-              this.healthyServices[pathToServiceNode] = false;
+              this.healthyServices[parentName+"/"+serviceName] = false;
             }
           }
           this.responseShow("good");
@@ -270,10 +270,47 @@ export class AgentRuntimeComponent implements OnInit {
       this.getTheServicesBaseData();
    }
 
+  prepareAgentPageView(){
+   let streamRegistryNode = this.configurationHandler.CONFIG["activeStreamRegistryNode"];
+      let tempPath = this.pathToData+'/'+streamRegistryNode;
+      let agentName = this.utilsSvc.getNodePathEnd(this.pathToData);
+      this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
+          let result = JSON.parse(data.toString());
+          if(Object.keys(result).length === 0 ){
+            this.responseShow("bad");
+            this.controlUtils.openDialogWithHeader("No data got from REST", "Error", this.pathToData)
+          }
+          else{
+            for( let serviceName in result){
+               this.serviceTableNeededData(result[serviceName], serviceName, "StreamsDataForAgentPage");
+               this.columnsToDisplay.push("control");
+               this.serviceTableLabels["control"]="Stream Control";
+               this.dataSourceService = new MatTableDataSource(this.tempServiceData);
+               if(Object.keys(result[serviceName]).length !== 0 && result[serviceName].constructor === Object){
+                 this.healthyServices[serviceName] = true;
+               } else{
+                 this.healthyServices[serviceName] = false;
+               }
+               console.log(   this.dataSourceService)
+               setTimeout(() => this.dataSourceService.paginator = this.paginatorService, 500);
+               setTimeout(() => this.dataSourceService.sort = this.sortService, 500);
+               this.responseShow("good");
+            }
+          }
+      },
+      err =>{
+           this.responseShow("bad");
+      });
+  }
+
 /* Getting the data about all the services for agent view base stream stats*/
  getTheServicesBaseData(){
    this.tempServiceData = [];
    try{
+   if( this.utilsSvc.compareStrings(this.streamDataShowChoice, "agent" )){
+      this.prepareAgentPageView();
+   }
+   console.log(this.pathToServiceData)
      for(let name in  this.pathToServiceData){
         this.data.getZooKeeperNodeData(this.pathToServiceData[name]).subscribe( data => {
           let result = data;
@@ -282,26 +319,12 @@ export class AgentRuntimeComponent implements OnInit {
           this.serviceBaseMetrics = result["data"];
           this.serviceConfiguration = result["config"];
           if(!this.utilsSvc.compareStrings( this.serviceConfiguration , "undefined")){
-            if( this.utilsSvc.compareStrings(this.serviceConfiguration["componentLoad"],'service')){
-              if(!this.utilsSvc.compareStrings(this.serviceBaseMetrics , "null")){
-                 console.log(this.pathToServiceData[name])
-                        console.log(result)
-                console.log("AGENT")
-                this.serviceTableNeededData(this.serviceBaseMetrics, name, "StreamsDataForAgentPage");
-                this.columnsToDisplay.push("control");
-                this.serviceTableLabels["control"]="Stream Control";
-                this.dataSourceService = new MatTableDataSource(this.tempServiceData);
-                console.log(   this.dataSourceService)
-                setTimeout(() => this.dataSourceService.paginator = this.paginatorService, 500);
-                setTimeout(() => this.dataSourceService.sort = this.sortService, 500);
-                 this.responseShow("good");
-              }
-            }
-            else if(this.utilsSvc.compareStrings(this.serviceConfiguration["componentLoad"],'agent')){
+
+            if(this.utilsSvc.compareStrings(this.serviceConfiguration["componentLoad"],'agent')){
               this.clusterViewData(name);
               setTimeout(() => this.dataSourceCluster.paginator = this.paginatorCluster, 500);
               setTimeout(() => this.dataSourceCluster.sort = this.sortCluster, 500);
-
+              this.responseShow("good");
             }
             else if(this.utilsSvc.compareStrings(this.serviceConfiguration["componentLoad"],'cluster')){
               this.prepareClusterViewTableData(result['childrenNodes'], name);
@@ -327,7 +350,7 @@ export class AgentRuntimeComponent implements OnInit {
     this.columnsToDisplay = [];
     let neededData = this.configurationHandler.CONFIG[neededDataConfig];
     let tempServiceInformation = [];
-    tempServiceInformation["description"] = this.serviceTableExpandableData(this.serviceBaseMetrics, name, neededData);
+    tempServiceInformation["description"] = this.serviceTableExpandableData(serviceData, name, neededData);
     tempServiceInformation["Stream"] = this.utilsSvc.getNodePathEnd(name);
     console.log(tempServiceInformation);
     this.columnsToDisplay.push("Stream");
@@ -469,10 +492,12 @@ export class AgentRuntimeComponent implements OnInit {
             agentInfo[key] = tempFormatAgent;
             tempAgentRuntimeInfo["value"]= agentInfo[key];
             value.push(tempAgentRuntimeInfo);
+            this.responseShow("good");
         }
         this.dataSourceRuntime = new MatTableDataSource(value);
       }
       catch(e){
+        this.responseShow("bad");
         console.log("Problem on preparing agent runtime info for table: ", e)
       }
   }

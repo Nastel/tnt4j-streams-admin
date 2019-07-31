@@ -14,7 +14,7 @@ import { TreeViewComponent } from '../tree-view/tree-view.component'
 })
 export class AgentLogsComponent implements OnInit {
 
-@ViewChild('scrollMeLog', { static: false })private myScrollContainerFakeNav: ElementRef;
+@ViewChild('scrollMeLog')private myScrollContainerFakeNav: ElementRef;
 
   /** Url address */
   pathToData : string;

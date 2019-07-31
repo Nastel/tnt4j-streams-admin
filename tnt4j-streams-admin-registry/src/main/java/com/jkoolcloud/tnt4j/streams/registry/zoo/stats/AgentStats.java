@@ -233,7 +233,7 @@ public class AgentStats {
 		return StaticObjectMapper.objectToString(box);
 	}
 
-	public static String getAllStatsAndMetricsJson() {
+	public static String getAllStreamsAndMetricsJson() {
 
 		String mainCfgPath = metadataProvider.getMainCfgPath();
 
@@ -247,7 +247,7 @@ public class AgentStats {
 
 		Set<String> streamNames = streamToClassMap.keySet();
 
-		Map<String, Map<String, Metric>> streamToMetricsMap = AgentStats.getAllStatsAndMetrics();
+		Map<String, Map<String, Metric>> streamToMetricsMap = AgentStats.getAllStreamsAndMetrics();
 
 		for (String stream : streamNames) {
 			if (!streamToMetricsMap.containsKey(stream)) {
@@ -258,7 +258,7 @@ public class AgentStats {
 		return StaticObjectMapper.objectToString(streamToMetricsMap);
 	}
 
-	private static Map<String, Map<String, Metric>> getAllStatsAndMetrics() {
+	private static Map<String, Map<String, Metric>> getAllStreamsAndMetrics() {
 
 		ThreadGroup threadGroup = JobUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
 

@@ -1,4 +1,4 @@
-package com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper;
+package zookeeper;
 
 import java.util.ArrayList;
 import java.util.List;

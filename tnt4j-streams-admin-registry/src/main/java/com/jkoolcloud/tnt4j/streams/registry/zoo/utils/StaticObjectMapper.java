@@ -22,6 +22,7 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jkoolcloud.tnt4j.core.OpLevel;
 
 /**
  * The type Static object mapper.
@@ -42,7 +43,7 @@ public class StaticObjectMapper {
 		try {
 			data = StaticObjectMapper.mapper.readValue(value, typeReference);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 		return data;
 	}
@@ -52,7 +53,7 @@ public class StaticObjectMapper {
 		try {
 			jsonStr = StaticObjectMapper.mapper.writeValueAsString(json);
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 		return jsonStr;
 	}

@@ -20,8 +20,8 @@ import { Zlib } from 'zlibt';
 })
 export class DownloadsComponent implements OnInit {
 
- @ViewChild('downloadsPaging', { static: false }) downloadsPaging: MatPaginator;
- @ViewChild('downloadsSorting', { static: false }) downloadsSorting: MatSort;
+ @ViewChild('downloadsPaging') downloadsPaging: MatPaginator;
+ @ViewChild('downloadsSorting') downloadsSorting: MatSort;
 
   dataSource = new MatTableDataSource<any>();
 

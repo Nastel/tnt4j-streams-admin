@@ -1,4 +1,4 @@
-package com.jkoolcloud.tnt4j.streams.registry.zoo.dto;
+package dto;
 
 import java.util.List;
 

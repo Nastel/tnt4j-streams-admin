@@ -8,8 +8,7 @@ public class StringUtils {
 
 	public static String substitutePlaceholders(String template, Map<String, Object> placeholderToValue) {
 		StringSubstitutor stringSubstitutor = new StringSubstitutor(placeholderToValue);
-		String resolved = stringSubstitutor.replace(template);
-		return resolved;
+		return stringSubstitutor.replace(template);
 	}
 
 }

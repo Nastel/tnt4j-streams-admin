@@ -108,6 +108,11 @@ public class IoUtils {
 		for (File file : files) {
 			JarInputStream jarInputStream = IoUtils.getJarInputStream(file);
 			Manifest manifest = jarInputStream.getManifest();
+
+			if (manifest == null) {
+				continue;
+			}
+
 			java.util.jar.Attributes attribute = manifest.getMainAttributes();
 
 			String name = attribute.getValue("Implementation-Title");

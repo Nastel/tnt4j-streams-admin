@@ -15,7 +15,7 @@ import { incompleteBlocks }  from '../incomplete-blocks/incomplete-blocks.compon
 export class BottomLogComponent implements OnInit, OnDestroy{
 
 
-  @ViewChild('scrollMe', { static: true })private myLogScroll: ElementRef;
+  @ViewChild('scrollMe')private myLogScroll: ElementRef;
 
  /** Url address */
   pathToData : string;

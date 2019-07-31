@@ -22,8 +22,8 @@ export class ServiceDataComponent implements OnInit {
  displayedColumns = ['name', 'value'];
  dataSourceServiceBaseStats = new MatTableDataSource<any>();
 
- @ViewChild('paginatorServiceBaseStat', { static: false }) paginatorServiceBaseData: MatPaginator;
- @ViewChild('matServiceBaseSort', { static: false }) sortServiceData: MatSort;
+ @ViewChild('paginatorServiceBaseStat') paginatorServiceBaseData: MatPaginator;
+ @ViewChild('matServiceBaseSort') sortServiceData: MatSort;
 
   /** Url address */
   pathToData : string;

@@ -36,6 +36,8 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.StreamsAgent;
+import com.jkoolcloud.tnt4j.streams.custom.dirStream.DirStreamingManager;
+import com.jkoolcloud.tnt4j.streams.custom.dirStream.StreamingJobLogger;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.CuratorUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.IoUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
@@ -45,8 +47,8 @@ import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
  */
 public class Init {
 
-	private void startJetty() {
-		Server server = new Server(8899);
+	private void startJetty(Properties properties) {
+		Server server = new Server(Integer.parseInt(properties.getProperty("jetty.port")));
 
 		ServletContextHandler servletHandler = new ServletContextHandler();
 
@@ -145,7 +147,28 @@ public class Init {
 			public void run() {
 				publishStreams(properties);
 			}
-		}, 1000, 1000, TimeUnit.MILLISECONDS);
+		}, 1000, 5000, TimeUnit.MILLISECONDS);
+	}
+
+	public void dirStreaming(String dirToMonitor) throws Exception {
+		String fwn = "*.xml"; // NON-NLS
+		DirStreamingManager dm = new DirStreamingManager(dirToMonitor, fwn);
+		dm.setTnt4jCfgFilePath(System.getProperty("tnt4j.config")); // NON-NLS
+		dm.addStreamingJobListener(new StreamingJobLogger());
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			@Override
+			public void run() {
+				System.out.println("JVM exiting!..."); // NON-NLS
+				synchronized (dm) {
+					dm.notify();
+				}
+				dm.stop();
+			}
+		}));
+		dm.start();
+		synchronized (dm) {
+			dm.wait();
+		}
 	}
 
 	public Init() {
@@ -161,11 +184,24 @@ public class Init {
 
 		Properties properties = IoUtils.getProperties(System.getProperty("streamsAdmin"));
 
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					dirStreaming(properties.getProperty("userRequestsPath"));
+				} catch (Exception e) {
+					LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+				}
+			}
+		});
+		thread.start();
+
 		createZkTree(properties);
 
 		setStreamPublisherDaemon(properties);
 
-		startJetty();
+		startJetty(properties);
 
 	}
 }

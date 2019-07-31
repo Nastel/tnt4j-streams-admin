@@ -16,7 +16,7 @@ import { TreeViewComponent } from '../tree-view/tree-view.component'
 export class ServerConfigurationFileComponent implements OnInit {
 
 
-@ViewChild('viewComponent', { static: false })private viewComponent: ElementRef;
+@ViewChild('viewComponent')private viewComponent: ElementRef;
 
   /** Url address */
   pathToData : string;
@@ -105,7 +105,7 @@ export class ServerConfigurationFileComponent implements OnInit {
      this.scrollToTop();
    }
 
-   @ViewChild('configuration', { static: false })private configFiles: ElementRef;
+   @ViewChild('configuration')private configFiles: ElementRef;
 
    scrollToTop(): void {
       try {

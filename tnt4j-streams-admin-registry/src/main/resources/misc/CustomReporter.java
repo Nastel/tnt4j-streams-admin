@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jkoolcloud.tnt4j.streams.registry.zoo.misc;
+package misc;
 
 import org.apache.curator.framework.CuratorFramework;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper;
+package zookeeper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

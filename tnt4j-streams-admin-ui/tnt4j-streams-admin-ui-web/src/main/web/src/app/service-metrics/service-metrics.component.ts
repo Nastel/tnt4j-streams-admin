@@ -18,8 +18,8 @@ import { TreeViewComponent } from '../tree-view/tree-view.component'
 export class ServiceMetricsComponent implements OnInit {
 
 
-  @ViewChild('paginatorRuntime', { static: false }) paginator: MatPaginator;
-  @ViewChild(MatSort, { static: false }) sortMetrics: MatSort;
+  @ViewChild('paginatorRuntime') paginator: MatPaginator;
+  @ViewChild(MatSort) sortMetrics: MatSort;
 
  displayedColumns = ['name', 'value', 'name1', 'value1'];
  dataSourceMetrics = new MatTableDataSource<any>();

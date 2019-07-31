@@ -1,4 +1,4 @@
-package com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper;
+package zookeeper;
 
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
@@ -8,7 +8,7 @@ public class PathCacheManager {
 	private PathChildrenCache pathChildrenCache;
 
 	public PathCacheManager(PathChildrenCache pathToTreeCache) {
-		this.pathChildrenCache = pathToTreeCache;
+		pathChildrenCache = pathToTreeCache;
 	}
 
 	public void addListenerToPath(PathChildrenCacheListener pathChildrenCacheListener) {

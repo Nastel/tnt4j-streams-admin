@@ -3,11 +3,13 @@ package com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.StreamsAgent;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.AgentStats;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.ClusterStats;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.StreamControls;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.StreamStats;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
 
 @Path("/")
 public class RestEndpoint {
@@ -76,10 +78,10 @@ public class RestEndpoint {
 	}
 
 	@GET
-	@Path("streamsAgent/streamsAndMetrics")
+	@Path("/streamsAgent/streamsAndMetrics")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String allStreamsAndMetrics() {
-		return AgentStats.getAllStatsAndMetricsJson();
+		return AgentStats.getAllStreamsAndMetricsJson();
 	}
 
 	@GET
@@ -136,8 +138,19 @@ public class RestEndpoint {
 	@GET
 	@Path("streamsAgent/{streamName}/replay")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String replay(@QueryParam("blocks") String blocks) {
-		throw new UnsupportedOperationException("Replay is still unsupported");
+	public String replay(@QueryParam("b") String blocks) {
+
+		String[] blocksArr = blocks.split(",");
+
+		for (String block : blocksArr) {
+			if (!block.matches("[0-9]+")) {
+				LoggerWrapper.addMessage(OpLevel.ERROR, String.format("Bad format: %s", blocks));
+				return "{ \"error\" : \" Wrong format\" }";
+			}
+		}
+
+		// StreamControls.processRequest(blocksArr);
+		return blocks;
 	}
 
 	@GET

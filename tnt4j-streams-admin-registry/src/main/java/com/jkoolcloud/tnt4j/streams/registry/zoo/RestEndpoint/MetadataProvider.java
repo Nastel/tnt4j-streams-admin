@@ -58,6 +58,7 @@ public class MetadataProvider {
 
 	public String getThreadDumpUiMetadata() {
 		return properties.getProperty("threadDumpMetadata");
+
 	}
 
 	public String getMetricsUiMetadata() {
@@ -94,5 +95,13 @@ public class MetadataProvider {
 
 	public String getRepositoryFullData(String streamName) {
 		return properties.getProperty(streamName + ".repositoryFullData");
+	}
+
+	public String getReplayTemplatePath() {
+		return properties.getProperty("replayTemplatePath");
+	}
+
+	public String getMonitoredFolder() {
+		return properties.getProperty("userRequestsPath");
 	}
 }

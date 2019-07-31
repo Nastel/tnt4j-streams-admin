@@ -81,7 +81,8 @@ public class ZookeeperAccessService {
        //zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/tnt4j-streams-activities.log");
         //zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth");
 		//zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/sampleConfigurations");
-        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/_streamsAndMetrics");
+		zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/_streamsAndMetrics");
+		//zooAccess.getServiceNodeInfoFromLinkForReplay("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream2/4441");
 
 		zooAccess.destroy();
 	}
@@ -150,6 +151,30 @@ public class ZookeeperAccessService {
 			LOG.error("Error", e);
 		}
 		return dataMap;
+	}
+
+	/**
+	 * Get the map dataReading ant format it using the method prom service dataReading
+	 *
+	 * @param dataMap
+	 *            The dataReading from ZooKeeper node inside Map
+	 * @return
+	 */
+	private static Map getMetricsWithFormattingStreams(Object dataMap, String serviceName) {
+		Map tempMap = null;
+		HashMap tempData = new HashMap();
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			String json = objectMapper.writeValueAsString(dataMap);
+			dataMap = objectMapper.readValue(json, HashMap.class);
+			tempData.put(serviceName, dataMap);
+			tempMap = ServiceData.parseJsonDataIntoSimpleFormatZooKeeper(tempData, serviceName);
+			LOG.info("Formatted metrics dataReading {}", tempMap);
+
+		} catch (Exception e) {
+			LOG.error("Problem while trying to parse metrics dataReading", e);
+		}
+		return tempMap;
 	}
 
 	/**
@@ -336,6 +361,47 @@ public class ZookeeperAccessService {
 	 *            The path got on request from front-end or API user to get the dataReading from ZooKeeper node
 	 * @return
 	 */
+	public HashMap getServiceNodeInfoFromLinkForReplay(String pathToData) {
+		String responseLink, responseData, pathToNode, blocksToReplay;
+		HashMap dataMap = new HashMap();
+		try {
+			pathToNode = prepareReplayLink(pathToData);// doChecksForSpecialNeedsNodes(pathToData);
+			blocksToReplay = getAddressEnding(pathToData);
+			responseLink = readNode(pathToNode) + blocksToReplay;
+			responseData = HttpUtils.readURLData(responseLink);
+			LOG.info("Response data {}", responseData);
+			dataMap = getResponseInJson(responseData);
+			dataMap.put("childrenNodes", getListOfChildNodes(SERVICES_REGISTRY_START_PARENT + pathToData));
+			dataMap.put("Response link", responseLink);
+
+		} catch (Exception e) {
+			LOG.error("Error on query for node information {}", pathToData);
+			LOG.error("Error", e);
+		}
+		LOG.debug("Response map for debuging {}", dataMap);
+		return dataMap;
+	}
+
+	private String prepareReplayLink(String data) {
+		String dataReplay ="";
+		String[] arrayUrl = data.split("/");
+		for (int i=0; i<arrayUrl.length-1; i++) {
+			if(!arrayUrl[i].equals("")) {
+				dataReplay = dataReplay+"/"+arrayUrl[i];
+			}
+		}
+		dataReplay =SERVICES_REGISTRY_START_PARENT +dataReplay+"/_replay";
+		return dataReplay;
+	}
+
+	/**
+	 * Method that finishes building the path to ZooKeeper node, reads the address from node, and returns the data from
+	 * the address inside a map object.
+	 *
+	 * @param pathToData
+	 *            The path got on request from front-end or API user to get the dataReading from ZooKeeper node
+	 * @return
+	 */
 	public HashMap getServiceNodeInfoFromLink(String pathToData) {
 		String responseLink, responseData;
 		HashMap dataMap = new HashMap();
@@ -346,7 +412,7 @@ public class ZookeeperAccessService {
 			dataMap = getResponseInJson(responseData);
 			if(getAddressEnding(pathToData).equals(ACTIVE_STREAMS_REGISTRY_NODE)){
 				for (Object serviceName : dataMap.keySet() ){
-					dataMap.put(serviceName, getMetricsWithFormatting(dataMap, serviceName.toString()));
+					dataMap.put(serviceName, getMetricsWithFormattingStreams(dataMap.get(serviceName), serviceName.toString()));
 				}
 			}else {
 				if (checkIfMetricsData(dataMap)) {

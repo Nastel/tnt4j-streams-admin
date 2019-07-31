@@ -21,8 +21,8 @@ export class ServiceRepositoryStatusComponent implements OnInit {
  displayedColumns = ['name', 'value'];
  dataSourceRepositoryData = new MatTableDataSource<any>();
 
- @ViewChild('matRepositoryData', { static: false }) sortRepositoryData: MatSort;
- @ViewChild('paginatorRepository', { static: false }) paginatorRepoData: MatPaginator;
+ @ViewChild('matRepositoryData') sortRepositoryData: MatSort;
+ @ViewChild('paginatorRepository') paginatorRepoData: MatPaginator;
 
   /** Url address */
   pathToData : string;

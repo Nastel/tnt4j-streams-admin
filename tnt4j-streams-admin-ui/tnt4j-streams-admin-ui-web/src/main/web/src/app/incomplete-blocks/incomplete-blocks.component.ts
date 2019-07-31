@@ -36,8 +36,8 @@ export class IncompleteBlocksComponent implements OnInit {
 /** Data table properties */
   displayedColumns: string[] = ['reason', 'activityName','startTime',  'count',  'control'];
   dataSource = new MatTableDataSource();
-  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
 /** incomplete blocks transaction properties */
   message = '';

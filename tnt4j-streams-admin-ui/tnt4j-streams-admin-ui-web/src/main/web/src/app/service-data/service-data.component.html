@@ -25,7 +25,7 @@
           <div class="small-marginLeftRight rounded-corners display-content">
               <div *ngIf="serviceControlList.includes('replay')"  class="display-inlineFlex ">
                 <mat-form-field (click)="onEvent($event)">
-                  <input matInput   matTooltip="Input item id to replay" type="number" placeholder="Item id" [(ngModel)]="blockNumber" />
+                  <input matInput   matTooltip="Input item id to replay" placeholder="Item id" [(ngModel)]="blockNumber" />
                 </mat-form-field>
                 <mat-icon  svgIcon="{{'replay'}}" class="background-svgColorChange" (click)="replayTheBlockFromInput(blockNumber)"></mat-icon>
               </div>

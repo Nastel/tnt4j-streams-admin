@@ -17,7 +17,7 @@ import { ControlUtils } from "../utils/control.utils";
 export class TreeViewComponent implements OnInit {
 
 
-@ViewChild('viewComponent', { static: true })private viewComponent: ElementRef;
+@ViewChild('viewComponent')private viewComponent: ElementRef;
 
   /** Url address */
   pathToData : string;
@@ -83,11 +83,13 @@ export class TreeViewComponent implements OnInit {
       }
     }
     catch(err) {
-       this.streamDataShowChoice = 'default';
-       if(!this.utilsSvc.compareStrings(this.zooKeeperData["dataReading"], "undefined")){
-       console.log(this.zooKeeperData["Response link"])
+      this.streamDataShowChoice = 'default';
+      console.log(this.zooKeeperData["dataReading"])
+      if(this.utilsSvc.compareStrings(this.zooKeeperData["dataReading"], "undefined") || this.utilsSvc.compareStrings(this.zooKeeperData["dataReading"], "") ){}
+      else{
+        console.log(this.zooKeeperData["Response link"])
         this.controlUtils.openDialogWithHeader(this.zooKeeperData["Response link"], this.zooKeeperData["dataReading"], this.pathToData);
-       }
+      }
        console.log("Node data not loaded correctly:", err);
        console.log("Most likely reasons:");
        console.log("* Bad ZooKeeper configuration - missing values");

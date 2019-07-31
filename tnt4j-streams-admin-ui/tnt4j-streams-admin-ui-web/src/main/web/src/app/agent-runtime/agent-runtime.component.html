@@ -135,7 +135,7 @@
                 <div class="small-marginLeftRight rounded-corners display-content">
                   <div *ngIf="serviceControlList[element.Stream].includes('replay')" class="display-inlineFlex">
                     <mat-form-field (click)="onEvent($event)">
-                      <input matInput matTooltip="Input item id to replay" type="number" placeholder="Item id"
+                      <input matInput matTooltip="Input item id to replay" placeholder="Item id"
                              [(ngModel)]="element.Stream_name" [name]="element.Stream"/>
                     </mat-form-field>
                     <mat-icon svgIcon="{{'replay'}}" class="background-svgColorChange" (click)="onEvent($event)"
@@ -192,7 +192,7 @@
         <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
         <mat-row *matRowDef="let element; columns: columnsToDisplay;"
                  (click)="expandedElement = expandedElement === element ? null : element"
-                 [ngStyle]="{'background-color': this.utilsSvc.getColorAgentListService(childrenParentNodes, element['Stream'])}"
+                 [ngStyle]="{'background-color': this.utilsSvc.getColorAgentListService(healthyServices, element['Stream'])}"
                  [class.expand-detail-row]="expandedElement === element">
         </mat-row>
         <mat-row *matRowDef="let row; columns: ['expandedDetail']" class="expand-detail-row"></mat-row>

@@ -92,7 +92,7 @@ public class ZookeeperRegistryEndpoint {
 			}
 			LOG.info("Path created from URL: {}", pathToNode.toString());
 			String value = mapper.writeValueAsString(
-					zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString()));
+					zookeeperAccessService.getServiceNodeInfoFromLinkForReplay(pathToNode.toString()));
 
 			return Response.status(200).entity(value).build();
 		} catch (Exception e) {

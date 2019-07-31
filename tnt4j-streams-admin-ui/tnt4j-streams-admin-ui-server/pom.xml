@@ -20,7 +20,7 @@
         <servlet.api.version>3.0.1</servlet.api.version>
         <logback.version>1.2.3</logback.version>
         <jackson.version>2.9.9</jackson.version>
-        <jboss.version>3.0.9.Final</jboss.version>
+        <jboss.resteasy.version>4.1.1.Final</jboss.resteasy.version>
         <guava.version>27.0.1-jre</guava.version>
         <jasypt.version>1.9.2</jasypt.version>
         <quartz.version>2.3.1</quartz.version>
@@ -195,24 +195,24 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-servlet-initializer</artifactId>
-            <version>${jboss.version}</version>
+            <version>${jboss.resteasy.version}</version>
         </dependency>
         <!-- JSON/POJO support -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jackson2-provider</artifactId>
-            <version>${jboss.version}</version>
+            <version>${jboss.resteasy.version}</version>
         </dependency>
         <!-- REST Client support -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>${jboss.version}</version>
+            <version>${jboss.resteasy.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-cdi</artifactId>
-            <version>${jboss.version}</version>
+            <version>${jboss.resteasy.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
