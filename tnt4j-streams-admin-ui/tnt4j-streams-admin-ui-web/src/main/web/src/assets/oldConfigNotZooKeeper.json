@@ -1,253 +1,331 @@
 {
-	"ExistingStreams": [
-		"eth" ,
-		"ethRepair",
-		"ethRepo",
-		
-		"btc",
-		"btcRepair",
-		"btcRepo",
-		
-		"bch",
-		"bchRepair",
-		"bchRepo"
-	],
-	"ExistingStreamsLinksGenerate": {
-		"eth": "stream-control", 
-		"ethRepair": "stream-control",
-		"ethRepo": "repository",
-		
-		"btc": "stream-control",
-		"btcRepair": "stream-control",
-		"btcRepo": "repository",
-		
-		"bch": "stream-control",
-		"bchRepair": "stream-control",
-		"bchRepo": "repository"
-	},
-	"aOuthTokens" : {
-		"eth":"Read@ETH.Mainnet",
-		"ethRepair":"Read@ETH.Mainnet",
-		"ethRepo":"Read@ETH.Mainnet",
-		
-		"btc":"Read@BTC.Testnet",
-		"btcRepair":"Read@BTC.Testnet",
-		"btcRepo":"Read@BTC.Testnet",
-		
-		"bch":"f0afc7ea-93ab-476e-9b5f-e4274baf06cb",
-		"bchRepair":"f0afc7ea-93ab-476e-9b5f-e4274baf06cb",
-		"bchRepo":"f0afc7ea-93ab-476e-9b5f-e4274baf06cb"
-	},
-	"StreamsIcon": {
-		"eth": "assets/icons/ethereum.svg",
-		"ethRepair": "assets/icons/ethereumRepair.svg",
-		"ethRepo": "assets/icons/ethereum.svg",
-		
-		"btc": "assets/icons/bitcoin.svg",
-		"btcRepair": "assets/icons/bitcoinRepair.svg",
-		"btcRepo": "assets/icons/bitcoin.svg",
-		
-		"bch": "assets/icons/bch.svg",
-		"bchRepair": "assets/icons/bitcoinCashRep.svg",
-		"bchRepo": "assets/icons/bch.svg",
-		
-		"mainPage": "assets/icons/mainPage5.svg"
-	},
-	"StreamsDataForAllPage": {
-		"LatestBlock" : {"Last block streamed": "N/A"},
-		"ping.jsp" : {	"Service responds": false },
-		"InfuraHealthCheck" : { "Block chain client responds" : false},
-		"BitcoinCashHealthCheck" : { "Block chain client responds" : false},
-		"BitcoinHealthCheck" : { "Block chain client responds" : false},
-		"JKoolHealthCheck": {	"Repository responds"  : false},
-		"BECHealthCheck" : {"Enhanced Client responds" : false},
-		"BitcoinCashMediatorHealthCheck" : { "Enhanced Client responds" : false},
-		"TransactionMeter" : { 
-			"m1_rate" : {"Tx/last min" : 0},
-			"m5_rate" : {"Tx/last 5 min" : 0},
-			"m15_rate" : {"Tx/last 15 min" : 0}},
-		"StreamActivityMeter" : { 
-			"m1_rate" : {"Actions/last min" : 0},
-			"m5_rate" : {"Actions/last 5 min" : 0}},
-		"outputTimer:com.jkoolcloud.tnt4j.streams.inputs.TNTInputStreamStatistics" : {
-		"mean_rate" : {"Output avg (msgs/sec)" : 0}},
-		"bytesStreamed" : {"Total bytes streamed" : 0 },
-		"skippedactivities" :{ "Skipped activities" : 0 },
-		"LatestBlockQueryTime" : {"Last block query time" : "N/A"},
-		"LatestBlockTime" :{"Last block stream time": "N/A"},
-		"StreamActivityTime" :{"Last action in streams time" : "N/A"},
-		"StreamsStartTime" :{"Service start time" : "N/A"}
-	},
-	"ReposDataForAllPage": {
-		"rowCount" :{"Total streams" : 0},
-		"last_msg_time" :{"Last received" : "N/A"},
-		"last_delivered_msg_time" : {"Last processed" : "N/A" },
-		
-		"last_drop_msg_time" :{"Last failure" : "N/A"},
-		"last_error_msg_time" : {"Last drop" : "N/A" },
-		
-		"SUMtotal_msg_count" :{"Total received" : 0},
-		"SUMtotal_delivered_msg_count" : {"Total Processed" : 0 },
-		"SUMtotal_drop_msg_count" :{"Total errors" : 0},
-		"SUMtotal_error_msg_count" : {"Total dropped" : 0 },
-		
-		"SUMlimiter_total_delay_count" : {"Delayed by limiter" : 0 },
-		"SUMlimiter_total_msg_count" :{"Processed by limiter" : 0},
-		"limiter_overage_policy" : {"Overage policy" : "N/A" },
-		
-		"SUMlimiter_bytes_per_sec" :{"Total bytes/sec" : 0},
-		"AVGlimiter_bytes_per_sec" :{"Avg bytes/sec per stream" : 0},
-		"SUMlimiter_msgs_per_sec" : {"Total msgs/sec" : 0 },
-		"AVGlimiter_msgs_per_sec" :{"Avg msgs/sec per stream" : 0}
-	},
-	"StreamsDataFormating": {
-		"Service responds": "responds",
-		
-		"LatestBlockQueryTime" : "time",
-		"LatestBlockTime": "time",
-		"StreamsStartTime" : "time",
-		"StreamActivityTime" : "time",
-		
-		"Last received" : "timeWords",
-		"Last processed" : "timeWords",
-		
-	
-		"Last block query time" : "time",
-		"Last block stream time": "time",
-		"Last action in streams time" : "time",
-		"Service start time" : "time",
-		"StartTime" : "time"
-	},
-	"serviceFakeNavigation": {
-		"base" : "Base Stats",
-		"meters" : "Stream Meters",
-		"timers" : "Stream Timers",
-		"thread" : "Threads info",
-		"incompleteBlocks" : "Incomplete Blocks",
-		"repo" : "Repository Data",
-		"conf" : "Stream Config",
-		"servLogs" : "Service Logs",
-		"err" : "Error logs"
-	},
-	"ComponentToIncludeList" : [
-		"base",
-		"incompleteBlocks",
-		"servLogs",
-		"err",
-		"conf",
-		"repo",
-		"thread",
-		"meters",
-		"timers",
-		"blockReplay"
-	],
-	"ComponentToIncludeListRepair" : [
-		"servLogs",
-		"base",
-		"repo",
-		"thread",
-		"meters",
-		"timers",
-		"err"
-		
-	],
-	"StreamsNeededComponentsChoice": {
-		"eth": "ComponentToIncludeList" ,
-		"ethRepair": "ComponentToIncludeListRepair" ,
-		
-		"btc": "ComponentToIncludeList" ,
-		"btcRepair": "ComponentToIncludeListRepair" ,
-		
-		"bch": "ComponentToIncludeList" ,
-		"bchRepair": "ComponentToIncludeListRepair" 
-	},
-	"NeededDataToGetJKoolIncompleteBlocks" : [
-		"ActivityName",
-		"EventCount",
-		"StartTime",
-		{"Properties('txCount')" :"txCount"},
-		"linkToBlock"
-	],
-	"NeededDataToGetJKoolIncompleteBlocksNoReceipt" : [
-		"Count(EventName)",
-		{"Properties('blockNumber')" : "blockNumber" },
-		"StartTime"
-	],
-	"JKoolCallConfig" : {
-		"IncompleteBlocks" :{
-		  "url":"https://jkool.jkoolcloud.com/jkool-service/jkql",
-		  "param_query":"?jk_query=Get%20activities%20fields%20eventCount%2C%20ActivityName%2C%20StartTime%2C%20map(%27txCount%27)%2C%20(map(%27txCount%27)-eventCount)%20as%20diff%2C%20map(%27blockNumber%27)%20where%20%27diff%27%20%3E%200",
-		  "time_interval" : "%20for%20last%20",
-		  "day_interval" : 2000,
-		  "2time_interval" : "%20days%20",
-		  "oder_by": "%20order%20by%20StartTime%20desc%20",
-		  "param_token":"&jk_token=",
-		  "param_max_rows":"&jk_maxrows=",
-		  "max_rows" : 100,
-		  "param_time_zone":"&jk_tz=GMT",
-		  "param_time_range":"&jk_date=last%2010%20years"
-		  },
-		"IncompleteBlocksNoReceipt" :{
-		  "url":"https://jkool.jkoolcloud.com/jkool-service/jkql",
-		  "param_query":"?jk_query=get%20tx%20fields%20starttime%2C%20count%28name%29%20where%20map%28%27numberOfLogs%27%29%20not%20exists%20group%20by%20map%28%27blockNumber%27%29%2C%20starttime",
-		  "oder_by": "%20order%20by%20map%28%27blockNumber%27%29%20desc",
-		  "param_token":"&jk_token=",
-		  "param_max_rows":"&jk_maxrows=",
-		  "max_rows" : 100,
-		  "param_time_zone":"&jk_tz=GMT",
-		  "param_time_range":"&jk_date=last%2010%20years"
-		  },
-		"RepositoryData" : {
-		  "url":"https://jkool.jkoolcloud.com/jkool-service/jkql",
-		  "param_query":"?jk_query=get%20active%20streams&",
-		  "param_token":"&jk_token=",
-		  "param_max_rows":"&jk_maxrows=",
-		  "max_rows" : 1,
-		  "param_time_zone":"&jk_tz=GMT",
-		  "param_time_range":"&jk_date=last%2010%20years"
-		}
-	},
-	"EndpointJKoolData" : { 
-		"IncompleteBlocks" : [
-			"//localhost:8080/streamsadminservices/health_services/",
-			"/incomplete"
-		],
-		"IncompleteBlocksNoReceipt" : [
-			"//localhost:8080/streamsadminservices/health_services/",
-			"/incompleteNoReceipt"
-		],
-		"RepositoryData" : [
-			"//localhost:8080/streamsadminservices/health_services/",
-			"/repository"
-		]
-	},
-	"EndpointAddressService" : "//localhost:8080/streamsadminservices/health_services/",
-	"EndpointAddressAllService" : "//localhost:8080/streamsadminservices/health_services/all",
-	
-	"EndpointLogData" : { 
-		"log" : [
-			"//localhost:8080/streamsadminservices/health_services/",
-			"/log"
-		], 
-		"errorLog" : [
-			"//localhost:8080/streamsadminservices/health_services/",
-			"/errLog"
-		]
-	},
-	
-	"EndpointStreamConfigData" : { 
-		"0" : "https://www.gocypher.com/eth_info/ethereumInfura.xml", 
-		"1" : "https://www.gocypher.com/eth_info/ethereumParsers.xml"
-	},
-	"StreamConfigurationZookeper" : "http://localhost:8080/streamsadminservices/registry/streams/services/config",
-	
-	"LazyLoadDataLines" : {
-		"log" : 50,
-		"logErr" : 200,
-		"bottomLog" : 200,
-		"bottomLogLoadIntervalMS" : 5000
-	},
-	
-	"threads" : "threads.jsp"
-		
+  "ExistingStreams": [
+    "eth",
+    "ethRepair",
+    "ethRepo",
+
+    "btc",
+    "btcRepair",
+    "btcRepo",
+
+    "bch",
+    "bchRepair",
+    "bchRepo"
+  ],
+  "ExistingStreamsLinksGenerate": {
+    "eth": "stream-control",
+    "ethRepair": "stream-control",
+    "ethRepo": "repository",
+
+    "btc": "stream-control",
+    "btcRepair": "stream-control",
+    "btcRepo": "repository",
+
+    "bch": "stream-control",
+    "bchRepair": "stream-control",
+    "bchRepo": "repository"
+  },
+  "aOuthTokens": {
+    "eth": "Read@ETH.Mainnet",
+    "ethRepair": "Read@ETH.Mainnet",
+    "ethRepo": "Read@ETH.Mainnet",
+
+    "btc": "Read@BTC.Testnet",
+    "btcRepair": "Read@BTC.Testnet",
+    "btcRepo": "Read@BTC.Testnet",
+
+    "bch": "f0afc7ea-93ab-476e-9b5f-e4274baf06cb",
+    "bchRepair": "f0afc7ea-93ab-476e-9b5f-e4274baf06cb",
+    "bchRepo": "f0afc7ea-93ab-476e-9b5f-e4274baf06cb"
+  },
+  "StreamsIcon": {
+    "eth": "assets/icons/ethereum.svg",
+    "ethRepair": "assets/icons/ethereumRepair.svg",
+    "ethRepo": "assets/icons/ethereum.svg",
+
+    "btc": "assets/icons/bitcoin.svg",
+    "btcRepair": "assets/icons/bitcoinRepair.svg",
+    "btcRepo": "assets/icons/bitcoin.svg",
+
+    "bch": "assets/icons/bch.svg",
+    "bchRepair": "assets/icons/bitcoinCashRep.svg",
+    "bchRepo": "assets/icons/bch.svg",
+
+    "mainPage": "assets/icons/mainPage5.svg"
+  },
+  "StreamsDataForAllPage": {
+    "LatestBlock": {
+      "Last block streamed": "N/A"
+    },
+    "ping.jsp": {
+      "Service responds": false
+    },
+    "InfuraHealthCheck": {
+      "Block chain client responds": false
+    },
+    "BitcoinCashHealthCheck": {
+      "Block chain client responds": false
+    },
+    "BitcoinHealthCheck": {
+      "Block chain client responds": false
+    },
+    "JKoolHealthCheck": {
+      "Repository responds": false
+    },
+    "BECHealthCheck": {
+      "Enhanced Client responds": false
+    },
+    "BitcoinCashMediatorHealthCheck": {
+      "Enhanced Client responds": false
+    },
+    "TransactionMeter": {
+      "m1_rate": {
+        "Tx/last min": 0
+      },
+      "m5_rate": {
+        "Tx/last 5 min": 0
+      },
+      "m15_rate": {
+        "Tx/last 15 min": 0
+      }
+    },
+    "StreamActivityMeter": {
+      "m1_rate": {
+        "Actions/last min": 0
+      },
+      "m5_rate": {
+        "Actions/last 5 min": 0
+      }
+    },
+    "outputTimer:com.jkoolcloud.tnt4j.streams.inputs.TNTInputStreamStatistics": {
+      "mean_rate": {
+        "Output avg (msgs/sec)": 0
+      }
+    },
+    "bytesStreamed": {
+      "Total bytes streamed": 0
+    },
+    "skippedactivities": {
+      "Skipped activities": 0
+    },
+    "LatestBlockQueryTime": {
+      "Last block query time": "N/A"
+    },
+    "LatestBlockTime": {
+      "Last block stream time": "N/A"
+    },
+    "StreamActivityTime": {
+      "Last action in streams time": "N/A"
+    },
+    "StreamsStartTime": {
+      "Service start time": "N/A"
+    }
+  },
+  "ReposDataForAllPage": {
+    "rowCount": {
+      "Total streams": 0
+    },
+    "last_msg_time": {
+      "Last received": "N/A"
+    },
+    "last_delivered_msg_time": {
+      "Last processed": "N/A"
+    },
+
+    "last_drop_msg_time": {
+      "Last failure": "N/A"
+    },
+    "last_error_msg_time": {
+      "Last drop": "N/A"
+    },
+
+    "SUMtotal_msg_count": {
+      "Total received": 0
+    },
+    "SUMtotal_delivered_msg_count": {
+      "Total Processed": 0
+    },
+    "SUMtotal_drop_msg_count": {
+      "Total errors": 0
+    },
+    "SUMtotal_error_msg_count": {
+      "Total dropped": 0
+    },
+
+    "SUMlimiter_total_delay_count": {
+      "Delayed by limiter": 0
+    },
+    "SUMlimiter_total_msg_count": {
+      "Processed by limiter": 0
+    },
+    "limiter_overage_policy": {
+      "Overage policy": "N/A"
+    },
+
+    "SUMlimiter_bytes_per_sec": {
+      "Total bytes/sec": 0
+    },
+    "AVGlimiter_bytes_per_sec": {
+      "Avg bytes/sec per stream": 0
+    },
+    "SUMlimiter_msgs_per_sec": {
+      "Total msgs/sec": 0
+    },
+    "AVGlimiter_msgs_per_sec": {
+      "Avg msgs/sec per stream": 0
+    }
+  },
+  "StreamsDataFormating": {
+    "Service responds": "responds",
+
+    "LatestBlockQueryTime": "time",
+    "LatestBlockTime": "time",
+    "StreamsStartTime": "time",
+    "StreamActivityTime": "time",
+
+    "Last received": "timeWords",
+    "Last processed": "timeWords",
+
+    "Last block query time": "time",
+    "Last block stream time": "time",
+    "Last action in streams time": "time",
+    "Service start time": "time",
+    "StartTime": "time"
+  },
+  "serviceFakeNavigation": {
+    "base": "Base Stats",
+    "meters": "Stream Meters",
+    "timers": "Stream Timers",
+    "thread": "Threads info",
+    "incompleteBlocks": "Incomplete Blocks",
+    "repo": "Repository Data",
+    "conf": "Stream Config",
+    "servLogs": "Service Logs",
+    "err": "Error logs"
+  },
+  "ComponentToIncludeList": [
+    "base",
+    "incompleteBlocks",
+    "servLogs",
+    "err",
+    "conf",
+    "repo",
+    "thread",
+    "meters",
+    "timers",
+    "blockReplay"
+  ],
+  "ComponentToIncludeListRepair": [
+    "servLogs",
+    "base",
+    "repo",
+    "thread",
+    "meters",
+    "timers",
+    "err"
+
+  ],
+  "StreamsNeededComponentsChoice": {
+    "eth": "ComponentToIncludeList",
+    "ethRepair": "ComponentToIncludeListRepair",
+
+    "btc": "ComponentToIncludeList",
+    "btcRepair": "ComponentToIncludeListRepair",
+
+    "bch": "ComponentToIncludeList",
+    "bchRepair": "ComponentToIncludeListRepair"
+  },
+  "NeededDataToGetJKoolIncompleteBlocks": [
+    "ActivityName",
+    "EventCount",
+    "StartTime",
+    {
+      "Properties('txCount')": "txCount"
+    },
+    "linkToBlock"
+  ],
+  "NeededDataToGetJKoolIncompleteBlocksNoReceipt": [
+    "Count(EventName)",
+    {
+      "Properties('blockNumber')": "blockNumber"
+    },
+    "StartTime"
+  ],
+  "JKoolCallConfig": {
+    "IncompleteBlocks": {
+      "url": "https://jkool.jkoolcloud.com/jkool-service/jkql",
+      "param_query": "?jk_query=Get%20activities%20fields%20eventCount%2C%20ActivityName%2C%20StartTime%2C%20map(%27txCount%27)%2C%20(map(%27txCount%27)-eventCount)%20as%20diff%2C%20map(%27blockNumber%27)%20where%20%27diff%27%20%3E%200",
+      "time_interval": "%20for%20last%20",
+      "day_interval": 2000,
+      "2time_interval": "%20days%20",
+      "oder_by": "%20order%20by%20StartTime%20desc%20",
+      "param_token": "&jk_token=",
+      "param_max_rows": "&jk_maxrows=",
+      "max_rows": 100,
+      "param_time_zone": "&jk_tz=GMT",
+      "param_time_range": "&jk_date=last%2010%20years"
+    },
+    "IncompleteBlocksNoReceipt": {
+      "url": "https://jkool.jkoolcloud.com/jkool-service/jkql",
+      "param_query": "?jk_query=get%20tx%20fields%20starttime%2C%20count%28name%29%20where%20map%28%27numberOfLogs%27%29%20not%20exists%20group%20by%20map%28%27blockNumber%27%29%2C%20starttime",
+      "oder_by": "%20order%20by%20map%28%27blockNumber%27%29%20desc",
+      "param_token": "&jk_token=",
+      "param_max_rows": "&jk_maxrows=",
+      "max_rows": 100,
+      "param_time_zone": "&jk_tz=GMT",
+      "param_time_range": "&jk_date=last%2010%20years"
+    },
+    "RepositoryData": {
+      "url": "https://jkool.jkoolcloud.com/jkool-service/jkql",
+      "param_query": "?jk_query=get%20active%20streams&",
+      "param_token": "&jk_token=",
+      "param_max_rows": "&jk_maxrows=",
+      "max_rows": 1,
+      "param_time_zone": "&jk_tz=GMT",
+      "param_time_range": "&jk_date=last%2010%20years"
+    }
+  },
+  "EndpointJKoolData": {
+    "IncompleteBlocks": [
+      "//localhost:8080/streamsadminservices/health_services/",
+      "/incomplete"
+    ],
+    "IncompleteBlocksNoReceipt": [
+      "//localhost:8080/streamsadminservices/health_services/",
+      "/incompleteNoReceipt"
+    ],
+    "RepositoryData": [
+      "//localhost:8080/streamsadminservices/health_services/",
+      "/repository"
+    ]
+  },
+  "EndpointAddressService": "//localhost:8080/streamsadminservices/health_services/",
+  "EndpointAddressAllService": "//localhost:8080/streamsadminservices/health_services/all",
+
+  "EndpointLogData": {
+    "log": [
+      "//localhost:8080/streamsadminservices/health_services/",
+      "/log"
+    ],
+    "errorLog": [
+      "//localhost:8080/streamsadminservices/health_services/",
+      "/errLog"
+    ]
+  },
+
+  "EndpointStreamConfigData": {
+    "0": "https://www.gocypher.com/eth_info/ethereumInfura.xml",
+    "1": "https://www.gocypher.com/eth_info/ethereumParsers.xml"
+  },
+  "StreamConfigurationZookeeper": "http://localhost:8080/streamsadminservices/registry/streams/services/config",
+
+  "LazyLoadDataLines": {
+    "log": 50,
+    "logErr": 200,
+    "bottomLog": 200,
+    "bottomLogLoadIntervalMS": 5000
+  },
+
+  "threads": "threads.jsp"
+
 }
