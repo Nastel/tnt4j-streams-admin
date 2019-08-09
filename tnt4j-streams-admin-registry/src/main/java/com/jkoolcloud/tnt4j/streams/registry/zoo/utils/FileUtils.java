@@ -21,9 +21,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 
-public class IoUtils {
+public class FileUtils {
 
 	public static JarInputStream getJarInputStream(File file) {
 		FileInputStream fileInputStream = null;
@@ -106,7 +106,7 @@ public class IoUtils {
 		Map<String, Object> searchResult = new HashMap<>();
 
 		for (File file : files) {
-			JarInputStream jarInputStream = IoUtils.getJarInputStream(file);
+			JarInputStream jarInputStream = FileUtils.getJarInputStream(file);
 			Manifest manifest = jarInputStream.getManifest();
 
 			if (manifest == null) {
@@ -125,37 +125,13 @@ public class IoUtils {
 		return searchResult;
 	}
 
-	/*
-	 * 
-	 * public static String extractPathFromRegistry(String line) {
-	 * 
-	 * String fileArgument = "-f:"; int start = line.indexOf(fileArgument);
-	 * 
-	 * return line.substring(start + fileArgument.length()); }
-	 * 
-	 * public static String executeExternalCommandAndReceiveOutput(String command) throws IOException {
-	 * 
-	 * Process process = Runtime.getRuntime().exec(command);
-	 * 
-	 * try { process.waitFor(); } catch (InterruptedException e) { e.printStackTrace(); }
-	 * 
-	 * InputStream inputStream = process.getInputStream();
-	 * 
-	 * BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-	 * 
-	 * StringBuilder execOutput = new StringBuilder();
-	 * 
-	 * String line; while ((line = bufferedReader.readLine()) != null) { execOutput.append(line); }
-	 * 
-	 * return execOutput.toString(); }
-	 */
-
 	public static Map<String, Object> FileNameAndContentToMap(File file, String filenameKey, String fileContentKey) {
 		String fileContent = null;
 		String fileName = file.getName();
 		try {
 
-			fileContent = FileUtils.readFile(file.getPath().trim(), Charset.defaultCharset());
+			fileContent = com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils.readFile(file.getPath().trim(),
+					Charset.defaultCharset());
 		} catch (IOException e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
@@ -169,7 +145,7 @@ public class IoUtils {
 	public static List<Map<String, Object>> getConfigs(String path) {
 
 		List<File> fileList = new ArrayList<>();
-		FileUtils.listf(path, fileList);
+		com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils.listf(path, fileList);
 
 		List<Map<String, Object>> list = new ArrayList<>();
 
@@ -193,7 +169,7 @@ public class IoUtils {
 			}
 			File file = new File(propertiesPath);
 			if (file.isFile() && !configProperty.toString().equals("mainCfg")) {
-				Map<String, Object> response = IoUtils.FileNameAndContentToMap(file, "name", "config");
+				Map<String, Object> response = FileUtils.FileNameAndContentToMap(file, "name", "config");
 				list.add(response);
 			}
 		}
@@ -203,7 +179,7 @@ public class IoUtils {
 	public static List<String> getAvailableFiles(String path) {
 		List<File> fileList = new ArrayList<>();
 
-		FileUtils.listf(path, fileList);
+		com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils.listf(path, fileList);
 
 		List<String> fileNames = fileList.stream().map(file -> file.getName()).collect(Collectors.toList());
 
@@ -223,7 +199,7 @@ public class IoUtils {
 	public static String findFile(String dir, String fileName) {
 		List<File> files = new ArrayList<>();
 
-		FileUtils.listf(dir, files);
+		com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils.listf(dir, files);
 
 		for (File file : files) {
 			if (file.getName().equals(fileName)) {
@@ -245,4 +221,37 @@ public class IoUtils {
 		return baos.toByteArray();
 	}
 
+	// Method tries to extract lib version from jar manifest.xml
+	public static Map<String, Object> getLibsVersions(String path, List<String> libNames) {
+		File[] files = listAllFiles(path);
+
+		Map<String, Object> streamsVersionsMap = getLibVersion(files, libNames);
+
+		return streamsVersionsMap;
+	}
+
+	/*
+	 *
+	 * public static String extractPathFromRegistry(String line) {
+	 *
+	 * String fileArgument = "-f:"; int start = line.indexOf(fileArgument);
+	 *
+	 * return line.substring(start + fileArgument.length()); }
+	 *
+	 * public static String executeExternalCommandAndReceiveOutput(String command) throws IOException {
+	 *
+	 * Process process = Runtime.getRuntime().exec(command);
+	 *
+	 * try { process.waitFor(); } catch (InterruptedException e) { e.printStackTrace(); }
+	 *
+	 * InputStream inputStream = process.getInputStream();
+	 *
+	 * BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+	 *
+	 * StringBuilder execOutput = new StringBuilder();
+	 *
+	 * String line; while ((line = bufferedReader.readLine()) != null) { execOutput.append(line); }
+	 *
+	 * return execOutput.toString(); }
+	 */
 }

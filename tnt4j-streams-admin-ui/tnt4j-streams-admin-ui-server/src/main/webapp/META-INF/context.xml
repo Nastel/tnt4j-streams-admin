@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context>
-    <Resource name="BeanManager"
-              auth="Container"
-              type="javax.enterprise.inject.spi.BeanManager"
-              factory="org.jboss.weld.resources.ManagerObjectFactory"/>
+<!--<Context>-->
+    <!--<Resource name="BeanManager"-->
+              <!--auth="Container"-->
+              <!--type="javax.enterprise.inject.spi.BeanManager"-->
+              <!--factory="org.jboss.weld.resources.ManagerObjectFactory"/>-->
+<!--</Context>-->
+<Context path="" reloadable="true">
+<Realm appName="StreamsAdminLogin" className="org.apache.catalina.realm.JAASRealm"
+       roleClassNames="com.jkoolcloud.tnt4j.streams.admin.backend.loginAuth.RolePrincipal"
+       userClassNames="com.jkoolcloud.tnt4j.streams.admin.backend.loginAuth.UserPrincipal"/>
 </Context>

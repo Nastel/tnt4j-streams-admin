@@ -27,30 +27,35 @@
         <div  *ngIf="utilsSvc.compareStrings(node.visible, 'true'); then markText; else noMarking"></div>
         <ng-template #markText>
             <a routerLink="{{node.item}}" class="navTree" >
-                <div *ngIf="iconsRegistered.includes(node.item); then includeSvg; else noSvg"></div>
+                <div *ngIf="iconsRegistered.includes(utilsSvc.getNodePathEnd(node.item)); then includeSvg; else zooKeeperSvg"></div>
               <ng-template #includeSvg>
-                <div>
-
-                  <mat-icon svgIcon="{{node.item}}" class="serviceIcon"></mat-icon>
+                <div  class="display-inlineFlex">
+                  {{utilsSvc.getNodePathEnd(node.item)}}
+                  <mat-icon svgIcon="{{utilsSvc.getNodePathEnd(node.item)}}" class="serviceIcon"></mat-icon>
                   <mark>{{this.utilsSvc.getNodePathEnd(node.item)}}</mark>
                 </div>
               </ng-template>
-              <ng-template #noSvg>
+              <ng-template #zooKeeperSvg>
+                <div  class="display-inlineFlex">
+                  <mat-icon svgIcon="{{node.item}}" class="serviceIcon"></mat-icon>
+                </div>
                 <mark>{{this.utilsSvc.getNodePathEnd(node.item)}}</mark>
               </ng-template>
             </a>
         </ng-template>
         <ng-template #noMarking>
             <a routerLink="{{node.item}}" class="navTree" >
-                <div *ngIf="iconsRegistered.includes(node.item); then includeSvg; else noSvg"></div>
+                <div *ngIf="iconsRegistered.includes(utilsSvc.getNodePathEnd(node.item)); then includeSvg; else zooKeeperSvg"></div>
                 <ng-template #includeSvg>
-                  <div>
-
-                    <mat-icon svgIcon="{{node.item}}" class="serviceIcon"></mat-icon>
+                  <div  class="display-inlineFlex">
+                    <mat-icon svgIcon="{{utilsSvc.getNodePathEnd(node.item)}}" class="serviceIcon"></mat-icon>
                     {{this.utilsSvc.getNodePathEnd(node.item)}}
                   </div>
                 </ng-template>
-                <ng-template #noSvg>
+                <ng-template #zooKeeperSvg>
+                  <div  class="display-inlineFlex">
+                   <mat-icon svgIcon="{{node.item}}" class="serviceIcon"></mat-icon>
+                  </div>
                   {{this.utilsSvc.getNodePathEnd(node.item)}}
                 </ng-template>
             </a>
@@ -67,30 +72,35 @@
           <div  *ngIf="utilsSvc.compareStrings(node.visible, 'true'); then markText; else noMarking"></div>
           <ng-template #noMarking>
               <a routerLink="{{node.item}}"  class="navTree wordBreak small-marginTopBottom">
-                  <div *ngIf="iconsRegistered.includes(node.item); then includeSvg; else noSvg"></div>
+                  <div *ngIf="iconsRegistered.includes(utilsSvc.getNodePathEnd(node.item)); then includeSvg; else zooKeeperSvg"></div>
                   <ng-template #includeSvg>
-                    <div>
-                      <mat-icon svgIcon="{{node.item}}" class="serviceIcon"></mat-icon>
+                    <div class="display-inlineFlex">
+                      <mat-icon svgIcon="{{utilsSvc.getNodePathEnd(node.item)}}" class="serviceIcon"></mat-icon>
                       {{this.utilsSvc.getNodePathEnd(node.item)}}
-
                     </div>
                   </ng-template>
-                  <ng-template #noSvg>
+                  <ng-template #zooKeeperSvg>
+                    <div  class="display-inlineFlex">
+                      <mat-icon svgIcon="{{node.item}}" class="serviceIcon"></mat-icon>
+                    </div>
                      {{this.utilsSvc.getNodePathEnd(node.item)}}
                   </ng-template>
               </a>
           </ng-template>
           <ng-template #markText>
               <a routerLink="{{node.item}}" class="navTree">
-                  <div *ngIf="iconsRegistered.includes(node.item); then includeSvg; else noSvg"></div>
+                  <div *ngIf="iconsRegistered.includes(utilsSvc.getNodePathEnd(node.item)); then includeSvg; else zooKeeperSvg"></div>
                   <ng-template #includeSvg>
-                    <div>
+                    <div  class="display-inlineFlex">
 
-                      <mat-icon svgIcon="{{node.item}}" class="serviceIcon"></mat-icon>
+                      <mat-icon svgIcon="{{utilsSvc.getNodePathEnd(node.item)}}" class="serviceIcon"></mat-icon>
                       <mark>{{this.utilsSvc.getNodePathEnd(node.item)}}</mark>
                     </div>
                   </ng-template>
-                  <ng-template #noSvg>
+                  <ng-template #zooKeeperSvg>
+                    <div  class="display-inlineFlex">
+                      <mat-icon svgIcon="{{node.item}}" class="serviceIcon"></mat-icon>
+                    </div>
                     <mark>{{this.utilsSvc.getNodePathEnd(node.item)}}</mark>
                   </ng-template>
               </a>

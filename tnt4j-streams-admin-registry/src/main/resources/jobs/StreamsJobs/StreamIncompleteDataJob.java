@@ -12,7 +12,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jkoolcloud.tnt4j.streams.inputs.StreamThread;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.Config;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.ConfigData;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.*;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.CuratorUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.ThreadUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.ZkTree;
 
 public class StreamIncompleteDataJob implements Job {
@@ -21,21 +25,21 @@ public class StreamIncompleteDataJob implements Job {
 
 		JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
-		ThreadGroup threadGroup = JobUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
+		ThreadGroup threadGroup = ThreadUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
 
 		if (threadGroup == null) {
 			return;
 		}
 
-		List<StreamThread> streamThreadList = JobUtils.getThreadsByClass(threadGroup, StreamThread.class);
+		List<StreamThread> streamThreadList = ThreadUtils.getThreadsByClass(threadGroup, StreamThread.class);
 
 		String agentPath = ZkTree.pathToAgent;
 
 		for (StreamThread streamThread : streamThreadList) {
 			String incompleteNodePath = agentPath + "/" + streamThread.getTarget().getName() + "/" + "incomplete";
-			Config config = JobUtils.createConfigObject(jobDataMap);
+			Config config = ThreadUtils.createConfigObject(jobDataMap);
 
-			Properties properties = IoUtils.getProperties(System.getProperty("zkTree"));
+			Properties properties = FileUtils.getProperties(System.getProperty("zkTree"));
 
 			String link = properties.getProperty(streamThread.getTarget().getName() + ".incomplete");
 
@@ -49,7 +53,7 @@ public class StreamIncompleteDataJob implements Job {
 			String json = null;
 
 			try {
-				json = StaticObjectMapper.mapper.writeValueAsString(configData);
+				json = JsonUtils.mapper.writeValueAsString(configData);
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}

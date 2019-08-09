@@ -53,7 +53,7 @@ public class PropertyData {
 	public static String getProperty(String key) throws IOException {
 		// LOG.info("the property key: | " + key +" |");
 
-		ResourceBundle rb = ResourceBundle.getBundle("serviceInfoLinksCfg");
+		ResourceBundle rb = ResourceBundle.getBundle(ClsConstants.BUNDLE_CONFIG_FILE_NAME);
 		String property;
 		InputStream inputStream;
 		String propFileName;
@@ -87,7 +87,7 @@ public class PropertyData {
 		}
 		if (property == null) {
 			LOG.error(
-					"The property provided has wrong value or was not declared correctly in the serviceInfoLinksCfg.properties file: "
+					"The property provided has wrong value or was not declared correctly in the streamsProperties.properties file: "
 							+ key);
 			throw new IllegalArgumentException(
 					MessageFormat.format("\"BAD REQUEST \"+ Missing value for key {0}!", key));
@@ -109,6 +109,41 @@ public class PropertyData {
 		return propertyData;
 	}
 
+
+	public static String getPathToConf() throws IOException {
+		ResourceBundle rb = ResourceBundle.getBundle(ClsConstants.BUNDLE_CONFIG_FILE_NAME);
+		InputStream inputStream;
+		String propFileName = "";
+
+		if (System.getenv(ClsConstants.TOMCAT_HOME_PROPERTY_PATH_NAME) == null) {
+			// For local config file
+			if (System.getProperty(ClsConstants.TOMCAT_HOME_PROPERTY_PATH_NAME) == null) {
+				propFileName = ClsConstants.TOMCAT_HOME_PROPERTY_PATH_NAME + File.separator
+					+ ClsConstants.CONFIG_FILE_PATH + File.separator + ClsConstants.SSL_CONFIG_PATH;
+			}
+			// For Unit testing
+			else {
+				propFileName = System.getProperty(ClsConstants.TOMCAT_HOME_PROPERTY_PATH_NAME) + File.separator
+						+ ClsConstants.CONFIG_FILE_PATH + File.separator + ClsConstants.SSL_CONFIG_PATH;
+				Properties prop = new Properties();
+				inputStream = new FileInputStream(propFileName);
+				prop.load(inputStream);
+				inputStream.close();
+			}
+		}
+		// For server config file
+		else {
+			propFileName = System.getenv(ClsConstants.TOMCAT_HOME_PROPERTY_PATH_NAME) + File.separator
+					+ ClsConstants.CONFIG_FILE_PATH + File.separator + ClsConstants.SSL_CONFIG_PATH;
+			Properties prop = new Properties();
+			inputStream = new FileInputStream(propFileName);
+			prop.load(inputStream);
+
+			inputStream.close();
+		}
+
+		return propFileName;
+	}
 
 
 }

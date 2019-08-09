@@ -10,8 +10,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.jkoolcloud.tnt4j.streams.inputs.StreamThread;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.misc.StreamManagerSingleton;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JobUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.StreamManagerSingleton;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.ThreadUtils;
 
 public class StreamLifeManager implements Job {
 
@@ -19,13 +19,13 @@ public class StreamLifeManager implements Job {
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
-		ThreadGroup threadGroup = JobUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
+		ThreadGroup threadGroup = ThreadUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
 
 		if (threadGroup == null) {
 			return;
 		}
 
-		List<StreamThread> streamThreadList = JobUtils.getThreadsByClass(threadGroup, StreamThread.class);
+		List<StreamThread> streamThreadList = ThreadUtils.getThreadsByClass(threadGroup, StreamThread.class);
 
 		List<String> activeStreams = new ArrayList<>();
 

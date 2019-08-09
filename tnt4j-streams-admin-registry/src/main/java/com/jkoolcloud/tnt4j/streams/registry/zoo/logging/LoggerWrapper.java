@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jkoolcloud.tnt4j.streams.registry.zoo.utils;
+package com.jkoolcloud.tnt4j.streams.registry.zoo.logging;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -73,7 +73,7 @@ public class LoggerWrapper {
 	}
 
 	public static void logStackTrace(OpLevel opLevel, Exception e) {
-		LoggerWrapper.addMessage(OpLevel.ERROR, getStatTrace(e));
+		LoggerWrapper.addMessage(opLevel, getStatTrace(e));
 	}
 
 }

@@ -35,12 +35,12 @@
               <div *ngIf="serviceControlList.includes('start') && utilsSvc.compareStrings(streamState, 'startStop')" class="display-inlineFlex">
                 <mat-icon  svgIcon="{{'start'}}" class="background-svgColorChange" (click)="startStopStream('start')"></mat-icon>
               </div>
-              <div *ngIf="serviceControlList.includes('pause') && utilsSvc.compareStrings(streamState, 'running')" class="display-inlineFlex">
-                <mat-icon  svgIcon="{{'pause'}}" class="background-svgColorChange" (click)="pauseResumeStream('pause')"></mat-icon>
-              </div>
-              <div *ngIf="serviceControlList.includes('resume') && utilsSvc.compareStrings(streamState, 'running')" class="display-inlineFlex">
-                <mat-icon  svgIcon="{{'start'}}" class="background-svgColorChange" (click)="pauseResumeStream('resume')"></mat-icon>
-              </div>
+              <!--<div *ngIf="serviceControlList.includes('pause') && utilsSvc.compareStrings(streamState, 'running')" class="display-inlineFlex">-->
+                <!--<mat-icon  svgIcon="{{'pause'}}" class="background-svgColorChange" (click)="pauseResumeStream('pause')"></mat-icon>-->
+              <!--</div>-->
+              <!--<div *ngIf="serviceControlList.includes('resume') && utilsSvc.compareStrings(streamState, 'running')" class="display-inlineFlex">-->
+                <!--<mat-icon  svgIcon="{{'start'}}" class="background-svgColorChange" (click)="pauseResumeStream('resume')"></mat-icon>-->
+              <!--</div>-->
           </div>
         </div>
       </div>

@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint.MetadataProvider;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.MetadataProvider;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.RuntimeInfo;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.RuntimeInfoWrapper;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StaticObjectMapper;
 
 public class AgentRuntimeUpdaterJob {
 
@@ -77,7 +77,7 @@ public class AgentRuntimeUpdaterJob {
 	public static String agentRuntime() {
 		MetadataProvider metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
 
-		Map<String, Object> uiMetadata = StaticObjectMapper.jsonToMap(metadataProvider.getStreamAgentUiMetadata(),
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getStreamAgentUiMetadata(),
 				new TypeReference<HashMap<String, Object>>() {
 				});
 
@@ -86,13 +86,13 @@ public class AgentRuntimeUpdaterJob {
 		box.put("config", uiMetadata);
 		box.put("data", AgentRuntimeUpdaterJob.getRuntime());
 
-		return StaticObjectMapper.objectToString(box);
+		return JsonUtils.objectToString(box);
 	}
 
 	public static String runtimeInformation() {
 		MetadataProvider metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
 
-		Map<String, Object> uiMetadata = StaticObjectMapper.jsonToMap(metadataProvider.getRuntimeUiMetadata(),
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getRuntimeUiMetadata(),
 				new TypeReference<HashMap<String, Object>>() {
 				});
 
@@ -101,7 +101,7 @@ public class AgentRuntimeUpdaterJob {
 		box.put("config", uiMetadata);
 		box.put("data", AgentRuntimeUpdaterJob.getRuntime());
 
-		return StaticObjectMapper.objectToString(box);
+		return JsonUtils.objectToString(box);
 	}
 
 }

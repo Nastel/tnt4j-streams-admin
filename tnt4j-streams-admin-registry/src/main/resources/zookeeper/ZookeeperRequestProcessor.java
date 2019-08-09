@@ -25,8 +25,8 @@ import java.util.concurrent.Executors;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.JsonRpcGeneric;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.IoUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
 
 /**
  * The type Zookeeper request processor.
@@ -62,7 +62,7 @@ public class ZookeeperRequestProcessor {
 	}
 
 	public void methodSelector(JsonRpcGeneric jsonRpcRequest) {
-		Properties properties = IoUtils.getProperties(System.getProperty("listeners"));
+		Properties properties = FileUtils.getProperties(System.getProperty("listeners"));
 
 		String method = properties.getProperty(jsonRpcRequest.getMethod());
 

@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint.MetadataProvider;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.IoUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StaticObjectMapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.MetadataProvider;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
 
 public class AgentConfigUpdaterJob {
 
@@ -43,14 +43,14 @@ public class AgentConfigUpdaterJob {
 
 		MetadataProvider metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
 
-		Map<String, Object> uiMetadata = StaticObjectMapper.jsonToMap(metadataProvider.getConfigUiMetadata(),
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getConfigUiMetadata(),
 				new TypeReference<HashMap<String, Object>>() {
 				});
 
 		String configsPath = metadataProvider.getStreamAdminCfgsPath();
 
-		List<Map<String, Object>> configs = IoUtils.getConfigs(configsPath);
-		List<Map<String, Object>> configs2 = IoUtils.getConfigFilesSystemProp();
+		List<Map<String, Object>> configs = FileUtils.getConfigs(configsPath);
+		List<Map<String, Object>> configs2 = FileUtils.getConfigFilesSystemProp();
 
 		Stream.of(configs, configs2).forEach(fullConfigurationsList::addAll);
 
@@ -59,6 +59,6 @@ public class AgentConfigUpdaterJob {
 		box.put("config", uiMetadata);
 		box.put("data", fullConfigurationsList);
 
-		return StaticObjectMapper.objectToString(box);
+		return JsonUtils.objectToString(box);
 	}
 }

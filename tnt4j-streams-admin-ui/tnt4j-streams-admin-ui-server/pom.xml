@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.jkoolcloud.tnt4j.streams.admin</groupId>
         <artifactId>tnt4j-streams-admin-ui</artifactId>
-        <version>1.9.0-SNAPSHOT</version>
+        <version>1.10.0-SNAPSHOT</version>
     </parent>
     <packaging>war</packaging>
 
@@ -21,7 +21,7 @@
         <logback.version>1.2.3</logback.version>
         <jackson.version>2.9.9.2</jackson.version>
         <jackson.jaxrs.version>2.9.9</jackson.jaxrs.version>
-        <jboss.resteasy.version>4.1.1.Final</jboss.resteasy.version>
+        <jboss.resteasy.version>4.2.0.Final</jboss.resteasy.version>
         <guava.version>27.0.1-jre</guava.version>
         <jasypt.version>1.9.2</jasypt.version>
         <quartz.version>2.3.1</quartz.version>

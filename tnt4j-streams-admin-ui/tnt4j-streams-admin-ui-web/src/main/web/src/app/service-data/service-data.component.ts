@@ -82,8 +82,8 @@ export class ServiceDataComponent implements OnInit {
       );
       this.serviceBaseData = this.provideFormattingForData(this.zooKeeperData);
       this.prepareServiceBaseData(this.zooKeeperData);
-      setTimeout(() => this.dataSourceServiceBaseStats.paginator = this.paginatorServiceBaseData);
-      setTimeout(() => this.dataSourceServiceBaseStats.sort = this.sortServiceData);
+      setTimeout(() => this.dataSourceServiceBaseStats.paginator = this.paginatorServiceBaseData, 1000);
+      setTimeout(() => this.dataSourceServiceBaseStats.sort = this.sortServiceData, 1000);
       this.responseShow("good")
     }
     catch (err){

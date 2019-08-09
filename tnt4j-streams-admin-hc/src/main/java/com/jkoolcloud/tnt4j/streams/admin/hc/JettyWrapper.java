@@ -65,7 +65,11 @@ public class JettyWrapper {
 	 * @throws Exception
 	 *             the exception
 	 */
-	public static void prepareJetty(int port, HealthCheckRegistry registry) throws Exception {
+	public static synchronized void prepareJetty(int port, HealthCheckRegistry registry) throws Exception {
+		if (server != null) {
+			return;
+		}
+
 		server = new Server();
 		ServerConnector connector = new ServerConnector(server);
 		connector.setPort(port);
@@ -112,7 +116,7 @@ public class JettyWrapper {
 	/**
 	 * Shutdown jetty.
 	 */
-	public static void shutdownJetty() {
+	public static synchronized void shutdownJetty() {
 		// if (zookeeperManager != null) {
 		// zookeeperManager.shutdownZookeeperManager();
 		// }

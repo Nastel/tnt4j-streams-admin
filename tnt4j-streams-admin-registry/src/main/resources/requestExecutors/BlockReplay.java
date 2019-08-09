@@ -15,21 +15,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.curator.framework.recipes.queue.SimpleDistributedQueue;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.IoUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StringUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.CuratorSingleton;
 import com.jkoolcloud.tnt4j.uuid.DefaultUUIDFactory;
 
 public class BlockReplay implements JsonRpcRequest<Map<String, Object>> {
 
-	private static AtomicBoolean hasMethodStarted;
-
-	static {
-		hasMethodStarted = new AtomicBoolean();
-		hasMethodStarted.set(false);
-	}
+	private static AtomicBoolean hasMethodStarted = new AtomicBoolean(false);
 
 	private static SimpleDistributedQueue simpleDistributedQueue;
 
@@ -44,7 +38,8 @@ public class BlockReplay implements JsonRpcRequest<Map<String, Object>> {
 	private String prepareTemplate(Map<String, Object> placeholderToValue, String templatePath) {
 		String template = null;
 		try {
-			template = FileUtils.readFile(templatePath, Charset.defaultCharset());
+			template = com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils.readFile(templatePath,
+					Charset.defaultCharset());
 		} catch (IOException e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
@@ -108,7 +103,7 @@ public class BlockReplay implements JsonRpcRequest<Map<String, Object>> {
 		simpleDistributedQueue = new SimpleDistributedQueue(
 				CuratorSingleton.getSynchronizedCurator().getCuratorFramework(), responsePath);
 
-		Properties properties = IoUtils.getProperties(System.getProperty("listeners"));
+		Properties properties = FileUtils.getProperties(System.getProperty("listeners"));
 
 		Map<String, Object> streamPlaceholderToValue = new HashMap<>();
 		streamPlaceholderToValue.put("blocks", blocks);

@@ -44,14 +44,15 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.utils.JsonRpc;
 @Singleton
 public class ZookeeperAccessService {
 	private static final Logger LOG = LoggerFactory.getLogger(ZookeeperAccessService.class);
-
+    public static  String AUTH_NODE_PATH;
 	private static String SERVICES_REGISTRY_START_NODE;
 	private static String SERVICES_REGISTRY_START_PARENT;
-	private static String SERVICE_DOWNLOAD_PATH;
     private static String ACTIVE_STREAMS_REGISTRY_NODE;
-
 	private static CuratorFramework client;
+	private static int AGENT_DEPTH;
+	private static String TOKEN_TYPE;
 
+	private static String SSL_FILE_CONF;
 	/**
 	 * The entry point of application.
 	 *
@@ -81,9 +82,14 @@ public class ZookeeperAccessService {
        //zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/tnt4j-streams-activities.log");
         //zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth");
 		//zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/sampleConfigurations");
-		zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/_streamsAndMetrics");
-		//zooAccess.getServiceNodeInfoFromLinkForReplay("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream2/4441");
+		//zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/_streamsAndMetrics");
+		//zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream2");
+		zooAccess.getServiceNodeInfoFromLinkForReplay("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream2/incomplete/4441");
+		//zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/sampleConfigurations");
+//		zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/file.txt");
 
+		//zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream2/_start");
+		//zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets");
 		zooAccess.destroy();
 	}
 
@@ -95,8 +101,17 @@ public class ZookeeperAccessService {
 		try {
 			SERVICES_REGISTRY_START_NODE = PropertyData.getProperty("serviceRegistryStartNode");
 			SERVICES_REGISTRY_START_PARENT = PropertyData.getProperty("serviceRegistryStartNodeParent");
-			SERVICE_DOWNLOAD_PATH = PropertyData.getProperty("pathToDownloadsNeeded");
             ACTIVE_STREAMS_REGISTRY_NODE = PropertyData.getProperty("activeStreamRegistry");
+            AUTH_NODE_PATH = PropertyData.getProperty("authorizationTokenNode");
+			AGENT_DEPTH = Integer.parseInt(PropertyData.getProperty("depthToAgentNode"));
+			TOKEN_TYPE = PropertyData.getProperty("tokenType");
+			SSL_FILE_CONF = PropertyData.getProperty("SslConfigFilePath");
+
+			System.setProperty("javax.net.ssl.trustStore",SSL_FILE_CONF);
+			System.setProperty("javax.net.ssl.trustStorePassword","27RZfaGhSR");
+
+			LOG.info("SSL cert file path: {}", SSL_FILE_CONF);
+			LOG.info("System properties: {}", System.getProperties());
 
 			String ZOOKEEPER_URL = PropertyData.getProperty("ZooKeeperAddress");
 			LOG.info("Connecting to Zookeeper at {}", ZOOKEEPER_URL);
@@ -119,7 +134,7 @@ public class ZookeeperAccessService {
 		try {
 			byte[] nodeLinkBytes = client.getData().watched().forPath(nodePath);
 			responseData = new String(nodeLinkBytes);
-			LOG.info("Response data: {}", responseData);
+			LOG.info("Node data: {}", responseData);
 		} catch (Exception e) {
 			LOG.error("Error on query for node information {}", nodePath);
 			LOG.error("Error", e);
@@ -230,7 +245,23 @@ public class ZookeeperAccessService {
 		}
 		return false;
 	}
-
+	/**
+	 * Checks if the provided path is a request to download a file.
+	 * @param pathToData
+	 * @param neededName
+	 * @return
+	 */
+	private static boolean checkIfNeededURLControls(String pathToData, String neededName) {
+		try {
+			String[] arrayUrl = pathToData.split("/");
+			if (arrayUrl[arrayUrl.length - 1].contains(neededName)) {
+				return true;
+			}
+		} catch (Exception e) {
+			LOG.error("There was a problem while checking if the call is from {} node {} ", pathToData, e);
+		}
+		return false;
+	}
     /**
      * Checks if the provided path is a request to download a file.
      * @param pathToData
@@ -296,7 +327,7 @@ public class ZookeeperAccessService {
 		int nodeLevel = 0;
 		Map<String, String> nodeMap = getZooKeeperTreeNodes(SERVICES_REGISTRY_START_NODE, myNodeMap, parentNode,
 				nodeLevel);
-		LOG.info("ZooKeeper Node Tree = {}", nodeMap);
+		LOG.info("ZooKeeper Node Tree Map = {}", nodeMap);
 		return nodeMap;
 	}
 
@@ -365,13 +396,19 @@ public class ZookeeperAccessService {
 		String responseLink, responseData, pathToNode, blocksToReplay;
 		HashMap dataMap = new HashMap();
 		try {
-			pathToNode = prepareReplayLink(pathToData);// doChecksForSpecialNeedsNodes(pathToData);
+			String[] nodeParts = pathToData.split("/");
+		    if(nodeParts.length>AGENT_DEPTH){
+				pathToNode =  RequestPath.getPathOfSpecifiedLength(pathToData, AGENT_DEPTH+1);
+			}else{
+				pathToNode =  RequestPath.getPathOfSpecifiedLength(pathToData, AGENT_DEPTH+1);
+			}
+			pathToNode = prepareReplayLink(pathToNode);// doChecksForSpecialNeedsNodes(pathToData);
 			blocksToReplay = getAddressEnding(pathToData);
 			responseLink = readNode(pathToNode) + blocksToReplay;
 			responseData = HttpUtils.readURLData(responseLink);
 			LOG.info("Response data {}", responseData);
 			dataMap = getResponseInJson(responseData);
-			dataMap.put("childrenNodes", getListOfChildNodes(SERVICES_REGISTRY_START_PARENT + pathToData));
+			dataMap.put("childrenNodes", getListOfChildNodes(pathToData));
 			dataMap.put("Response link", responseLink);
 
 		} catch (Exception e) {
@@ -382,6 +419,11 @@ public class ZookeeperAccessService {
 		return dataMap;
 	}
 
+	/**
+	 *  Method to
+	 * @param data
+	 * @return
+	 */
 	private String prepareReplayLink(String data) {
 		String dataReplay ="";
 		String[] arrayUrl = data.split("/");
@@ -403,72 +445,129 @@ public class ZookeeperAccessService {
 	 * @return
 	 */
 	public HashMap getServiceNodeInfoFromLink(String pathToData) {
+
 		String responseLink, responseData;
 		HashMap dataMap = new HashMap();
 		try {
-            responseLink = doChecksForSpecialNeedsNodes(pathToData);
-			responseData = HttpUtils.readURLData(responseLink);
-            LOG.info("Response data {}", responseData);
-			dataMap = getResponseInJson(responseData);
-			if(getAddressEnding(pathToData).equals(ACTIVE_STREAMS_REGISTRY_NODE)){
-				for (Object serviceName : dataMap.keySet() ){
-					dataMap.put(serviceName, getMetricsWithFormattingStreams(dataMap.get(serviceName), serviceName.toString()));
-				}
-			}else {
-				if (checkIfMetricsData(dataMap)) {
-					String serviceName = getStreamName(dataMap);
-					dataMap.put("data", getMetricsWithFormatting(dataMap, serviceName));
-				}
-
-				dataMap.put("childrenNodes", getListOfChildNodes(SERVICES_REGISTRY_START_PARENT + pathToData));
-				dataMap.put("Response link", responseLink);
+			String tempToken = getTheTokenFromZooKeeper(pathToData);
+            if(tempToken.length() > 2) {
+				tempToken =TOKEN_TYPE + " "+tempToken;
+				responseLink = doChecksForSpecialNeedsNodes(pathToData);
+				responseData = HttpUtils.readUrlAsStringWithToken(responseLink, true, tempToken);
+				dataMap = getResponseInJson(responseData);
+			}else{
+            	responseLink = SERVICES_REGISTRY_START_PARENT + pathToData;
+				String responseInfo = readNode(responseLink);
+				dataMap = getResponseInJson(responseInfo);
 			}
+			dataMap = formatIfMetricsData(dataMap, pathToData, responseLink);
 		} catch (Exception e) {
 			LOG.error("Error on query for node information {}", pathToData);
 			LOG.error("Error", e);
 		}
-        LOG.debug("Response map for debuging {}", dataMap);
+        LOG.info("Response map size: {}", dataMap.size());
 		return dataMap;
 	}
 
+	/**
+	 * Method to get the token data from specific node to add to call header
+	 * @param pathToData
+	 * @return
+	 */
+	public String getTheTokenFromZooKeeper(String pathToData){
+		pathToData = SERVICES_REGISTRY_START_PARENT + pathToData;
+		String[] nodeParts = pathToData.split("/");
+		if(nodeParts.length == AGENT_DEPTH){
+			String nodePath =  pathToData + "/" + AUTH_NODE_PATH;
+			return readNode(nodePath);
+		}
+		else if(nodeParts.length>AGENT_DEPTH){
+			String nodePath =  RequestPath.getPathOfSpecifiedLength(pathToData, AGENT_DEPTH+1) +  AUTH_NODE_PATH;
+			return readNode(nodePath);
+		}
+		else{
+			return "";
+		}
+	}
+
+	/**
+	 * Check if the data got is from metrics and if true format according to the method inside ServiceData class
+	 * @param dataMap
+	 * @param pathToData
+	 * @param responseLink
+	 * @return
+	 */
+	private HashMap formatIfMetricsData(HashMap dataMap, String pathToData, String responseLink){
+		HashMap tempMap = dataMap;
+		if(getAddressEnding(pathToData).equals(ACTIVE_STREAMS_REGISTRY_NODE)){
+			for (Object serviceName : dataMap.keySet() ){
+				tempMap.put(serviceName, getMetricsWithFormattingStreams(dataMap.get(serviceName), serviceName.toString()));
+			}
+		}else {
+			if (checkIfMetricsData(dataMap)) {
+				String serviceName = getStreamName(dataMap);
+				tempMap.put("data", getMetricsWithFormatting(dataMap, serviceName));
+			}
+			tempMap.put("childrenNodes", getListOfChildNodes(SERVICES_REGISTRY_START_PARENT + pathToData));
+			tempMap.put("Response link", responseLink);
+		}
+		//LOG.info("data from data [}", tempMap);
+		return tempMap;
+	}
+
+	/**
+	 * Check if simple node or request node, if request node then needs specific handling.
+	 * @param pathToData
+	 * @return
+	 */
 	private String doChecksForSpecialNeedsNodes(String pathToData){
 	    String responseLink = "";
         String tempPathToNode = SERVICES_REGISTRY_START_PARENT + pathToData;
         if (checkIfNeededURLDownload(pathToData, "downloadables")) {
-            tempPathToNode = RequestPath.getPathOfSpecifiedLength(tempPathToNode, 8) + SERVICE_DOWNLOAD_PATH;
-            responseLink = readNode(tempPathToNode);
-			responseLink = responseLink+ "/" + getAddressEnding(pathToData);
-        }//else if(getAddressEnding(pathToData).equals(ACTIVE_STREAMS_REGISTRY_NODE)){
+			tempPathToNode = RequestPath.getPathOfSpecifiedLength(tempPathToNode, 8);
+			tempPathToNode = tempPathToNode.substring(0, tempPathToNode.length()-1);
+			responseLink = readNode(tempPathToNode);
+			responseLink = responseLink + "/" + getAddressEnding(pathToData);
+		}
+//        }//else if(getAddressEnding(pathToData).equals(ACTIVE_STREAMS_REGISTRY_NODE)){
             //responseLink = readNode(tempPathToNode);
         else if (checkIfNeededURLDownload(pathToData, "replayBlock")){
 			responseLink = readNode(tempPathToNode);
-        }else  if (checkIfNeededURLDownload(pathToData, "stop")){
+        }else  if (checkIfNeededURLControls(pathToData, "_stop")){
 			responseLink = readNode(tempPathToNode);
-		}else  if (checkIfNeededURLDownload(pathToData, "start")){
+		}else  if (checkIfNeededURLControls(pathToData, "_start")){
 			responseLink = readNode(tempPathToNode);
-		}else  if (checkIfNeededURLDownload(pathToData, "pause")){
+		}else  if (checkIfNeededURLControls(pathToData, "_pause")){
 			responseLink = readNode(tempPathToNode);
-		}else  if (checkIfNeededURLDownload(pathToData, "resume")){
+		}else  if (checkIfNeededURLControls(pathToData, "_resume")){
 			responseLink = readNode(tempPathToNode);
 		}
         else {
             responseLink = readNode(tempPathToNode);
         }
-        LOG.info("Path to node full :{}", tempPathToNode);
-        LOG.info("Response link {}", responseLink);
+        LOG.info("Response link that makes the call to ZooKeeper REST {}", responseLink);
         return responseLink;
     }
 
-
+	/**
+	 * Returns the last element in string path
+	 * @param path
+	 * @return
+	 */
 	private String getAddressEnding(String path) {
 		String pathEnding = path.substring(path.lastIndexOf('/') + 1);
 		return pathEnding;
 	}
 
+	/**
+	 * Returns a list of children nodes to be added to teh main response map
+	 * @param parentPath
+	 * @return
+	 */
 	private List<String> getListOfChildNodes (String parentPath){
 		Collection<String> nodeNames = null;
 		List<String> neededNames = new ArrayList<>();
-		LOG.info("Trying to get the children node list from provided node parent : {}", parentPath);
+//		LOG.info("Trying to get the children node list from provided node parent : {}", parentPath);
 		ServiceDiscovery<String> serviceDiscovery = null;
 		try {
 
@@ -548,7 +647,7 @@ public class ZookeeperAccessService {
 //			paramMap.put("responsePath", tempPathToNode);
 //			sendRequestAndWaitForResponseData(tempPathToNode, "getThreadDump", paramMap, waitTime);
 //		} else if (checkIfNeededURLDownload(pathToData, "downloadables")) {
-//			String pathToResponseNode = RequestPath.getPathOfSpecifiedLength(tempPathToNode, 8) + SERVICE_DOWNLOAD_PATH;
+//			String pathToResponseNode = RequestPath.getPathOfSpecifiedLength(tempPathToNode, 8);
 //			String[] arrayUrl = pathToData.split("/");
 //			String fileName = arrayUrl[arrayUrl.length - 1];
 //			paramMap.put("responsePath", pathToResponseNode);

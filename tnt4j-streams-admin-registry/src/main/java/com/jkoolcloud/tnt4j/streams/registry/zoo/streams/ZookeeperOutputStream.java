@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper;
+package com.jkoolcloud.tnt4j.streams.registry.zoo.streams;
 
 import java.io.IOException;
 import java.io.OutputStream;

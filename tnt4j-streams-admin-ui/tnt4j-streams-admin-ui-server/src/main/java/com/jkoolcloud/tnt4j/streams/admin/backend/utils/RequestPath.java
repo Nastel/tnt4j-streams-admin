@@ -12,82 +12,142 @@ public class RequestPath {
 	public RequestPath() {
 	}
 
+	/**
+	 * Returns request node path from full path
+	 * @param pathToData
+	 * @return
+	 */
 	public static String getPathToRequestNode(String pathToData) {
 		String requestNodePath = "";
 		int count = 0;
-		String[] nodeParts = pathToData.split("/");
-		for (String partOfPath : nodeParts) {
-			count++;
-			if (count < 7) {
-				requestNodePath = requestNodePath + partOfPath + "/";
-			} else {
-				break;
+		try {
+			int AGENT_DEPTH = Integer.parseInt(PropertyData.getProperty("depthToAgentNode"));
+			String[] nodeParts = pathToData.split("/");
+			for (String partOfPath : nodeParts) {
+				count++;
+				if (count < AGENT_DEPTH+1) {
+					requestNodePath = requestNodePath + partOfPath + "/";
+				} else {
+					break;
+				}
 			}
+		}
+		catch (Exception e){
+			LOG.error("Problem on getting cluster name");
 		}
 		requestNodePath = requestNodePath + "requests";
 		LOG.info("Path to request node: {}", requestNodePath);
 		return requestNodePath;
 	}
 
+	/**
+	 * Returns response node path from full path
+	 * @param pathToData
+	 * @return
+	 */
 	public static String getPathToResponseNode(String pathToData) {
 		String responseNodePath = "";
 		int count = 0;
-		String[] nodeParts = pathToData.split("/");
-		for (String partOfPath : nodeParts) {
-			count++;
-			if (count < 7) {
-				responseNodePath = responseNodePath + partOfPath + "/";
-			} else {
-				break;
+		try {
+			int AGENT_DEPTH = Integer.parseInt(PropertyData.getProperty("depthToAgentNode"));
+			String[] nodeParts = pathToData.split("/");
+			for (String partOfPath : nodeParts) {
+				count++;
+				if (count < AGENT_DEPTH+1) {
+					responseNodePath = responseNodePath + partOfPath + "/";
+				} else {
+					break;
+				}
 			}
+		}
+		catch (Exception e){
+			LOG.error("Problem on getting cluster name");
 		}
 		responseNodePath = responseNodePath + "responses";
 		LOG.info("Path to response node: {}", responseNodePath);
 		return responseNodePath;
 	}
 
+	/**
+	 * Returns cluster node from full path
+	 * @param pathToData
+	 * @return
+	 */
 	public static String getClusterNameFromPath(String pathToData) {
 		String agentName = "";
-		int count = 0;
-		String[] nodeParts = pathToData.split("/");
-		for (String partOfPath : nodeParts) {
-			count++;
-			if (count == 5) {
-				agentName = partOfPath;
+		try {
+			int AGENT_DEPTH = Integer.parseInt(PropertyData.getProperty("depthToAgentNode"));
+			int count = 0;
+			String[] nodeParts = pathToData.split("/");
+			for (String partOfPath : nodeParts) {
+				count++;
+				if (count == AGENT_DEPTH-1) {
+					agentName = partOfPath;
+				}
 			}
+			LOG.info("Stream name: {}", agentName);
 		}
-		LOG.info("Cluster name: {}", agentName);
+		catch (Exception e){
+			LOG.error("Problem on getting cluster name");
+		}
 		return agentName;
 	}
 
+	/**
+	 * Returns agent node from full path
+	 * @param pathToData
+	 * @return
+	 */
 	public static String getAgentNameFromPath(String pathToData) {
 		String agentName = "";
-		int count = 0;
-		String[] nodeParts = pathToData.split("/");
-		for (String partOfPath : nodeParts) {
-			count++;
-			if (count == 6) {
-				agentName = partOfPath;
+		try {
+			int AGENT_DEPTH = Integer.parseInt(PropertyData.getProperty("depthToAgentNode"));
+			int count = 0;
+			String[] nodeParts = pathToData.split("/");
+			for (String partOfPath : nodeParts) {
+				count++;
+				if (count == AGENT_DEPTH) {
+					agentName = partOfPath;
+				}
 			}
+			LOG.info("Stream name: {}", agentName);
 		}
-		LOG.info("Agent name: {}", agentName);
+		catch (Exception e){
+			LOG.error("Problem on getting agent name");
+		}
 		return agentName;
 	}
 
+	/**
+	 * Returns stream node from full path
+	 * @param pathToData
+	 * @return
+	 */
 	public static String getStreamNameFromPath(String pathToData) {
-		String agentName = "";
-		int count = 0;
-		String[] nodeParts = pathToData.split("/");
-		for (String partOfPath : nodeParts) {
-			count++;
-			if (count == 7) {
-				agentName = partOfPath;
+		String streamName = "";
+		try {
+			int AGENT_DEPTH = Integer.parseInt(PropertyData.getProperty("depthToAgentNode"));
+			int count = 0;
+			String[] nodeParts = pathToData.split("/");
+			for (String partOfPath : nodeParts) {
+				count++;
+				if (count == AGENT_DEPTH+1) {
+					streamName = partOfPath;
+				}
 			}
+			LOG.info("Stream name: {}", streamName);
 		}
-		LOG.info("Stream name: {}", agentName);
-		return agentName;
+		catch (Exception e){
+			LOG.error("Problem on getting stream name");
+		}
+		return streamName;
 	}
 
+	/**
+	 * Returns specified part of path by number node from full path
+	 * @param pathToData
+	 * @return
+	 */
 	public static String getTheSpecifiedEndpointPart(String pathToData, int pathPartNumber) {
 		String agentName = "";
 		int count = 0;
@@ -102,6 +162,11 @@ public class RequestPath {
 		return agentName;
 	}
 
+	/**
+	 * Returns path of specified length
+	 * @param pathToData
+	 * @return
+	 */
 	public static String getPathOfSpecifiedLength(String pathToData, int pathPartNumber) {
 		String nodePath = "";
 		int count = 0;

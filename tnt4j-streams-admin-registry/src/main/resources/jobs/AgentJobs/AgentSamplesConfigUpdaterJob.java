@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint.MetadataProvider;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.IoUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StaticObjectMapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.MetadataProvider;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
 
 /**
  * The type Agent config updater job.
@@ -69,7 +69,7 @@ public class AgentSamplesConfigUpdaterJob {
 	public static String getSamples() {
 		MetadataProvider metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
 
-		Map<String, Object> uiMetadata = StaticObjectMapper.jsonToMap(metadataProvider.getSampleConfigsUiMetadata(),
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getSampleConfigsUiMetadata(),
 				new TypeReference<HashMap<String, Object>>() {
 				});
 
@@ -79,7 +79,7 @@ public class AgentSamplesConfigUpdaterJob {
 
 		List<String> parsersUriList = null;
 		try {
-			parsersUriList = IoUtils.getParsersList(mainConfigPath);
+			parsersUriList = FileUtils.getParsersList(mainConfigPath);
 		} catch (Exception e) {
 			parsersUriList = new ArrayList<>();
 		}
@@ -91,16 +91,16 @@ public class AgentSamplesConfigUpdaterJob {
 
 			File file = new File(pathToParser);
 
-			mapList.add(IoUtils.FileNameAndContentToMap(file, "name", "config"));
+			mapList.add(FileUtils.FileNameAndContentToMap(file, "name", "config"));
 		}
-		mapList.add(IoUtils.FileNameAndContentToMap(new File(mainConfigPath), "name", "config"));
+		mapList.add(FileUtils.FileNameAndContentToMap(new File(mainConfigPath), "name", "config"));
 
 		Map<String, Object> box = new HashMap<>();
 
 		box.put("config", uiMetadata);
 		box.put("data", mapList);
 
-		return StaticObjectMapper.objectToString(box);
+		return JsonUtils.objectToString(box);
 
 	}
 }

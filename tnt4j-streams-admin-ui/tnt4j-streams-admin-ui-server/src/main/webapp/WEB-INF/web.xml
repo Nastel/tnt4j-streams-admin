@@ -9,5 +9,31 @@
         <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
     </listener>
 
+    <!-- URL constraints -->
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Admin</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+            <role-name>staff</role-name>
+        </auth-constraint>
+        <user-data-constraint>
+            <!-- transport-guarantee can be CONFIDENTIAL, INTEGRAL, or NONE -->
+            <transport-guarantee>NONE</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+    <!-- What roles are allowed -->
+    <security-role>
+        <role-name>admin</role-name>
+        <role-name>staff</role-name>
+    </security-role>
+    <!-- Force login by form -->
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>Admin</realm-name>
+    </login-config>
+
 </web-app>
 

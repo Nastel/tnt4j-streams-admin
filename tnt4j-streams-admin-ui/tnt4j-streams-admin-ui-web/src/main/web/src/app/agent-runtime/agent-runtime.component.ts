@@ -82,7 +82,7 @@ export class AgentRuntimeComponent implements OnInit {
   /** Values for showing data loading properties */
   valueThatChangesOnDataLoad = false;
   valueThatChangesForSpinnerOnResponse = false;
-
+  streamRegistryNode = this.configurationHandler.CONFIG["activeStreamRegistryNode"];
   agentStatus = true;
 
   streamDataShowChoice: string;
@@ -101,6 +101,7 @@ export class AgentRuntimeComponent implements OnInit {
     this.pathToData = this.router.url.substring(1);
     this.loadZooKeeperNodeData(this.pathToData);
     this.iconsRegistered = this.utilsSvc.getAllRegisteredIonsList();
+    console.log( this.iconsRegistered)
   }
   ngAfterContentInit(){
       setTimeout(() => this.dataSourceRuntime.paginator = this.paginatorAgent);
@@ -157,8 +158,7 @@ export class AgentRuntimeComponent implements OnInit {
    }
 
   checkStreamStatus(agentNodeName: string, streamName: string){
-    let streamRegistryNode = this.configurationHandler.CONFIG["activeStreamRegistryNode"];
-      let tempPath = agentNodeName+'/'+streamRegistryNode;
+      let tempPath = agentNodeName+'/'+this.streamRegistryNode;
       let healthyPath = streamName+'/'+this.utilsSvc.getNodePathEnd(agentNodeName);
       this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
           let result = JSON.parse(data.toString());
@@ -167,7 +167,8 @@ export class AgentRuntimeComponent implements OnInit {
           }
           else{
             for( let serviceName in result){
-              if(Object.keys(result[serviceName]).length !== 0 &&  this.healthyServices[healthyPath]){
+            console.log(serviceName);
+              if(Object.keys(result[serviceName]).length !== 0 &&  !this.healthyServices[healthyPath]){
                   this.healthyServices[healthyPath] = true;
                   console.log(this.healthyServices[healthyPath]);
               }else{
@@ -183,8 +184,7 @@ export class AgentRuntimeComponent implements OnInit {
   }
 
   clusterViewData(parentName){
-    let streamRegistryNode = this.configurationHandler.CONFIG["activeStreamRegistryNode"];
-    let tempPath = this.router.url.substring(1)+'/'+parentName+'/'+streamRegistryNode;
+    let tempPath = this.router.url.substring(1)+'/'+parentName+'/'+this.streamRegistryNode;
     this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
         let result = JSON.parse(data.toString());
         if(Object.keys(result).length === 0 ){
@@ -271,8 +271,7 @@ export class AgentRuntimeComponent implements OnInit {
    }
 
   prepareAgentPageView(){
-   let streamRegistryNode = this.configurationHandler.CONFIG["activeStreamRegistryNode"];
-      let tempPath = this.pathToData+'/'+streamRegistryNode;
+      let tempPath = this.pathToData+'/'+this.streamRegistryNode;
       let agentName = this.utilsSvc.getNodePathEnd(this.pathToData);
       this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
           let result = JSON.parse(data.toString());
@@ -322,18 +321,23 @@ export class AgentRuntimeComponent implements OnInit {
 
             if(this.utilsSvc.compareStrings(this.serviceConfiguration["componentLoad"],'agent')){
               this.clusterViewData(name);
-              setTimeout(() => this.dataSourceCluster.paginator = this.paginatorCluster, 500);
-              setTimeout(() => this.dataSourceCluster.sort = this.sortCluster, 500);
+              setTimeout(() => this.dataSourceCluster.paginator = this.paginatorCluster, 1000);
+              setTimeout(() => this.dataSourceCluster.sort = this.sortCluster, 1000);
               this.responseShow("good");
             }
             else if(this.utilsSvc.compareStrings(this.serviceConfiguration["componentLoad"],'cluster')){
               this.prepareClusterViewTableData(result['childrenNodes'], name);
-              setTimeout(() => this.dataSourceClusters.paginator = this.paginatorClusters, 500);
-              setTimeout(() => this.dataSourceClusters.sort = this.sortClusters, 500);
+              setTimeout(() => this.dataSourceClusters.paginator = this.paginatorClusters, 1000);
+              setTimeout(() => this.dataSourceClusters.sort = this.sortClusters, 1000);
               this.responseShow("good");
             }
           }
           else{
+            if(this.utilsSvc.compareStrings(result["dataReading"], "undefined") || this.utilsSvc.compareStrings(result["dataReading"], "") ){}
+            else{
+              console.log(this.zooKeeperData["Response link"])
+              this.controlUtils.openDialogWithHeader(result["Response link"], result["dataReading"], this.pathToData);
+            }
             console.log("Problem occurred:  no configuration data loaded")
           }
         });
@@ -397,10 +401,9 @@ export class AgentRuntimeComponent implements OnInit {
  prepareTableForClustersView(agentsRuntimeData, parentsInChildrenData, parentName, agentPath){
      let value = [];
      try{
-       for(let clusterName of parentsInChildrenData){
+      let agentName =  this.utilsSvc.getNodePathEnd(agentPath);
           let tempClustersInfo = [];
-          if(agentPath.includes(clusterName)){
-          console.log(parentName)
+          if(agentPath.includes(parentName)){
             tempClustersInfo["ClusterName"]=parentName;
             //.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
             tempClustersInfo["AgentName"]=agentPath;
@@ -418,7 +421,6 @@ export class AgentRuntimeComponent implements OnInit {
               this.dataSourceClusters = new MatTableDataSource(this.dataSourceClusters.data);
             }
           }
-       }
      }
      catch(e){
        console.log("Problem on preparing clusters info for table: ", e)

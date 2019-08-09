@@ -1,4 +1,4 @@
-package com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint;
+package com.jkoolcloud.tnt4j.streams.registry.zoo.rest;
 
 import java.util.Collections;
 import java.util.HashSet;

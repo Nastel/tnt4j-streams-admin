@@ -22,9 +22,9 @@ import java.util.Map;
 import org.quartz.JobExecutionException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint.MetadataProvider;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.MetadataProvider;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.RuntimeInformation;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StaticObjectMapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.TimeUtils;
 
 /**
@@ -64,7 +64,7 @@ public class AgentThreadDumpUpdaterJob {
 
 		String currentTime = TimeUtils.getCurrentTimeStr();
 
-		Map<String, Object> uiMetadata = StaticObjectMapper.jsonToMap(metadataProvider.getThreadDumpUiMetadata(),
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getThreadDumpUiMetadata(),
 				new TypeReference<HashMap<String, Object>>() {
 				});
 
@@ -79,6 +79,6 @@ public class AgentThreadDumpUpdaterJob {
 		box.put("config", uiMetadata);
 		box.put("data", data);
 
-		return StaticObjectMapper.objectToString(box);
+		return JsonUtils.objectToString(box);
 	}
 }

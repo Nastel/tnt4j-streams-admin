@@ -1,27 +1,25 @@
-package com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
+package com.jkoolcloud.tnt4j.streams.registry.zoo.configuration;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.ValidatorUtils;
 
 public class MetadataProvider {
 
-	private Properties properties;
+	private PropertiesWrapper properties;
 
-	private void loadProperties(String path) {
-		properties = new Properties();
-		try (FileInputStream inputFileStream = new FileInputStream(path)) {
-			properties.load(inputFileStream);
-		} catch (IOException e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
-		}
-	}
+	private static final String ERROR_MESSAGE = "Path >>>%s<<< should point to a file/directory, check config";
 
 	public MetadataProvider(String path) {
-		loadProperties(path);
+		boolean isResourceAvailable = ValidatorUtils.isResourceAvailable(path, ValidatorUtils.Resource.FILE);
+
+		if (!isResourceAvailable) {
+			LoggerWrapper.addMessage(OpLevel.ERROR, String.format(ERROR_MESSAGE, path));
+			throw new IllegalArgumentException(String.format(ERROR_MESSAGE, path));
+		}
+
+		properties = new PropertiesWrapper(FileUtils.getProperties(path));
 	}
 
 	public String getConfigUiMetadata() {
@@ -58,7 +56,6 @@ public class MetadataProvider {
 
 	public String getThreadDumpUiMetadata() {
 		return properties.getProperty("threadDumpMetadata");
-
 	}
 
 	public String getMetricsUiMetadata() {

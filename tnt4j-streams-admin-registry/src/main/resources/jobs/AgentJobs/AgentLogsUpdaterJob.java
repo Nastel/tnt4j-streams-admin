@@ -23,8 +23,8 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.jkoolcloud.tnt4j.streams.admin.utils.log.StringBufferAppender;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint.MetadataProvider;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StaticObjectMapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.MetadataProvider;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
 
 /**
  * The type Agent logs updater job.
@@ -66,7 +66,7 @@ public class AgentLogsUpdaterJob {
 	public static String getLogs() {
 		MetadataProvider metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
 
-		Map<String, Object> uiMetadata = StaticObjectMapper.jsonToMap(metadataProvider.getLogsUiMetadata(),
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getLogsUiMetadata(),
 				new TypeReference<HashMap>() {
 				});
 
@@ -93,7 +93,7 @@ public class AgentLogsUpdaterJob {
 		box.put("config", uiMetadata);
 		box.put("data", logs);
 
-		return StaticObjectMapper.objectToString(box);
+		return JsonUtils.objectToString(box);
 
 	}
 }

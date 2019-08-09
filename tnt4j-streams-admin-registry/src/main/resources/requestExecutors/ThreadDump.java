@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.Config;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.ConfigData;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.*;
 
 public class ThreadDump implements JsonRpcRequest<Map<String, Object>> {
@@ -35,7 +36,7 @@ public class ThreadDump implements JsonRpcRequest<Map<String, Object>> {
 
 		String threadDumpResponse = null;
 		try {
-			threadDumpResponse = StaticObjectMapper.mapper.writeValueAsString(configData);
+			threadDumpResponse = JsonUtils.mapper.writeValueAsString(configData);
 		} catch (JsonProcessingException e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}

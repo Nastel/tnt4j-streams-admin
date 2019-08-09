@@ -1,13 +1,11 @@
 package com.jkoolcloud.tnt4j.streams.registry.zoo.utils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.jkoolcloud.tnt4j.streams.inputs.StreamThread;
 
-public class JobUtils {
+public class ThreadUtils {
 
 	public static ThreadGroup getThreadGroupByName(String group) {
 		ThreadGroup rootGroup = Thread.currentThread().getThreadGroup();
@@ -43,15 +41,6 @@ public class JobUtils {
 		}
 
 		return streamThreadList;
-	}
-
-	// Method tries to extract lib version from jar manifest.xml
-	public static Map<String, Object> getLibsVersions(String path, List<String> libNames) {
-		File[] files = IoUtils.listAllFiles(path);
-
-		Map<String, Object> streamsVersionsMap = IoUtils.getLibVersion(files, libNames);
-
-		return streamsVersionsMap;
 	}
 
 }

@@ -31,6 +31,7 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 
 /**
  * The type Curator utils.
@@ -40,7 +41,7 @@ public class CuratorUtils {
 	private static final CuratorFramework curatorFramework;
 
 	static {
-		Properties properties = IoUtils.getProperties(System.getProperty("streamsAdmin"));
+		Properties properties = FileUtils.getProperties(System.getProperty("streamsAdmin"));
 
 		String connectString = properties.getProperty("connectString");
 		int baseSleepTimeMs = Integer.parseInt(properties.getProperty("baseSleepTimeMs"));

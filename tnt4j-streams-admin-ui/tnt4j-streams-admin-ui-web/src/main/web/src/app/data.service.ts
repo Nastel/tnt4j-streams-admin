@@ -74,7 +74,7 @@ export class DataService {
          let urlChoice = this.configurationHandler.CONFIG["ZooKeeperDataCall"];
          for(let choice of urlChoice){
            if(choice.includes(controlChoice)){
-               serviceUrl = urlBuild + pathLink + choice;
+               serviceUrl = urlBuild + pathLink +  choice;
            }
          }
       }

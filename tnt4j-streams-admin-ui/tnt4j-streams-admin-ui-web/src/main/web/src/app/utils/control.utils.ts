@@ -40,7 +40,7 @@ export class ControlUtils
   }
 
   public stopStream(path : String){
-     path = path + "/" + "stop";
+     path = path + "/" + "_stop";
      this.data.sendControlsRequest(path, "stop").subscribe( data => {
           try{
             let result = data;
@@ -57,7 +57,7 @@ export class ControlUtils
   }
 
   public startStream(path : String){
-     path = path + "/" + "start";
+     path = path + "/" + "_start";
      this.data.sendControlsRequest(path, "start").subscribe( data => {
           try{
             let result = data;
@@ -75,7 +75,7 @@ export class ControlUtils
   }
 
   public pauseStream(path : String){
-     path = path + "/" + "pause";
+     path = path + "/" + "_pause";
      this.data.sendControlsRequest(path, "pause").subscribe( data => {
           try{
             let result = data;
@@ -93,7 +93,7 @@ export class ControlUtils
   }
 
   public resumeStream(path : String){
-     path = path + "/" + "resume";
+     path = path + "/" + "_resume";
      this.data.sendControlsRequest(path, "resume").subscribe( data => {
           try{
             let result = data;

@@ -59,6 +59,12 @@ export class AutoRouteGenerator
         });
       });
     });
+//    var promise2 = new Promise ((resolve, reject) => {
+//       this.getConfigurationsFromTree(this.zooKeeperTreeNodeList);
+//       if(this.iconsDataLoaded ){
+//          resolve(promise)
+//       }
+//    });
     promise.then(function(value) {
      // this.getConfigurationsFromTree( this.zooKeeperTreeNodeList );
       console.log(value);
@@ -70,10 +76,12 @@ export class AutoRouteGenerator
 
   getConfigurationsFromTree(listOfNodes){
    console.log( "Adding svg icons");
-    let elementsToExcludeFromTreeView = this.configurationHandler.CONFIG["excludeFromReadingOnTreeLoad"];
-    let nodesToExcludeArray = this.getArrayOfNodesToExclude(elementsToExcludeFromTreeView);
+    let streamsRegistryNode = this.configurationHandler.CONFIG["activeStreamRegistryNode"];
+  //  let nodesToExcludeArray = this.getArrayOfNodesToExclude(elementsToExcludeFromTreeView);
+
     for(let node in this.zooKeeperTreeNodeList){
-        if(!nodesToExcludeArray.includes(node)){
+        let tempNodeArray = node.split("/");
+        if(tempNodeArray.length < 8){
           this.getZooKeeperNodeData(node).subscribe( data => {
             try{
               this.zooKeeperData = data;
@@ -95,6 +103,21 @@ export class AutoRouteGenerator
              console.log(err);
           });
        }
+//        if(tempNodeArray.length == 6){
+//        node = node + "/" + streamsRegistryNode;
+//          this.getZooKeeperNodeData(node).subscribe( data => {
+//              this.zooKeeperData = data;
+//              let result =  JSON.parse(this.zooKeeperData.toString());
+//              for(let stream in result){
+//                console.log(stream);
+//              }
+//
+//          },
+//          err =>{
+//             console.log("Problem on reading node:", node, "data");
+//             console.log(err);
+//          });
+//       }
     }
     this.iconsDataLoaded = true;
   }

@@ -1,31 +1,44 @@
 {
 	"StreamsIcon": {
-    "mainPage": "assets/icons/headerLogo.svg",
-    "start": "assets/iconControls/start.svg",
-    "replay": "assets/iconControls/replay.svg",
-    "stop": "assets/iconControls/stop.svg",
-    "pause": "assets/iconControls/pause.svg",
-    "streamUp": "assets/iconControls/streamUp.svg",
-    "streamDown": "assets/iconControls/streamDown.svg",
-    "expandDown": "assets/iconControls/expandDown.svg",
-    "expandUp": "assets/iconControls/expandUp.svg",
-    "search": "assets/iconControls/search.svg",
-    "clearSearch": "assets/iconControls/clearSearch.svg",
-    "closeModal": "assets/iconControls/clearSearch.svg",
-    "scrollDown": "assets/iconControls/scrollDown.svg",
-    "loadMore": "assets/iconControls/loadMore.svg",
-    "download" : "assets/iconControls/download.svg",
-	"fullScreen" : "assets/iconControls/fullScreen.svg",
-	"update" : "assets/iconControls/update.svg"
-  },
-    "StreamsDataForAgentPage": {
+		"mainPage": "assets/icons/headerLogo.svg",
+		"start": "assets/iconControls/start.svg",
+		"replay": "assets/iconControls/replay.svg",
+		"stop": "assets/iconControls/stop.svg",
+		"pause": "assets/iconControls/pause.svg",
+		"streamUp": "assets/iconControls/streamUp.svg",
+		"streamDown": "assets/iconControls/streamDown.svg",
+		"expandDown": "assets/iconControls/expandDown.svg",
+		"expandUp": "assets/iconControls/expandUp.svg",
+		"search": "assets/iconControls/search.svg",
+		"clearSearch": "assets/iconControls/clearSearch.svg",
+		"closeModal": "assets/iconControls/clearSearch.svg",
+		"scrollDown": "assets/iconControls/scrollDown.svg",
+		"loadMore": "assets/iconControls/loadMore.svg",
+		"download" : "assets/iconControls/download.svg",
+		"fullScreen" : "assets/iconControls/fullScreen.svg",
+		"update" : "assets/iconControls/update.svg",
+		
+		"clusters" : "assets/iconControls/clustersNode.svg",
+		"metrics" : "assets/iconControls/metricsNode.svg",
+		"runtimeInformation" : "assets/iconControls/runtimeInformationNode.svg",
+		"incomplete" : "assets/iconControls/incompleteNode.svg",
+		"repository" : "assets/iconControls/repositoryNode.svg",
+		"logs" : "assets/iconControls/logsNode.svg",
+		"configurations" : "assets/iconControls/configurationsNode.svg",
+		"sampleConfigurations" : "assets/iconControls/sampleConfigurationsNode.svg",
+		"downloadables" : "assets/iconControls/downloadablesNode.svg",
+		"EthereumInfuraStream2" : "assets/iconControls/streamNode.svg",
+		"EthereumInfuraStream25" : "assets/iconControls/streamNode.svg",
+		"threadDump" : "assets/iconControls/threadDumpNode.svg"
+	},
+	"StreamsDataForAgentPage": {
 		"latest block" : {"Last Streamed": "N/A"},
 		"last block query time" : {"Last Query Time" : "N/A"},
 		"last block time" :{"Last Stream Time": "N/A"},
 		"StreamsStartTime" :{"Start Time" : "N/A"}
 	},
 	
-    "StreamsDataForClusterPage": {
+	"StreamsDataForClusterPage": {
 		"latest block" : {"last streamed": "N/A"},
 		"last block time" :{"last block stream time": "N/A"},
 		"StreamsStartTime" :{"Start Time" : "N/A"}
@@ -61,7 +74,6 @@
 		
 		"Last received" : "timeWords",
 		"Last processed" : "timeWords",
-		
 	
 		"last block query time" : "time",
 		"last block time": "time",
@@ -130,9 +142,9 @@
 	"BasePathHide" : "streams/v1",
 	"activeStreamRegistryNode" : "_streamsAndMetrics",
 			
-	"ZooKeeperTreeNodes" : "//localhost:8080/test/registry/nodeTree",
+	"ZooKeeperTreeNodes" : "//localhost:8080/authTest/registry/nodeTree",
 	
-	"ZooKeeperBasePath" : "//localhost:8080/test/registry",
+	"ZooKeeperBasePath" : "//localhost:8080/authTest/registry",
 	
 	"ZooKeeperDataCall" : [
 		"/list",
@@ -142,8 +154,6 @@
 		"/pause",
 		"/resume"
 	],
-	
-	
 	
 	"PageColorConfigs" : {
 		"goodResponseHeaderFooter" : "#489431",
@@ -155,9 +165,7 @@
 		"agentWindowStreamNoResponse" : "#DBB1BC",
 		"badResponse" : "#CD1F1F",
 		
-		
 		"componentsBackgroundColor" : "#E6E6E6"
 	}
-	
 	
 }

@@ -23,25 +23,26 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jkoolcloud.tnt4j.core.OpLevel;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 
 /**
  * The type Static object mapper.
  */
-public class StaticObjectMapper {
+public class JsonUtils {
 
 	/**
 	 * The constant mapper.
 	 */
-	public static final ObjectMapper mapper = new ObjectMapper();
+	private static final ObjectMapper mapper = new ObjectMapper();
 
-	private StaticObjectMapper() {
+	private JsonUtils() {
 
 	}
 
 	public static Map<String, Object> jsonToMap(String value, TypeReference typeReference) {
 		Map<String, Object> data = null;
 		try {
-			data = StaticObjectMapper.mapper.readValue(value, typeReference);
+			data = JsonUtils.mapper.readValue(value, typeReference);
 		} catch (IOException e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
@@ -51,7 +52,7 @@ public class StaticObjectMapper {
 	public static String objectToString(Object json) {
 		String jsonStr = null;
 		try {
-			jsonStr = StaticObjectMapper.mapper.writeValueAsString(json);
+			jsonStr = JsonUtils.mapper.writeValueAsString(json);
 		} catch (JsonProcessingException e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}

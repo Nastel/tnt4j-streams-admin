@@ -6,9 +6,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint.MetadataProvider;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.IoUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StaticObjectMapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.MetadataProvider;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
 
 public class AgentDownloadableUpdaterJob {
 
@@ -34,12 +34,12 @@ public class AgentDownloadableUpdaterJob {
 
 		MetadataProvider metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
 
-		Map<String, Object> uiMetadata = StaticObjectMapper.jsonToMap(metadataProvider.getDownloadablesUiMetadata(),
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getDownloadablesUiMetadata(),
 				new TypeReference<HashMap>() {
 				});
 		String logsPath = metadataProvider.getLogsPath();
 
-		List<String> logs = IoUtils.getAvailableFiles(logsPath);
+		List<String> logs = FileUtils.getAvailableFiles(logsPath);
 
 		Map<String, Object> downloadablesMap = new HashMap<>();
 
@@ -52,7 +52,7 @@ public class AgentDownloadableUpdaterJob {
 
 		String response = null;
 		try {
-			response = StaticObjectMapper.mapper.writeValueAsString(box);
+			response = JsonUtils.mapper.writeValueAsString(box);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}

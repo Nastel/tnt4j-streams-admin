@@ -10,11 +10,10 @@ import java.util.Properties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.CuratorUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.IoUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StaticObjectMapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
 
 public class getDownloadableContent implements JsonRpcRequest<Map<String, Object>> {
 
@@ -36,18 +35,19 @@ public class getDownloadableContent implements JsonRpcRequest<Map<String, Object
 		Properties properties = (Properties) params.get("properties");
 		String contentPath = properties.getProperty("contentPath");
 
-		String filePath = IoUtils.findFile(contentPath, fileToFetch);
+		String filePath = FileUtils.findFile(contentPath, fileToFetch);
 		String content = null;
 
 		try {
-			content = FileUtils.readFile(filePath, Charset.defaultCharset());
+			content = com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils.readFile(filePath,
+					Charset.defaultCharset());
 		} catch (IOException e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 
 		byte[] compressedBytes = null;
 		try {
-			compressedBytes = IoUtils.compress(content.getBytes(), fileToFetch + ".txt");
+			compressedBytes = FileUtils.compress(content.getBytes(), fileToFetch + ".txt");
 		} catch (IOException e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
@@ -60,7 +60,7 @@ public class getDownloadableContent implements JsonRpcRequest<Map<String, Object
 
 		String responseJson = null;
 		try {
-			responseJson = StaticObjectMapper.mapper.writeValueAsString(response);
+			responseJson = JsonUtils.mapper.writeValueAsString(response);
 		} catch (JsonProcessingException e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}

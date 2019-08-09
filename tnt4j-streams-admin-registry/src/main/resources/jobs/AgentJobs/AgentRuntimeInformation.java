@@ -10,10 +10,10 @@ import org.quartz.JobExecutionException;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.Config;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.ConfigData;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.RuntimeInfo;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.CuratorUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JobUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.RuntimeInfoWrapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.ThreadUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.CuratorSingleton;
 
 public class AgentRuntimeInformation implements Job {
@@ -23,8 +23,8 @@ public class AgentRuntimeInformation implements Job {
 
 		JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
-		String path = JobUtils.getPathToNode(jobDataMap);
-		Config config = JobUtils.createConfigObject(jobDataMap);
+		String path = ThreadUtils.getPathToNode(jobDataMap);
+		Config config = ThreadUtils.createConfigObject(jobDataMap);
 
 		Map<String, Object> osMap = RuntimeInfoWrapper.getOsProperties();
 		Map<String, Object> network = RuntimeInfoWrapper.getNetworkProperties();
@@ -52,7 +52,7 @@ public class AgentRuntimeInformation implements Job {
 
 		ConfigData configData = new ConfigData<>(config, runtimeInfo);
 
-		String response = JobUtils.toJson(configData);
+		String response = ThreadUtils.toJson(configData);
 
 		boolean wasSet = CuratorUtils.setData(path, response,
 				CuratorSingleton.getSynchronizedCurator().getCuratorFramework());

@@ -1,36 +1,23 @@
-package com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint;
+package com.jkoolcloud.tnt4j.streams.registry.zoo.rest;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.streams.StreamsAgent;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.authentication.Secure;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.AgentStats;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.ClusterStats;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.StreamControls;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.StreamStats;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
 
 @Path("/")
 public class RestEndpoint {
 
 	@GET
-	@Path("/clusters")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String clusters() {
-		return ClusterStats.getClusters();
-	}
-
-	@GET
-	@Path("/cluster")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String cluster() {
-		return ClusterStats.getCluster();
-	}
-
-	@GET
 	@Path("/streamsAgent")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String streamAgent() {
 		return AgentStats.agentRuntime();
 	}
@@ -38,6 +25,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/streamsAgent/configs")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String configs() {
 		return AgentStats.getConfigs();
 	}
@@ -45,6 +33,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/streamsAgent/logs")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String logs() {
 		return AgentStats.getLogs();
 	}
@@ -52,6 +41,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/streamsAgent/runtimeInformation")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String runtime() {
 		return AgentStats.runtimeInformation();
 	}
@@ -59,6 +49,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/streamsAgent/samples")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String samples() {
 		return AgentStats.getSamples();
 	}
@@ -66,6 +57,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/streamsAgent/threadDump")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String threadDump() {
 		return AgentStats.getThreadDump();
 	}
@@ -73,6 +65,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/streamsAgent/downloadables")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String downloadables() {
 		return AgentStats.getDownloadables();
 	}
@@ -80,6 +73,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/streamsAgent/streamsAndMetrics")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String allStreamsAndMetrics() {
 		return AgentStats.getAllStreamsAndMetricsJson();
 	}
@@ -87,6 +81,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/streamsAgent/{streamName}")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String stream(@PathParam("streamName") String streamName) {
 		return StreamStats.getMetricsForStreamNode(streamName);
 	}
@@ -94,6 +89,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/streamsAgent/downloadables/{file}")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String download(@PathParam("file") String fileName) {
 		return AgentStats.getFile(fileName);
 	}
@@ -101,6 +97,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/streamsAgent/{streamName}/incomplete")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String incomplete(@PathParam("streamName") String streamName) {
 		return StreamStats.getIncomplete(streamName);
 	}
@@ -108,6 +105,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/streamsAgent/{streamName}/metrics")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String metrics(@PathParam("streamName") String streamName) {
 		return StreamStats.getMetricsForNode(streamName);
 	}
@@ -115,6 +113,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/streamsAgent/{streamName}/repository")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String repository(@PathParam("streamName") String streamName) {
 		return StreamStats.getRepositoryStatus(streamName);
 	}
@@ -122,6 +121,7 @@ public class RestEndpoint {
 	@GET
 	@Path("streamsAgent/{streamName}/start")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String start(@PathParam("streamName") String streamName) {
 		StreamControls.restartStreams(streamName);
 		return "started";
@@ -130,6 +130,7 @@ public class RestEndpoint {
 	@GET
 	@Path("streamsAgent/{streamName}/stop")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String stop(@PathParam("streamName") String streamName) {
 		StreamControls.stopStream(streamName);
 		return "stopped";
@@ -138,6 +139,7 @@ public class RestEndpoint {
 	@GET
 	@Path("streamsAgent/{streamName}/replay")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Secure
 	public String replay(@QueryParam("b") String blocks) {
 
 		String[] blocksArr = blocks.split(",");
@@ -148,18 +150,16 @@ public class RestEndpoint {
 				return "{ \"error\" : \" Wrong format\" }";
 			}
 		}
+		StreamControls.processRequest(blocksArr);
 
-		// StreamControls.processRequest(blocksArr);
 		return blocks;
 	}
 
 	@GET
 	@Path("/ping")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String ping() {
-		System.out.println("Pong");
-		StreamsAgent.getRunningStreamNames();
-		return "pong";
+	@Secure
+	public Response ping() {
+		return Response.ok("pong", MediaType.TEXT_PLAIN).build();
 	}
-
 }

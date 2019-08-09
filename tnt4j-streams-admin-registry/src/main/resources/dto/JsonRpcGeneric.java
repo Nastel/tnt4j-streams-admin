@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jkoolcloud.tnt4j.streams.registry.zoo.dto;
+package dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

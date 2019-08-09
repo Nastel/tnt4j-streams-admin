@@ -25,7 +25,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 
 import com.codahale.metrics.jvm.ThreadDump;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.ZookeeperOutputStream;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.streams.ZookeeperOutputStream;
 import com.sun.management.OperatingSystemMXBean;
 
 /**

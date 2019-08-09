@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.jkoolcloud.tnt4j.streams.admin</groupId>
         <artifactId>tnt4j-streams-admin</artifactId>
-        <version>1.9.0-SNAPSHOT</version>
+        <version>1.10.0-SNAPSHOT</version>
     </parent>
     <packaging>jar</packaging>
 
@@ -21,7 +21,7 @@
         <quartz-jobs.version>2.3.1</quartz-jobs.version>
         <quartz.version>2.3.1</quartz.version>
         <jetty.version>9.4.19.v20190610</jetty.version>
-        <jboss.resteasy.version>4.1.1.Final</jboss.resteasy.version>
+        <jboss.resteasy.version>4.2.0.Final</jboss.resteasy.version>
     </properties>
 
     <build>

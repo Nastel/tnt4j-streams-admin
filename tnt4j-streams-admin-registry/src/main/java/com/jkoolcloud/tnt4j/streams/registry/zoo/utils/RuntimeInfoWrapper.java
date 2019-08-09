@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 
 public class RuntimeInfoWrapper {
 
@@ -13,7 +14,7 @@ public class RuntimeInfoWrapper {
 
 		Map<String, Object> streamToClassMap = null;
 		try {
-			streamToClassMap = IoUtils.getStreamsAndClasses(RuntimeInformation.getMainConfigPath());
+			streamToClassMap = FileUtils.getStreamsAndClasses(RuntimeInformation.getMainConfigPath());
 		} catch (Exception e) {
 			LoggerWrapper.addMessage(OpLevel.ERROR,
 					String.format("Failed to extract classes from stream config err msg: %s", e.getMessage()));
@@ -132,7 +133,7 @@ public class RuntimeInfoWrapper {
 	public static Map<String, Object> getVersionsProperties() {
 		Map<String, Object> versions = new HashMap<>();
 
-		Map<String, Object> streamVersionsMap = JobUtils.getLibsVersions(System.getProperty("libraries"),
+		Map<String, Object> streamVersionsMap = FileUtils.getLibsVersions(System.getProperty("libraries"),
 				Arrays.asList("tnt4j", "tnt4j-streams-core", "jesl"));
 
 		String javaVersion = RuntimeInformation.getJavaVersion();

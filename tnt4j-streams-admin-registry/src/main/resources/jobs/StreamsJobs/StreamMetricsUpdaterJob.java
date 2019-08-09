@@ -14,9 +14,9 @@ import com.jkoolcloud.tnt4j.streams.inputs.StreamThread;
 import com.jkoolcloud.tnt4j.streams.inputs.TNTInputStreamStatistics;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.Config;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.ConfigData;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.CuratorUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JobUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.LoggerWrapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.ThreadUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.zookeeper.ZkTree;
 
 public class StreamMetricsUpdaterJob implements Job {
@@ -26,13 +26,13 @@ public class StreamMetricsUpdaterJob implements Job {
 
 		JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 
-		ThreadGroup threadGroup = JobUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
+		ThreadGroup threadGroup = ThreadUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
 
 		if (threadGroup == null) {
 			return;
 		}
 
-		List<StreamThread> streamThreadList = JobUtils.getThreadsByClass(threadGroup, StreamThread.class);
+		List<StreamThread> streamThreadList = ThreadUtils.getThreadsByClass(threadGroup, StreamThread.class);
 
 		String agentPath = ZkTree.pathToAgent;
 
@@ -40,9 +40,9 @@ public class StreamMetricsUpdaterJob implements Job {
 			String metricsPath = agentPath + "/" + streamThread.getTarget().getName() + "/" + "metrics";
 			MetricRegistry streamStatistics = TNTInputStreamStatistics.getMetrics(streamThread.getTarget());
 			Map<String, Metric> metricRegistry = streamStatistics.getMetrics();
-			Config config = JobUtils.createConfigObject(jobDataMap);
+			Config config = ThreadUtils.createConfigObject(jobDataMap);
 			ConfigData<Map<String, Metric>> configData = new ConfigData<>(config, metricRegistry);
-			String json = JobUtils.toJson(configData);
+			String json = ThreadUtils.toJson(configData);
 
 			boolean wasSet = CuratorUtils.setData(metricsPath, json);
 

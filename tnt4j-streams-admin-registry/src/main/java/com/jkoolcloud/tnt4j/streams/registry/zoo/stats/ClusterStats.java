@@ -4,20 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint.MetadataProvider;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StaticObjectMapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.MetadataProvider;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
 
 public class ClusterStats {
 
-	private static final MetadataProvider metadataProvider;
-
-	static {
-		metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
-	}
+	private static final MetadataProvider metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
 
 	public static String getClusters() {
 
-		Map<String, Object> uiMetadata = StaticObjectMapper.jsonToMap(metadataProvider.getClustersUiMetadata(),
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getClustersUiMetadata(),
 				new TypeReference<HashMap<String, Object>>() {
 				});
 
@@ -25,12 +21,12 @@ public class ClusterStats {
 
 		box.put("config", uiMetadata);
 
-		return StaticObjectMapper.objectToString(box);
+		return JsonUtils.objectToString(box);
 
 	}
 
 	public static String getCluster() {
-		Map<String, Object> uiMetadata = StaticObjectMapper.jsonToMap(metadataProvider.getClusterUiMetadata(),
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getClusterUiMetadata(),
 				new TypeReference<HashMap<String, Object>>() {
 				});
 
@@ -38,7 +34,7 @@ public class ClusterStats {
 
 		box.put("config", uiMetadata);
 
-		return StaticObjectMapper.objectToString(box);
+		return JsonUtils.objectToString(box);
 	}
 
 }

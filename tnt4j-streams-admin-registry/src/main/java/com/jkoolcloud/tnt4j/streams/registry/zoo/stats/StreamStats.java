@@ -9,17 +9,13 @@ import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.jkoolcloud.tnt4j.streams.inputs.StreamThread;
 import com.jkoolcloud.tnt4j.streams.inputs.TNTInputStreamStatistics;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.RestEndpoint.MetadataProvider;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JobUtils;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StaticObjectMapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.MetadataProvider;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.ThreadUtils;
 
 public class StreamStats {
 
-	private static final MetadataProvider metadataProvider;
-
-	static {
-		metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
-	}
+	private static final MetadataProvider metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
 
 	public static String getRepositoryStatus(String streamName) {
 		return metadataProvider.getRepositoryFullData(streamName);
@@ -31,13 +27,13 @@ public class StreamStats {
 
 	private static Map<String, Metric> getMetrics(String streamName) {
 
-		ThreadGroup threadGroup = JobUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
+		ThreadGroup threadGroup = ThreadUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
 
 		if (threadGroup == null) {
 			return null;
 		}
 
-		List<StreamThread> streamThreadList = JobUtils.getThreadsByClass(threadGroup, StreamThread.class);
+		List<StreamThread> streamThreadList = ThreadUtils.getThreadsByClass(threadGroup, StreamThread.class);
 
 		for (StreamThread streamThread : streamThreadList) {
 
@@ -54,7 +50,7 @@ public class StreamStats {
 	}
 
 	public static String getMetricsForNode(String streamName) {
-		Map<String, Object> uiMetadata = StaticObjectMapper.jsonToMap(metadataProvider.getMetricsUiMetadata(),
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getMetricsUiMetadata(),
 				new TypeReference<HashMap<String, Object>>() {
 				});
 
@@ -65,11 +61,11 @@ public class StreamStats {
 		box.put("config", uiMetadata);
 		box.put("data", metricRegistry);
 
-		return StaticObjectMapper.objectToString(box);
+		return JsonUtils.objectToString(box);
 	}
 
 	public static String getMetricsForStreamNode(String streamName) {
-		Map<String, Object> uiMetadata = StaticObjectMapper.jsonToMap(metadataProvider.getStreamUiMetadata(),
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getStreamUiMetadata(),
 				new TypeReference<HashMap<String, Object>>() {
 				});
 
@@ -80,7 +76,7 @@ public class StreamStats {
 		box.put("config", uiMetadata);
 		box.put("data", metricRegistry);
 
-		return StaticObjectMapper.objectToString(box);
+		return JsonUtils.objectToString(box);
 	}
 
 }

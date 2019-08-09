@@ -66,7 +66,15 @@ public class ClsConstants {
 	/**
 	 * The constant CONFIG_FILE_NAME.
 	 */
-	public static final String CONFIG_FILE_NAME = "serviceInfoLinksCfg.properties";
+	public static final String CONFIG_FILE_NAME = "streamsProperties.properties";
+	/**
+	 * The constant BUNDLE_CONFIG_FILE_NAME.
+	 */
+	public static final String BUNDLE_CONFIG_FILE_NAME = "streamsProperties";
+	/**
+	 * The constant SSL_CONFIG_PATH.
+	 */
+	public static final String SSL_CONFIG_PATH = "streamsAdmin.jks";
 
 	/**
 	 * The constant KEY_ENDPOINT_PULL.
