@@ -1,23 +1,46 @@
 {
 	"StreamsIcon": {
 		"mainPage": "assets/icons/headerLogo.svg",
+		
 		"start": "assets/iconControls/start.svg",
 		"replay": "assets/iconControls/replay.svg",
 		"stop": "assets/iconControls/stop.svg",
 		"pause": "assets/iconControls/pause.svg",
+		
 		"streamUp": "assets/iconControls/streamUp.svg",
 		"streamDown": "assets/iconControls/streamDown.svg",
 		"expandDown": "assets/iconControls/expandDown.svg",
 		"expandUp": "assets/iconControls/expandUp.svg",
+		
 		"search": "assets/iconControls/search.svg",
 		"clearSearch": "assets/iconControls/clearSearch.svg",
-		"closeModal": "assets/iconControls/clearSearch.svg",
 		"scrollDown": "assets/iconControls/scrollDown.svg",
 		"loadMore": "assets/iconControls/loadMore.svg",
 		"download" : "assets/iconControls/download.svg",
+		
+		"closeModal": "assets/iconControls/clearSearch.svg",
 		"fullScreen" : "assets/iconControls/fullScreen.svg",
 		"update" : "assets/iconControls/update.svg",
 		
+		"logout" : "assets/iconControls/logout.svg",
+		"usernameLogout" : "assets/iconControls/userLogout2.svg",
+		
+		"loginImage" : "assets/iconControls/loginImage.svg",
+		"register" : "assets/iconControls/register.svg",
+		"cluster" : "assets/iconControls/clusters.svg",
+		"passwordField" : "assets/iconControls/passwordLogin.svg",
+		"usernameField" : "assets/iconControls/userLogout.svg",
+		"rights" : "assets/iconControls/rights.svg",
+		"addUser" : "assets/iconControls/addUser.svg",
+		"removeUser" : "assets/iconControls/removeUser.svg",
+		"editUser" : "assets/iconControls/editUser.svg",
+		"loginButton" : "assets/iconControls/loginButton.svg",
+		"info" : "assets/iconControls/info.svg",
+		"save" : "assets/iconControls/save.svg",
+		"cancel" : "assets/iconControls/cancel.svg",
+		"edit" : "assets/iconControls/edit.svg",
+		"remove" : "assets/iconControls/remove.svg",
+	
 		"clusters" : "assets/iconControls/clustersNode.svg",
 		"metrics" : "assets/iconControls/metricsNode.svg",
 		"runtimeInformation" : "assets/iconControls/runtimeInformationNode.svg",
@@ -140,11 +163,46 @@
 
 	"StartTreeNodeParentName" : "BaseNode",
 	"BasePathHide" : "streams/v1",
+	"BasePathToUsersPage" : "manageUser",
+	"LogToShowAtBottom" : "Service log",
 	"activeStreamRegistryNode" : "_streamsAndMetrics",
-			
-	"ZooKeeperTreeNodes" : "//localhost:8080/authTest/registry/nodeTree",
+	"logoutParamName" : "logout",
 	
-	"ZooKeeperBasePath" : "//localhost:8080/authTest/registry",
+	"sessionTokenName" : "authToken",	
+	"sessionUserName" : "username",
+	
+	
+	"UserManagementForm_add" : {
+			"FormName" : "Register new user",
+			"MethodCallName" : "addUser",
+			"MethodChoiceName" : "add"
+	},
+	"UserManagementForm_info" : {
+			"FormName" : "User profile",
+			"MethodCallName" : "",
+			"MethodChoiceName" : "info"
+	},
+	"UserManagementForm_remove" : {
+			"FormName" : "Remove user",
+			"MethodCallName" : "removeUser",
+			"MethodChoiceName" : "remove"
+	},
+	"UserManagementForm_edit" : {
+			"FormName" : "Edit user data",
+			"MethodCallName" : "editUser",
+			"MethodCallNameAdminFalse" : "editUserNonAdmin",
+			"MethodChoiceName" : "edit"
+	},
+	
+	"SecretKeyForEncryption" : "0123456789123456",
+			
+	"ZooKeeperTreeNodes" : "https://localhost:8443/testLog/registry/nodeTree",
+	
+	"ZooKeeperBasePath" : "https://localhost:8443/testLog/registry",
+	
+	"LoginRequestPath" : "https://localhost:8443/testLog/authenticate",
+	
+	"BaseAddress" : "https://localhost:8443/testLog",
 	
 	"ZooKeeperDataCall" : [
 		"/list",

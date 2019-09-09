@@ -25,14 +25,14 @@ import java.net.URLConnection;
 import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.NotFoundException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
+
 
 /**
  * The type Http utils.
  */
 public class HttpUtils {
-	private static final Logger LOG = LoggerFactory.getLogger(HttpUtils.class);
+	private static final Logger LOG = Logger.getLogger(HttpUtils.class);
 
 	/**
 	 * Read url via http string.
@@ -49,7 +49,7 @@ public class HttpUtils {
 
 			result = readStreamAsString(conn.getInputStream(), "UTF-8");
 		} catch (Exception e) {
-			LOG.error("Error on accessing URL {} via HTTP", urlString, e);
+			LOG.error("Error on accessing URL  via HTTP"+ urlString+"   "+ e);
 		}
 		return result;
 	}
@@ -77,7 +77,7 @@ public class HttpUtils {
 	 */
 	public static String readURLData(String serviceLink) {
 		String response = "";
-		LOG.info("Trying to read dataReading from {}", serviceLink);
+		LOG.info("Trying to read dataReading from "+ serviceLink);
 		try {
 			URL url = new URL(serviceLink);
 			URLConnection con = url.openConnection();
@@ -116,7 +116,7 @@ public class HttpUtils {
 	 */
 	public static String readURLDataWithToken(String serviceLink, String tempToken) {
 		String response = "";
-		LOG.info("Trying to read dataReading from {}", serviceLink);
+		LOG.info("Trying to read dataReading from "+ serviceLink);
 		try {
 			URL url = new URL(serviceLink);
 			URLConnection con = url.openConnection();
@@ -184,8 +184,7 @@ public class HttpUtils {
 			if (ignoreHostnameVerifier) {
 				con.setHostnameVerifier((s, sslSession) -> true);
 			}
-			LOG.info("http URL {}", httpsUrl);
-			LOG.info("Temp Token {}", tempToken);
+			LOG.info("http URL "+ httpsUrl);
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String line;
 			while ((line = bufferedReader.readLine()) != null) {

@@ -26,13 +26,13 @@ export class BottomLogComponent implements OnInit, OnDestroy{
   pathToLogs = "";
 
   /** Service log choice name */
-  logChoiceName = "Service log";
+  logChoiceName: string;
   autoUpdate = "Auto update Off";
   findValueBottomLog = "";
 
   /** Service logs data */
   logDataBottom = [];
-  logDataFull = [];
+  logDataFull = {};
   logDataBottomFiltered = [];
 
 
@@ -60,6 +60,7 @@ export class BottomLogComponent implements OnInit, OnDestroy{
                 private matIconRegistry: MatIconRegistry) { }
 
   ngOnInit() {
+     this.logChoiceName = this.configurationHandler.CONFIG["LogToShowAtBottom"];
      let item = localStorage.getItem("bottomLogUpdateState");
      this.pathToData = this.router.url.substring(1);
      this.iconsRegistered = this.utilsSvc.getAllRegisteredIonsList();
@@ -130,24 +131,22 @@ export class BottomLogComponent implements OnInit, OnDestroy{
    loadLogData(path){
       this.data.getZooKeeperNodeData(path).subscribe(
         data => {
+        var mapped = []; let result;
         try{
             let tempVal =this.configurationHandler.CONFIG["LazyLoadDataLines"];
             tempVal = tempVal["bottomLog"];
             this.zooKeeperData = data;
-            let result =  JSON.parse(this.zooKeeperData.toString());
-//            console.log("LOG DATA", result);
+            result =  this.zooKeeperData; //JSON.parse(this.zooKeeperData.toString());
             if(this.utilsSvc.isObject(result)){
-               result = result['data'];
+               result =  this.zooKeeperData['data'];
                if(!this.utilsSvc.compareStrings(result[this.logChoiceName], "undefined")){
                   result = result[this.logChoiceName];
-                //  this.logDataFull = result;
                   this.logDataBottom = result.slice(-1*tempVal);
                }
             }
             else{
               this.valueThatChangesForSpinnerOnResponse = false;
               this.valueThatChangesOnDataLoad = true;
-             // this.logDataFull = result;
               this.logDataBottom = result.slice(-1*tempVal);
             }
           }
@@ -155,7 +154,6 @@ export class BottomLogComponent implements OnInit, OnDestroy{
             this.valueThatChangesForSpinnerOnResponse = false;
             this.valueThatChangesOnDataLoad = false;
             this.logDataBottom.push( "Problem on reading log data from : ", path, e);
-            //console.log("Problem on reading log data from : ", path, e);
             this.autoUpdate = "Auto update On";
             clearInterval(this.interval)
           }

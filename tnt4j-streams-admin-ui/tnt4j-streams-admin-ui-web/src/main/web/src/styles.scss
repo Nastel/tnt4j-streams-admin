@@ -36,6 +36,13 @@
     overflow-y: auto;
   }
 
+  .heightAndWidth{
+    min-height : 8em;
+    max-height : 80em;
+    min-width : 30em;
+    max-width : 100em;
+  }
+
   /* -----------Material TABLE component style changes-----------------------------------------------*/
   .mat-paginator-container {
   display: flex;
@@ -79,12 +86,12 @@
   display: none;
   }
 
-  @media(max-width: 900px) {
+  @media(max-width: 800px) {
   .mobile-label {
-  font-family: Montserrat,sans-serif !important;
-  text-align: center;
-  display: inline-block;
-  font-weight: bold;
+    font-family: Montserrat,sans-serif !important;
+    text-align: center;
+    display: inline-block;
+    font-weight: bold;
   }
 
   .mat-header-row {
@@ -104,6 +111,31 @@
   }
   }
 
+
+  /* ----------- Dropdown with multi select -----------------------------------------------*/
+  .selected-list {
+  display: flex !important;
+  justify-content: center !important;
+  }
+  .selected-list .c-btn {
+  width: 70% !important;
+  }
+  .selected-list .c-list .c-token .c-remove svg{
+    fill: #000000 !important;
+  }
+  .mat-checkbox:not(.mat-checkbox-disabled).mat-accent .mat-checkbox-ripple .mat-ripple-element{
+    background-color: #489431 !important;
+  }
+  .mat-accent .mat-pseudo-checkbox-checked, .mat-accent .mat-pseudo-checkbox-indeterminate, .mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-indeterminate{
+    background-color: #489431 !important;
+  }
+  .mat-checkbox-checked.mat-accent .mat-checkbox-background, .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background{
+    background-color: #489431 !important;
+  }
+
+  .selected-list .c-list .c-token .c-label{
+    font-size: 1.2em !important;
+  }
 
   /* -----------Material FORM component style changes-----------------------------------------------*/
   ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
@@ -191,6 +223,13 @@
   box-shadow: 6px 12px 6px #A4A4A4;
   margin-bottom: 1em !important;
   }
+  .loginBack{
+    height: 100%;
+    background-color: #E6E6E6 ;
+    border-radius: 2em;
+    box-shadow: 6px 12px 6px #A4A4A4;
+    margin-bottom: 1em !important;
+  }
 
   /* ----------Input fields design------------------------------------------------*/
 
@@ -204,6 +243,20 @@
   margin-right: 0.5em;
   }
 
+  .formSubmitButton{
+    transition: 1s;
+    background-color: Transparent;
+    border: none;
+    height: 4em;
+    width: 6em;
+    border-radius: 0.7em;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    &:hover {
+      background: #FAFAFA;
+    }
+  }
   /* ----------Log show borders------------------------------------------------*/
   .logBorderBottom {
   border: 2px solid #D8D8D8;
@@ -302,9 +355,24 @@
   padding-right: 1em;
   }
   .medium-paddingTop{
+  padding-top: 1.5em;
+  }
+  .large-paddingTop{
   padding-top: 3em;
   }
-
+  .large-paddingLeftRight{
+    padding-right: 3em;
+    padding-left: 3em;
+  }
+  .medium-paddingBottom{
+  padding-bottom: 3em;
+  }
+  .large-padding{
+    padding-top: 3em;
+    padding-right: 3em;
+    padding-left: 3em;
+    padding-bottom: 3em;
+  }
   /* -----------------MARGIN------------------*/
   .noMargin{
   margin: 0px 0px 0px 0px !important;;
@@ -316,6 +384,9 @@
   .extraSmall-marginRight{
   margin-right: 0.5em;
   }
+  .extraSmall-marginLeft{
+  margin-left: 0.5em;
+  }
   .extraSmall-marginBottom{
   margin-bottom: 0.5em;
   }
@@ -324,6 +395,12 @@
   }
   .small-marginLeft{
   margin-left: 1em;
+  }
+  .large-marginLeft{
+  margin-left: 3em;
+  }
+  .extraLarge-marginLeft{
+  margin-left: 20em;
   }
   .small-marginRight{
   margin-right: 1em !important;
@@ -348,11 +425,34 @@
   margin-left: 1em;
   margin-right: 1em;
   }
+  .medium-marginTop{
+  margin-top: 1.5em;
+  }
+  .medium-marginRight{
+  margin-right: 1.5em !important;
+  }
   .medium-marginLeftRight{
   margin-left: 1.5em;
   margin-right: 1.5em;
   }
-
+  .medium-marginTopBottom{
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  }
+  .medium-margin{
+  margin-top: 1.5em;
+  margin-right: 1.5em;
+  margin-left: 1.5em;
+  margin-bottom: 1.5em;
+  }
+  .large-marginLeftRight{
+    margin-left: 3em;
+    margin-right: 3em;
+  }
+  .large-marginTopBottom{
+  margin-top: 3em;
+  margin-bottom: 3em;
+  }
   /* -------------DISPLAY--------------------*/
   .display-inlineBlock{
   display: inline-block;
@@ -363,6 +463,9 @@
   .display-inlineFlex{
   display: inline-flex;
   }
+  .displayFlex{
+  display: flex !important;
+  }
   .displayNone{
   display: none;
   }
@@ -371,6 +474,10 @@
   }
   .display-grid{
   display: grid;
+  }
+  .displayCenter{
+    display: flex;
+    align-items: center;
   }
 
 
@@ -403,6 +510,11 @@
   .fullWidth{
   width: 100%;
   }
+  /* -------------FIELD SIZE--------------------*/
+  .medium-inputField{
+  height : 3em;
+  width : 22em;
+  }
 
   /* -------------TEXT--------------------*/
   .small-fontSize{
@@ -416,6 +528,10 @@
   .large-fontSize{
   font-family: Montserrat,sans-serif;
   font-size: 1.25em !important;
+  }
+  .extraLarge-fontSize{
+  font-family: Montserrat,sans-serif;
+  font-size: 1.5em !important;
   }
   .routing{
   color:#790604;
@@ -440,7 +556,7 @@
   .background-svgColorChange{
   transition: 0.3s;
   &:hover {
-  background: #F6CECE !important;
+  background: #8e948e !important;
   }
   }
 

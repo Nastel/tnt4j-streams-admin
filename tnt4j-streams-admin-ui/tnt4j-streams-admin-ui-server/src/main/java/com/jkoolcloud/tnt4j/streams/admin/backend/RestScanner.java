@@ -19,16 +19,21 @@ package com.jkoolcloud.tnt4j.streams.admin.backend;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The type Rest scanner.
  */
 @ApplicationPath("/")
 public class RestScanner extends Application {
+	private static final Logger LOG = LoggerFactory.getLogger(RestScanner.class);
+
 	/**
 	 * Instantiates a new Rest scanner.
 	 */
 	public RestScanner() {
-
 	}
+
 
 }

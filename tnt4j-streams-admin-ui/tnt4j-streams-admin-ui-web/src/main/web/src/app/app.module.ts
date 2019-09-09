@@ -18,12 +18,18 @@ import {
   MatSortModule,
   MatTooltipModule,
   MatDialogModule,
-  MatButtonModule} from '@angular/material'
+  MatButtonModule,
+  MatCheckboxModule,
+  MatSelectModule} from '@angular/material'
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
+
 import { JitCompilerFactory, platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import {CdkTreeModule} from '@angular/cdk/tree';
 import { HighlightSearch } from './utils/highlight.search';
+
+import { BlockUIModule } from 'ng-block-ui';
 
 
   export function createCompiler(compilerFactory: CompilerFactory) {
@@ -36,24 +42,17 @@ import { HighlightSearch } from './utils/highlight.search';
       return () => appConfig.getLinks();
     }
 
-
-
 import { AppRoutingModule } from './app-routing.module';
 import { ConfigurationHandler } from './config/configuration-handler';
 import { AutoRouteGenerator } from './config/auto-route-generator';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
-
 import { IncompleteBlocksComponent } from './incomplete-blocks/incomplete-blocks.component';
 import { NavigationTreeComponent } from './navigation-tree/navigation-tree.component';
 import { TreeViewComponent } from './tree-view/tree-view.component';
 import { ThreadDumpComponent } from './thread-dump/thread-dump.component';
-
 import { DialogOverviewExampleDialog } from './thread-dump/thread-dump.component';
 import { popupMessage } from './utils/popup.message';
-
-
-
 import { ServerConfigurationFileComponent } from './server-configuration-file/server-configuration-file.component';
 import { AgentLogsComponent } from './agent-logs/agent-logs.component';
 import { AgentRuntimeComponent } from './agent-runtime/agent-runtime.component';
@@ -64,6 +63,13 @@ import { BottomLogComponent } from './bottom-log/bottom-log.component';
 import { DownloadsComponent } from './downloads/downloads.component';
 import { ConfigurableComponentNodeComponent } from './configurable-component-node/configurable-component-node.component';
 import { LoginComponent } from './login/login.component';
+
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { RequestInterceptor } from './utils/request-interceptor';
+import { LogoutComponent } from './logout/logout.component';
+import { UserControlComponent } from './users-control/users-control.component';
+
+import { RecaptchaModule } from 'ng-recaptcha';
 
 @NgModule({
   declarations: [
@@ -86,17 +92,24 @@ import { LoginComponent } from './login/login.component';
     BottomLogComponent,
     DownloadsComponent,
     ConfigurableComponentNodeComponent,
-    LoginComponent
+    LoginComponent,
+    LogoutComponent,
+    UserControlComponent
   ],
   entryComponents: [
     TreeViewComponent,
     DialogOverviewExampleDialog,
     popupMessage,
-    LoginComponent
+    LoginComponent,
+    UserControlComponent
   ],
   imports: [
-  CdkTreeModule,
+    RecaptchaModule,
+    CdkTreeModule,
+    MatSelectModule,
+    AngularMultiSelectModule,
     FormsModule,
+    ReactiveFormsModule,
     MatButtonModule,
     MatSortModule,
     MatTreeModule,
@@ -105,20 +118,21 @@ import { LoginComponent } from './login/login.component';
     MatPaginatorModule,
     BrowserModule,
     MatDialogModule,
-    ReactiveFormsModule,
     MatNativeDateModule,
     MatTooltipModule,
     MatSidenavModule,
+    MatCheckboxModule,
     AppRoutingModule,
     HttpClientModule,
-    ReactiveFormsModule,
     MatProgressSpinnerModule, MatRadioModule,
     MatIconModule,
     BrowserAnimationsModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    BlockUIModule.forRoot()
   ],
   providers: [
+
   ConfigurationHandler,
     { provide: APP_INITIALIZER,
       useFactory: initializeApp,
@@ -129,6 +143,11 @@ import { LoginComponent } from './login/login.component';
     { provide: APP_INITIALIZER,
       useFactory: initializeLinks,
       deps: [AutoRouteGenerator],
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RequestInterceptor,
       multi: true
     },
   { provide: COMPILER_OPTIONS, useValue: {}, multi: true },

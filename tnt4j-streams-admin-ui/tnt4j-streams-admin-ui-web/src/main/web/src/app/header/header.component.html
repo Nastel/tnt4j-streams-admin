@@ -1,9 +1,19 @@
-<header [ngStyle]="{'background-color': this.utilsSvc.getColor(true)}" class="header">
+<header [ngStyle]="{'background-color': this.utilsSvc.getColor(true)}" class="">
 
-  <div class="row justify-content-center">
-    <a  class="nav-link"  routerLink='streams/v1/clusters' >
-      <mat-icon svgIcon="mainPage"  style="width: 305px; height: 10em; text-transform: capitalize;" class="text-alignCenter"></mat-icon>
-      <!--<span class="large-fontSize">BETA</span>-->
-    </a>
-  </div>
+    <div class="row">
+      <div class="col">
+      </div>
+      <div class="col-6">
+        <div class="text-alignCenter small-paddingTopBottom">
+          <a  class="nav-link"  routerLink='streams/v1/clusters' >
+            <mat-icon class="text-alignCenter"  style="width: 305px; height: 10em; text-transform: capitalize;" svgIcon="mainPage"></mat-icon>
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <div class="large-marginLeftRight medium-marginTopBottom align-alignEnd">
+           <app-logout></app-logout>
+        </div>
+      </div>
+    </div>
 </header>

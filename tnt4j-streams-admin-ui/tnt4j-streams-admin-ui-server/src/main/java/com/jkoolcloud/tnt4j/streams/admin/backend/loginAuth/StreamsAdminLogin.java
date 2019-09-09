@@ -10,20 +10,22 @@ import javax.security.auth.callback.*;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
+
+
 
 public class StreamsAdminLogin implements LoginModule {
 
-    // Logger used to output debug information
-    private static final Logger LOG = LoggerFactory.getLogger(StreamsAdminLogin.class);
 
+
+    // Logger used to output debug information
+    private static final Logger LOG = Logger.getLogger(StreamsAdminLogin.class);
+    LoginCache loginCache;
     // Initializing parameters
     private CallbackHandler handler;
     private Subject subject;
     private Map options;
     private Map sharedState;
-
     // Parameters to store user principals, users and their groups.
     private UserPrincipal userPrincipal;
     private RolePrincipal rolePrincipal;
@@ -50,7 +52,7 @@ public class StreamsAdminLogin implements LoginModule {
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
                            Map<String, ?> options) {
-
+        loginCache =  new LoginCache();
         handler = callbackHandler;
         this.subject = subject;
 
@@ -63,15 +65,22 @@ public class StreamsAdminLogin implements LoginModule {
     }
 
     /**
-     * Authenticate the user againt chosen method
+     * Authenticate the user against chosen method
      * @return
      * @throws LoginException
      */
     @Override
     public boolean login() throws LoginException {
+        boolean authenticateNow = loginCache.getBypassSecurity();
+//        LOG.info("Is the user authenticated already and do not need any more AUTH on login method: "+ authenticateNow);
+        if(authenticateNow){
+            userGroups = getRoles();
+            isAuthenticated = true;
+            return true;
+        }
         // If no handler is specified throw a error
         if (handler == null) {
-            throw new LoginException("Error: no CallbackHandler available to recieve authentication information from the user");
+            throw new LoginException("Error: no CallbackHandler available to receive authentication information from the user");
         }
         Callback[] callbacks = new Callback[2];
         callbacks[0] = new NameCallback("login");
@@ -79,38 +88,49 @@ public class StreamsAdminLogin implements LoginModule {
         try {
             handler.handle(callbacks);
             username = ((NameCallback) callbacks[0]).getName();
-            password = String.valueOf(((PasswordCallback) callbacks[1])
-                    .getPassword());
-            if (debug) {
-                LOG.info("Username : {}", username);
-                LOG.info("Password : {}", password);
-            }
+            password = String.valueOf(((PasswordCallback) callbacks[1]).getPassword());
+//            if (debug) {
+//                LOG.info("Username : "+ username);
+//                LOG.info("Password : "+ password);
+//            }
+
             // If no username or password is given throw LoginException
-            if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+            if (username == null || username.isEmpty() || password.isEmpty()) {
+                LOG.error("Authentication failed empty credentials");
+                loginCache.setLoginStatus("Authentication failed");
                 throw new LoginException("Data specified had null values");
             }
-            if ( username.equals("admin") && password.equals("admin")) {
-                // Store the username and roles  fetched from the credentials provider
-                // to be used later in commit() method. For now we hard coded "admin" role
+            else if (loginCache.checkForSuccessfulLogin(username+":"+password)) {
+//            if ( (username.equals("test") && password.equals("test")) || (username.equals("admin") && password.equals("admin"))) {
                 userGroups = getRoles();
+                loginCache.generateTokenForUser();
                 isAuthenticated = true;
+                //LOG.info("Login successful");
                 return true;
             }
-            // If credentials are bad throw a LoginException
+            LOG.error("Authentication failed  No access to clusters");
+            loginCache.setLoginStatus("Authentication failed");
             throw new LoginException("Authentication failed");
         } catch (IOException e) {
             LOG.info("Problem in login module");
             isAuthenticated = false;
             throw new LoginException(e.getMessage());
         } catch (UnsupportedCallbackException e) {
+            LOG.info("Problem in login module UnsupportedCallbackException");
             isAuthenticated = false;
             throw new LoginException(e.getMessage());
         }
     }
 
+
     @Override
     public boolean commit() throws LoginException {
-        if (!isAuthenticated) {
+        boolean authenticateNow = loginCache.getBypassSecurity();
+        if(authenticateNow){
+            commitSucceeded = true;
+            return true;
+        }
+        else if (!isAuthenticated) {
             return false;
         } else {
             userPrincipal = new UserPrincipal(username);
@@ -121,8 +141,11 @@ public class StreamsAdminLogin implements LoginModule {
                     rolePrincipal = new RolePrincipal(groupName);
                     subject.getPrincipals().add(rolePrincipal);
                 }
+                commitSucceeded = true;
+            }else{
+                commitSucceeded = false;
+                loginCache.setLoginStatus("Authorization failed");
             }
-            commitSucceeded = true;
             return true;
         }
     }

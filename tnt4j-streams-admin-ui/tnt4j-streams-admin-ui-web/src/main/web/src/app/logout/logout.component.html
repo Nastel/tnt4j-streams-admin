@@ -1,0 +1,21 @@
+<block-ui [delayStart]="500" [delayStop]="500">
+<div *ngIf="!utilsSvc.compareStrings(userActiveToken, 'null') && !utilsSvc.compareStrings(userActiveToken, 'undefined') && !utilsSvc.compareStrings(userActiveToken, '')">
+  <div  class="display-inlineFlex">
+    <mat-icon class="serviceIcon small-marginRight"  svgIcon="usernameLogout"></mat-icon>
+    <span class="extraLarge-fontSize"> {{username}}</span>
+  </div>
+  <div class=" align-alignEnd">
+    <button class="formSubmitButton"> <mat-icon (click)="logout()" class="serviceIcon mousePointer" style="height:2.5em; width: 2.5em;"  svgIcon="{{logoutParam}}"></mat-icon></button>
+  </div>
+  <div class=" align-alignEnd">
+    <button (click)="redirectToUsersPage()" class="formSubmitButton">
+      <div *ngIf="!returnBack; else backToMain">
+        <mat-icon class="serviceIcon" style="height:2.5em; width: 2.5em;" svgIcon="editUser"></mat-icon>
+      </div>
+      <ng-template #backToMain>
+        <mat-icon class="serviceIcon" style="height:2.5em; width: 2.5em;" svgIcon="cancel"></mat-icon>
+      </ng-template>
+    </button>
+  </div>
+</div>
+</block-ui>

@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
+import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
 import { ControlUtils } from "../utils/control.utils";
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -60,6 +61,7 @@ export class IncompleteBlocksComponent implements OnInit {
 /** Front end prop */
   valueThatChangesOnDataLoad = true;
   valueThatChangesForSpinnerOnResponse = false;
+  @BlockUI() blockUI: NgBlockUI;
 
     /** ZooKeeper loaded data */
    zooKeeperData: Object;
@@ -365,9 +367,17 @@ export class IncompleteBlocksComponent implements OnInit {
 
 
   public replayTheBlockFromInput(blockNumber){
-    let activityName = blockNumber.replace(/,/g, '');
-    console.log("Trying to replay block "+ activityName+" ...");
-    this.controlUtils.replayBlock(this.pathToData, activityName);
+    try{
+      this.blockUI.start("Starting block replay...");
+      let activityName = blockNumber.replace(/,/g, '');
+      console.log("Trying to replay block "+ activityName+" ...");
+      this.controlUtils.replayBlock(this.pathToData, activityName);
+      this.blockUI.stop();
+    }catch(e){
+      console.log("Problem occurred in start/stop");
+      console.log(e);
+      this.blockUI.stop();
+    }
   }
 
 }

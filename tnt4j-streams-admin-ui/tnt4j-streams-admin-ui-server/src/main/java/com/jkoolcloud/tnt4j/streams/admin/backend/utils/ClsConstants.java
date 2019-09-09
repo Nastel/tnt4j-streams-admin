@@ -20,7 +20,6 @@ package com.jkoolcloud.tnt4j.streams.admin.backend.utils;
  * The type Cls constants.
  */
 public class ClsConstants {
-
 	/**
 	 * The constant KEY_SERVICE_INFO_NAME.
 	 */

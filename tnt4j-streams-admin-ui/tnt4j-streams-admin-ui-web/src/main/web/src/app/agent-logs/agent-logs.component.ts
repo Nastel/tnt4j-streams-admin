@@ -111,42 +111,6 @@ export class AgentLogsComponent implements OnInit {
           this.responseShow("bad");
           console.log("Problem on default node while trying to prepare the showing of node data AGENT LOGS", err);
         }
-
-//      this.valueThatChangesOnDataLoad = false;
-//      this.valueThatChangesForSpinnerOnResponse = true;
-//      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
-//        try{
-//          this.zooKeeperData = data;
-//          let result =  JSON.parse(this.zooKeeperData.toString());
-//          console.log("LOGS DATA", result);
-//          this.logArray = Object.keys(result["data"]);
-//          //  this.logArray = result["config"]["logNavigation"];
-//          if(this.utilsSvc.isObject(result)){
-//             result = result['data'];
-//             if(!this.utilsSvc.compareStrings(result[this.logChoiceName], "undefined")){
-//                result = result[this.logChoiceName];
-//                this.loadLogData(result);
-//
-//             }
-//          }
-//          else{
-//            this.valueThatChangesForSpinnerOnResponse = false;
-//            this.valueThatChangesOnDataLoad = true;
-//            this.logData = result;
-//          }
-//          }
-//        catch{
-//            this.valueThatChangesForSpinnerOnResponse = false;
-//            this.valueThatChangesOnDataLoad = false;
-//            console.log("Problem on reading log data from : ", this.pathToData, this.logChoiceName);
-//          }
-//      },
-//       err =>{
-//         this.valueThatChangesForSpinnerOnResponse = false;
-//         this.valueThatChangesOnDataLoad = false;
-//         console.log("Problem on reading log data from : ", this.pathToData, this.logChoiceName);
-//       }
-//      );
    }
 
  /** Method for calling functions needed to prepare the log data to be shown */

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { MatIconRegistry } from "@angular/material";
 import { DomSanitizer } from "@angular/platform-browser";
+import { HttpHeaders } from '@angular/common/http';
 
   @Injectable()
   export class ConfigurationHandler {
@@ -33,7 +34,7 @@ import { DomSanitizer } from "@angular/platform-browser";
        try{
           this.CONFIG = data;
           console.log("CONFIG", this.CONFIG);
-          this.getAllImageSvg();
+         // this.getAllImageSvg();
           this.threadsServiceDataName = String(this.CONFIG['threads']);
           this.configDataNameInAllData = String(this.CONFIG['config']);
           this.getZooKeeperNodeList();
@@ -49,7 +50,8 @@ import { DomSanitizer } from "@angular/platform-browser";
 
   getZooKeeperNodeList(){
       try{
-        this.http.get(this.CONFIG["ZooKeeperTreeNodes"]).subscribe(data => {
+        var headers = this.returnHeaderWithToken();
+        this.http.get(this.CONFIG["ZooKeeperTreeNodes"], headers).subscribe(data => {
          this.zooKeeperTreeNodeList = data;
         });
       }
@@ -58,21 +60,14 @@ import { DomSanitizer } from "@angular/platform-browser";
       }
         return  this.zooKeeperTreeNodeList;
   }
-
-
-   /** Methods for config data from JSON config file assets/configuration.json */
-
-  getAllImageSvg(){
-    try{
-      let neededData = this.CONFIG["StreamsIcon"];
-      for(let name in neededData) {
-        let pathToIcon =  this.CONFIG["StreamsIcon"][name];
-        this.matIconRegistry.addSvgIcon(name, this.domSanitizer.bypassSecurityTrustResourceUrl(pathToIcon));
-      }
+    /**
+      A utils method to help with request authorization.
+    */
+    returnHeaderWithToken(){
+      let tokenName = this.CONFIG["sessionTokenName"];
+      let input = sessionStorage.getItem(tokenName);
+      var header = { headers: new HttpHeaders().set('Authorization',  JSON.stringify(input))}
+      return header;
     }
-    catch(err){
-     console.log("Problem in configurations on registering .svg icons", err);
-    }
-  }
 }
 

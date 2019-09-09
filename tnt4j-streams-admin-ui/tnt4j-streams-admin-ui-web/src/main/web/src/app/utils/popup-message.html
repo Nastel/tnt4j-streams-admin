@@ -1,27 +1,22 @@
-<div class="sticky-top align-alignEnd">
-  <!--<span class="small-margin headerFont"><b> Last update: {{threadsTimeStamp}}</b></span>-->
-  <!--<mat-icon (click)="loadZooKeeperNodeData(pathToData)"svgIcon="{{'update'}}" matTooltip="Reload dataReading"></mat-icon>-->
-  <mat-icon (click)="onNoClick()" class="small-marginLeftRight" matTooltip="Close"
-            svgIcon="{{'closeModal'}}"></mat-icon>
-</div>
-<div class="row small-marginBottom">
-  <span class="large-fontSize boldFont">  {{responseHeaderMessage}}</span>
-</div>
-<div class="text-alignCenter">
+<div class="heightAndWidth">
+  <div class="sticky-top backgroundUnderline">
+    <div class="row">
+      <div class="col">
+      </div>
+      <div class="col-6">
+        <div class="text-alignCenter">
+          <span class="large-fontSize boldFont">  {{responseHeaderMessage}}</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="small-marginLeftRight align-alignEnd">
+          <mat-icon (click)="onNoClick()" matTooltip="Close" svgIcon="{{'closeModal'}}"></mat-icon>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <span class="large-fontSize wordBreak hiddenOverflowComponents  small-paddingLeftRight">{{responseData}}</span>
+  <div class="text-alignCenter small-marginTop">
+    <span class="large-fontSize wordWrap hiddenOverflowComponents small-paddingLeftRight">{{responseData}}</span>
+  </div>
 </div>
-<!--<div>-->
-<!--<div #scrollMeLog id="scrollElementLog" class="medium-marginLeftRight hiddenOverflow full-height threads wordWrap">-->
-<!--<div  class="hoverWhite small-paddingTop">-->
-<!--<div class="d-inline-block col-12">-->
-<!--<PRE><h6 class="threads">{{threadData}}</h6></PRE>-->
-<!--</div>-->
-<!--</div>-->
-<!--</div>-->
-<!--</div>-->
-<!--<div *ngIf="valueThatChangesForSpinnerOnResponse" >-->
-<!--<div class="row justify-content-center medium-paddingTop " >-->
-<!--<mat-progress-spinner mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>-->
-<!--</div>-->
-<!--</div>-->

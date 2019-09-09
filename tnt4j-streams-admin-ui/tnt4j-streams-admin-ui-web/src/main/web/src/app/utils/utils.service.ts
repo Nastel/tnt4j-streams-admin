@@ -36,6 +36,20 @@ export class UtilsService
     { return false; }
   }
 
+  navigateToCorrectPathAfterRefreshOrURlChange(router){
+    let authToken = sessionStorage.getItem("authToken");
+    let isAdmin: boolean = JSON.parse(sessionStorage.getItem("admin"));
+    let currentPath = sessionStorage.getItem("pathBeforeReload");
+    let userPath = this.configurationHandler.CONFIG["BasePathToUsersPage"];
+    if(!authToken || this.compareStrings(authToken, "null")){
+       router.navigate(['/login']);
+    }else if(this.compareStrings(currentPath, "null") || this.compareStrings(currentPath, "undefined")){
+       router.navigate(['/streams/v1/clusters']);
+    }else{
+      console.log("Do not navigate");
+    }
+  }
+
   public getCurrentTime (): Date
   {
     let jsonDate = new Date ();
@@ -81,6 +95,15 @@ export class UtilsService
     {
       return false;
     }
+  }
+
+  public valueExists(value){
+  console.log(value)
+    if(!this.compareStrings(value, "undefined")){
+      if(!(value==null)&&!(value=="")){
+           return true;
+      }else{ return false; }
+    }else{ return false; }
   }
 
   public changeStringToString (idx: String): string
@@ -305,8 +328,10 @@ export class UtilsService
        if(!this.compareStrings(string, 'undefined')){
          let regex = /([^\/]*)$/;
          string = string.match(regex);
+         return string[0];
+       }else{
+         return ""
        }
-      return string[0];
     }
     catch(err){
       console.log(" No node was provided to the method", err);

@@ -31,6 +31,7 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.dataReading.JKoolData;
 import com.jkoolcloud.tnt4j.streams.admin.backend.dataReading.LogData;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
 
+
 /**
  * The type Service info endpoint.
  */
@@ -38,6 +39,7 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
 @Path("/health_services")
 public class ServiceInfoEndpoint extends HttpServlet {
 
+	private static final long serialVersionUID = -7865038012272046475L;
 	@Inject
 	private LogData logData;
 

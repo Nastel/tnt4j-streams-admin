@@ -5,7 +5,7 @@
 </div>
 
 <div *ngIf="valueThatChangesForSpinnerOnResponse" >
-  <div class="row justify-content-center medium-paddingTop" >
+  <div class="row justify-content-center large-paddingTop" >
     <mat-progress-spinner mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>
   </div>
 </div>
@@ -29,18 +29,12 @@
                 </mat-form-field>
                 <mat-icon  svgIcon="{{'replay'}}" class="background-svgColorChange" (click)="replayTheBlockFromInput(blockNumber)"></mat-icon>
               </div>
-              <div *ngIf="serviceControlList.includes('stop')  && utilsSvc.compareStrings(streamState, 'startStop')" class="display-inlineFlex">
+              <div *ngIf="serviceControlList.includes('stop')" class="display-inlineFlex">
                 <mat-icon  svgIcon="{{'stop'}}" class="background-svgColorChange" (click)="startStopStream('stop')"></mat-icon>
               </div>
-              <div *ngIf="serviceControlList.includes('start') && utilsSvc.compareStrings(streamState, 'startStop')" class="display-inlineFlex">
+              <div *ngIf="serviceControlList.includes('start')" class="display-inlineFlex">
                 <mat-icon  svgIcon="{{'start'}}" class="background-svgColorChange" (click)="startStopStream('start')"></mat-icon>
               </div>
-              <!--<div *ngIf="serviceControlList.includes('pause') && utilsSvc.compareStrings(streamState, 'running')" class="display-inlineFlex">-->
-                <!--<mat-icon  svgIcon="{{'pause'}}" class="background-svgColorChange" (click)="pauseResumeStream('pause')"></mat-icon>-->
-              <!--</div>-->
-              <!--<div *ngIf="serviceControlList.includes('resume') && utilsSvc.compareStrings(streamState, 'running')" class="display-inlineFlex">-->
-                <!--<mat-icon  svgIcon="{{'start'}}" class="background-svgColorChange" (click)="pauseResumeStream('resume')"></mat-icon>-->
-              <!--</div>-->
           </div>
         </div>
       </div>

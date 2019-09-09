@@ -9,6 +9,7 @@ import { UtilsService } from "../utils/utils.service";
 import { DataService } from '../data.service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import { TreeViewComponent } from '../tree-view/tree-view.component'
+import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
 import { ControlUtils } from "../utils/control.utils";
 
@@ -84,6 +85,7 @@ export class AgentRuntimeComponent implements OnInit {
   valueThatChangesForSpinnerOnResponse = false;
   streamRegistryNode = this.configurationHandler.CONFIG["activeStreamRegistryNode"];
   agentStatus = true;
+  @BlockUI() blockUI: NgBlockUI;
 
   streamDataShowChoice: string;
   iconsRegistered = [];
@@ -99,9 +101,9 @@ export class AgentRuntimeComponent implements OnInit {
 
   ngOnInit() {
     this.pathToData = this.router.url.substring(1);
+    sessionStorage.setItem("pathBeforeReload", this.pathToData);
     this.loadZooKeeperNodeData(this.pathToData);
     this.iconsRegistered = this.utilsSvc.getAllRegisteredIonsList();
-    console.log( this.iconsRegistered)
   }
   ngAfterContentInit(){
       setTimeout(() => this.dataSourceRuntime.paginator = this.paginatorAgent);
@@ -121,7 +123,7 @@ export class AgentRuntimeComponent implements OnInit {
         this.dataSourceCluster = new MatTableDataSource<any>();
         this.responseShow("");
         this.zooKeeperData = this.treeView.zooKeeperData;
-        console.log("PARENT DATA", this.zooKeeperData);
+//        console.log("PARENT DATA", this.zooKeeperData);
         this.nodeConf = this.treeView.nodeConf;
         this.streamDataShowChoice = this.nodeConf["componentLoad"];
         this.prepareServiceDataTable(this.zooKeeperData["childrenNodes"] );
@@ -143,13 +145,19 @@ export class AgentRuntimeComponent implements OnInit {
       let tempPath = this.router.url.substring(1)+'/'+parentName+'/'+key;
         this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
            let result = data;
-           result = JSON.parse(result.toString());
-           let serviceData = result['data'];
-           this.agentsRuntimeData[tempPath] = this.neededDataFromRunTimeClustersPage(serviceData);
-           this.prepareTableForClustersView( this.agentsRuntimeData[tempPath],parentsInChildrenData, parentName, tempPath )
-           let tempKeysData = Object.keys(result['childrenNodes']);
-           let tempCountTrueFalse = false;
-           this.checkStreamStatus(tempPath, parentName)
+           if(!this.utilsSvc.compareStrings(result['data'],"undefined")){
+
+             console.log(result)
+            // result = JSON.parse(result.toString());
+             console.log(result)
+             let serviceData = result['data'];
+             this.agentsRuntimeData[tempPath] = this.neededDataFromRunTimeClustersPage(serviceData);
+             this.prepareTableForClustersView( this.agentsRuntimeData[tempPath],parentsInChildrenData, parentName, tempPath )
+             console.log(result);
+             let tempKeysData = Object.keys(result['childrenNodes']);
+             let tempCountTrueFalse = false;
+             this.checkStreamStatus(tempPath, parentName)
+           }
         },
         err =>{
            this.healthyServices[parentName+'/'+this.utilsSvc.getNodePathEnd(tempPath)] = false;
@@ -161,7 +169,7 @@ export class AgentRuntimeComponent implements OnInit {
       let tempPath = agentNodeName+'/'+this.streamRegistryNode;
       let healthyPath = streamName+'/'+this.utilsSvc.getNodePathEnd(agentNodeName);
       this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
-          let result = JSON.parse(data.toString());
+          let result = data; //JSON.parse(data.toString());
           if(Object.keys(result).length === 0){
             this.healthyServices[healthyPath] = false;
           }
@@ -186,7 +194,7 @@ export class AgentRuntimeComponent implements OnInit {
   clusterViewData(parentName){
     let tempPath = this.router.url.substring(1)+'/'+parentName+'/'+this.streamRegistryNode;
     this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
-        let result = JSON.parse(data.toString());
+             let result = data; //JSON.parse(data.toString());
         if(Object.keys(result).length === 0 ){
           this.responseShow("bad");
           this.controlUtils.openDialogWithHeader("No data got from REST", "Error", this.pathToData)
@@ -274,7 +282,7 @@ export class AgentRuntimeComponent implements OnInit {
       let tempPath = this.pathToData+'/'+this.streamRegistryNode;
       let agentName = this.utilsSvc.getNodePathEnd(this.pathToData);
       this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
-          let result = JSON.parse(data.toString());
+                  let result = data; //JSON.parse(data.toString());
           if(Object.keys(result).length === 0 ){
             this.responseShow("bad");
             this.controlUtils.openDialogWithHeader("No data got from REST", "Error", this.pathToData)
@@ -309,11 +317,10 @@ export class AgentRuntimeComponent implements OnInit {
    if( this.utilsSvc.compareStrings(this.streamDataShowChoice, "agent" )){
       this.prepareAgentPageView();
    }
-   console.log(this.pathToServiceData)
      for(let name in  this.pathToServiceData){
         this.data.getZooKeeperNodeData(this.pathToServiceData[name]).subscribe( data => {
           let result = data;
-          result = JSON.parse(result.toString());
+          //result = JSON.parse(result.toString());
 
           this.serviceBaseMetrics = result["data"];
           this.serviceConfiguration = result["config"];
@@ -545,33 +552,37 @@ export class AgentRuntimeComponent implements OnInit {
   }
 
   startStopStream(streamState, streamName){
-    let path = this.pathToData  + "/" + streamName;
-    if(this.utilsSvc.compareStrings(streamState,"stop")){
-      console.log("Stopping ...");
-       this.controlUtils.stopStream(path);
-    }
-    else{
-      console.log("Starting ...");
-       this.controlUtils.startStream(path);
-    }
-  }
-
-  pauseResumeStream(streamState, streamName){
-    let path = this.pathToData  + "/" + streamName;
-    if(this.utilsSvc.compareStrings(streamState,"pause")){
-      console.log("Pausing service...");
-       this.controlUtils.pauseStream(path);
-    }
-    else{
-      console.log("Resuming service...");
-       this.controlUtils.resumeStream(path);
+    this.blockUI.start("Loading...");
+    try{
+      let path = this.pathToData  + "/" + streamName;
+      if(this.utilsSvc.compareStrings(streamState,"stop")){
+        console.log("Stopping ...");
+         this.controlUtils.stopStream(path);
+      }
+      else{
+        console.log("Starting ...");
+         this.controlUtils.startStream(path);
+      }
+     this.blockUI.stop();
+    }catch(e){
+      console.log("Problem occurred in start/stop");
+      console.log(e);
+      this.blockUI.stop();
     }
   }
 
   replayTheBlockFromInput(streamName, blockNumber){
-     console.log("Trying to replay block: ", blockNumber, " from stream: ", streamName)
-     let path = this.pathToData  + "/" + streamName;
-     this.controlUtils.replayBlock(path, blockNumber);
+    try{
+       this.blockUI.start("Starting block replay...");
+       console.log("Trying to replay block: ", blockNumber, " from stream: ", streamName)
+       let path = this.pathToData  + "/" + streamName;
+       this.controlUtils.replayBlock(path, blockNumber);
+       this.blockUI.stop();
+    }catch(e){
+     console.log("Problem occurred in start/stop");
+     console.log(e);
+     this.blockUI.stop();
+    }
   }
 
 

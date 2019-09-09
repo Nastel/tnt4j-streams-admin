@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UtilsService } from "../utils/utils.service";
-
+import { Router, RouterModule} from '@angular/router';
 import { ConfigurationHandler } from '../config/configuration-handler';
 
 @Component({
@@ -12,18 +12,21 @@ export class HeaderComponent implements OnInit {
 
   constructor(
           private configurationHandler:ConfigurationHandler,
+          private router: Router,
           public utilsSvc: UtilsService) { }
 
   navbarOpen = false;
   pathToIcon: string;
 
-    toggleNavbar() {
-      this.navbarOpen = !this.navbarOpen;
-    }
+  ngOnInit() {}
 
-  ngOnInit() {
-;
+  toggleNavbar() {
+    this.navbarOpen = !this.navbarOpen;
+  }
 
+  logout(){
+    let tokenName = this.configurationHandler.CONFIG["sessionTokenName"];
+    sessionStorage.removeItem(tokenName);
   }
 
 }

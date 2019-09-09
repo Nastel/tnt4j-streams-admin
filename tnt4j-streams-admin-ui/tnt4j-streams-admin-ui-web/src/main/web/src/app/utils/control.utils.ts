@@ -18,7 +18,7 @@ export class ControlUtils
 {
 
   /** parameters for response */
-  responseResult = "";
+  responseResult;
 
   /** Url address */
   pathToData : string;
@@ -44,14 +44,22 @@ export class ControlUtils
      this.data.sendControlsRequest(path, "stop").subscribe( data => {
           try{
             let result = data;
-             this.responseResult =  JSON.parse(result.toString());
-            console.log("Response to stream stop ",  this.responseResult);
+             this.responseResult = result;
+             console.log(this.responseResult);
+             if(!this.utilsSvc.compareStrings(result,"undefined")){
+               this.openDialogWithHeader(this.responseResult["action"], "Success", this.pathToData);
+//               this.openDialogWithHeaderNoPath("Stop stream called", "Success");
+             }
           }catch(err){
             console.log("Problem while trying to stop stream" , err);
+            this.openDialogWithHeader(this.responseResult["action"], "Failed", this.pathToData);
+//            this.openDialogWithHeaderNoPath("Problem while trying to stop stream", "Error");
           }
         },
          err =>{
           console.log("Problem while trying to stop stream" , err);
+            this.openDialogWithHeader(this.responseResult["action"], "Failed", this.pathToData);
+//            this.openDialogWithHeaderNoPath("Problem while trying to stop stream", "Error");
          }
       );
   }
@@ -61,77 +69,50 @@ export class ControlUtils
      this.data.sendControlsRequest(path, "start").subscribe( data => {
           try{
             let result = data;
-             this.responseResult =  JSON.parse(result.toString());
+             this.responseResult = result;
+             console.log(this.responseResult);
              console.log("Response to stream start ",  this.responseResult);
-             this.openDialog("Start stream has not yet been implemented", this.pathToData);
+             if(!this.utilsSvc.compareStrings(result,"undefined")){
+                 this.openDialogWithHeader(this.responseResult["action"], "Success", this.pathToData);
+//               this.openDialogWithHeaderNoPath("Start stream called", "Success");
+             }
           }catch(err){
             console.log("Problem while trying to start stream" , err);
+            this.openDialogWithHeader(this.responseResult["action"], "Failed", this.pathToData);
+//            this.openDialogWithHeaderNoPath("Problem while trying to start stream", "Error");
           }
         },
          err =>{
             console.log("Problem while trying to start stream" , err);
+            this.openDialogWithHeader(this.responseResult["action"], "Failed", this.pathToData);
+//            this.openDialogWithHeaderNoPath("Problem while trying to start stream", "Error");
          }
       );
   }
-
-  public pauseStream(path : String){
-     path = path + "/" + "_pause";
-     this.data.sendControlsRequest(path, "pause").subscribe( data => {
-          try{
-            let result = data;
-             this.responseResult =  JSON.parse(result.toString());
-            console.log("Response to stream pause ",  this.responseResult);
-             this.openDialog("Pause has not yet been implemented", this.pathToData);
-          }catch(err){
-             console.log("Problem while trying to pause stream" , err);
-          }
-        },
-         err =>{
-            console.log("Problem while trying to pause stream" , err);
-         }
-      );
-  }
-
-  public resumeStream(path : String){
-     path = path + "/" + "_resume";
-     this.data.sendControlsRequest(path, "resume").subscribe( data => {
-          try{
-            let result = data;
-            this.responseResult =  JSON.parse(result.toString());
-            console.log("Response to stream resume ",  this.responseResult);
-            this.openDialog("Resume has not yet been implemented", this.pathToData);
-          }catch(err){
-            console.log("Problem while trying to resume stream" , err);
-          }
-        },
-         err =>{
-           console.log("Problem while trying to resume stream" , err);
-         }
-      );
-  }
-
 
   public replayBlock(path : String, blockNumber : number){
      path = path + "/" + blockNumber;
      this.data.sendControlsRequest(path, "blockReplay").subscribe( data => {
+        this.pathToData = this.router.url.substring(1);
           try{
             let result = data;
-             this.responseResult =  JSON.parse(result.toString());
+             this.responseResult = result;
+             console.log(this.responseResult);
+             console.log("Response of block replay",  this.responseResult);
              if( !this.utilsSvc.compareStrings(this.responseResult,"undefined")){
-                result = this.responseResult["Error"];
-                if(this.utilsSvc.compareStrings(result,"undefined")){
-                  result = this.responseResult["success"];
-                }
+                result = this.responseResult["dataReading"];
+                this.responseResult = result.toString();
+                console.log(this.responseResult);
              }
-            this.responseResult = result;
-            console.log(this.responseResult);
-            this.openDialog(this.responseResult, this.pathToData);
+            this.openDialogWithHeader("Block "+this.responseResult["action"]+" replay started", "Success", this.pathToData);
           }catch(err){
             console.log("Problem while trying to replay block "+ blockNumber, err);
+            this.openDialogWithHeader(this.responseResult["action"], "Failed", this.pathToData);
           }
         },
          err =>{
            console.log("Problem while trying to replay block "+ blockNumber, err);
+            this.openDialogWithHeader(this.responseResult["action"], "Failed", this.pathToData);
          }
       );
   }
@@ -140,7 +121,6 @@ export class ControlUtils
   openDialogNoArguments(): void {
    console.log("Response to block replay ",  this.responseResult);
     const dialogRef = this.dialog.open(popupMessage, {
-      width: '50em',
       data: { response: this.responseResult }
     });
 
@@ -150,13 +130,12 @@ export class ControlUtils
   }
 
   /** A popup message that shows a string that is passed as variable "message"*/
-  openDialog(message :String, dataPathStart :string): void {
+  openDialog(message :string, dataPathStart :string): void {
   let currentPath = this.router.url.substring(1);
   console.log(currentPath, dataPathStart);
     if(this.utilsSvc.compareStrings(currentPath, dataPathStart)){
       let data = "ERROR"
       const dialogRef = this.dialog.open(popupMessage, {
-        width: '50em',
         data: { response: message, header : data }
       });
 
@@ -169,18 +148,41 @@ export class ControlUtils
   /** A popup message that shows a string that is passed as variable "message" and has a header "headerMessage" */
   openDialogWithHeader(message :string, headerMessage :string, dataPathStart: string): void {
    let currentPath = this.router.url.substring(1);
-    console.log(currentPath, dataPathStart);
     if(this.utilsSvc.compareStrings(currentPath, dataPathStart)){
       const dialogRef = this.dialog.open(popupMessage, {
-        width: '50em',
         data: { response: message, header : headerMessage }
       });
-
       dialogRef.afterClosed().subscribe(result => {
         console.log('The dialog was closed');
       });
     }
   }
+
+    /** A popup message that shows a string that is passed as variable "message" and has a header "headerMessage" */
+    openDialogWithHeaderTokenExpiration(message :string, headerMessage :string, dataPathStart: string): void {
+     let currentPath = this.router.url.substring(1);
+      console.log(currentPath, dataPathStart);
+      if(this.utilsSvc.compareStrings(currentPath, dataPathStart)){
+        const dialogRef = this.dialog.open(popupMessage, {
+          data: { response: message, header : headerMessage }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+          console.log(currentPath);
+          this.router.navigate(["/"+currentPath])
+        });
+      }
+    }
+
+  /** A popup message that shows a string that is passed as variable "message" and has a header "headerMessage" */
+  openDialogWithHeaderNoPath(message :string, headerMessage :string): void {
+    const dialogRef = this.dialog.open(popupMessage, {
+      data: { response: message, header : headerMessage }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
 
 /** TODO : Implement if query block replay will be needed*/
   public replayBlocks(path : String, blockList){
@@ -191,7 +193,7 @@ export class ControlUtils
        this.data.sendControlsRequest(path, "blockReplay").subscribe( data => {
             try{
               let result = data;
-              result =  JSON.parse(result.toString());
+              result =  result; //JSON.parse(result.toString());
               console.log("Response to block replay ", result);
             }catch(err){
               console.log("Problem while trying to replay block "+ blockList, err);

@@ -31,8 +31,6 @@ export class nodeDatabase{
 
   getTreeList(tempZooKeeperNodeList): Map<string, string[]>{
     let elementsToExcludeFromTreeView = this.configurationHandler.CONFIG["excludeFromTreeView"];
-  //  console.log("List of elements to exclude from tree", elementsToExcludeFromTreeView);
-  //console.log(tempZooKeeperNodeList);
     let dataMap = new Map<string, string[]>();
     for(let node in tempZooKeeperNodeList){
       let tempArray = [];

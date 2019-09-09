@@ -40,7 +40,7 @@ export class DownloadsComponent implements OnInit {
   tableData = [];
 
   /** Full choice data */
-  fileZipData = [];
+  fileZipData = {};
 
   /** For URL address calls */
   pathToData = "";
@@ -88,34 +88,6 @@ export class DownloadsComponent implements OnInit {
       this.responseShow("bad");
       console.log("Problem on default node while trying to prepare the showing of node data AGENT LOGS", err);
     }
-
-
-//    this.data.getZooKeeperNodeData(this.pathToData).subscribe( data => {
-//      try{
-//        let result = data;
-//        result =  JSON.parse(result.toString());
-//        console.log("DOWNLOADS DATA", result);
-//        this.navNamesArray = Object.keys(result["data"]);
-//        this.fullDownloadableData = result["data"] ;
-//        if(this.utilsSvc.compareStrings(this.navigationChoice, "")){
-//          this.navigationChoice = this.navNamesArray[0];
-//        }
-//        if(!this.utilsSvc.compareStrings(this.fullDownloadableData[this.navigationChoice], "undefined")){
-//          result = this.fullDownloadableData[this.navigationChoice];
-//          this.loadDownloadsTable(result);
-//        }
-//        this.responseShow("good");
-//      }
-//      catch{
-//          this.responseShow("bad");
-//          console.log("Problem on reading downloads data from : ", this.pathToData);
-//        }
-//    },
-//     err =>{
-//       this.responseShow("bad");
-//       console.log("Problem on reading downloads data from : ", this.pathToData);
-//     }
-//    );
   }
 
 
@@ -172,7 +144,7 @@ export class DownloadsComponent implements OnInit {
           let fileName;
           let encodedFile;
           let result = data;
-          this.fileZipData = JSON.parse(result.toString());
+          this.fileZipData = result; //JSON.parse(result.toString());
           if(!this.utilsSvc.compareStrings(this.fileZipData, "undefined")){
             if( this.fileZipData['data'].includes("Error")){
               this.controlUtils.openDialog("Error: File download failed - File size to big", this.pathToData);

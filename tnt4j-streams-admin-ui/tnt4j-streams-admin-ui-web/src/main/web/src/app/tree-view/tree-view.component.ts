@@ -1,7 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatIconRegistry } from "@angular/material";
-import { DomSanitizer } from "@angular/platform-browser";
 import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
 import { DataService } from '../data.service';
@@ -32,16 +30,17 @@ export class TreeViewComponent implements OnInit {
   streamDataShowChoice: string;
   valueThatChangesOnDataLoad = false;
   valueThatChangesForSpinnerOnResponse = false;
+  iconsRegistered = [];
+
 
   constructor(  private data: DataService,
                 private router: Router,
                 private configurationHandler:ConfigurationHandler,
                 public utilsSvc: UtilsService,
-                private matIconRegistry: MatIconRegistry,
-                private domSanitizer: DomSanitizer,
                 private controlUtils: ControlUtils) { }
 
   ngOnInit() {
+    this.utilsSvc.navigateToCorrectPathAfterRefreshOrURlChange(this.router);
     this.pathToData = this.router.url.substring(1);
     this.loadZooKeeperNodeData(this.pathToData);
 
@@ -57,7 +56,7 @@ export class TreeViewComponent implements OnInit {
     this.responseShow("");
     this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
         let result = data;
-        result =  JSON.parse(result.toString());
+       // result =  JSON.parse(result.toString());
         this.zooKeeperData = result;
         console.log( this.zooKeeperData )
         this.nodeConf = result["config"];

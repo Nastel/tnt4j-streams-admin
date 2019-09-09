@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>com.jkoolcloud.tnt4j.streams.admin</groupId>
         <artifactId>tnt4j-streams-admin-ui</artifactId>
@@ -27,11 +27,11 @@
         <quartz.version>2.3.1</quartz.version>
         <jsonassert.version>1.5.0</jsonassert.version>
         <httpcomp.version>4.5.6</httpcomp.version>
-
+        <swagger.version>2.0.0</swagger.version>
+        <powermock.version>1.6.1</powermock.version>
         <zookeeper.version>3.5.5</zookeeper.version>
         <curator.version>4.2.0</curator.version>
     </properties>
-
     <build>
         <resources>
             <resource>
@@ -178,11 +178,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
@@ -198,12 +193,6 @@
             <artifactId>resteasy-servlet-initializer</artifactId>
             <version>${jboss.resteasy.version}</version>
         </dependency>
-        <!-- JSON/POJO support -->
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jackson2-provider</artifactId>
-            <version>${jboss.resteasy.version}</version>
-        </dependency>
         <!-- REST Client support -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -215,6 +204,7 @@
             <artifactId>resteasy-cdi</artifactId>
             <version>${jboss.resteasy.version}</version>
         </dependency>
+        <!-- Guava cache -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -230,6 +220,12 @@
             <groupId>org.jasypt</groupId>
             <artifactId>jasypt</artifactId>
             <version>${jasypt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jkoolcloud.tnt4j.streams.admin</groupId>
+            <artifactId>tnt4j-streams-admin-cli</artifactId>
+            <version>1.10.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Quartz scheduler -->
@@ -280,13 +276,13 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
-            <version>1.5.2</version>
+            <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>1.5.2</version>
+            <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
 

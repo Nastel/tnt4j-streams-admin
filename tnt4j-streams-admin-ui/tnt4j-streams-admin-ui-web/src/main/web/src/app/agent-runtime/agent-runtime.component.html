@@ -6,7 +6,7 @@
 </div>
 
 <div *ngIf="valueThatChangesForSpinnerOnResponse">
-  <div class="row justify-content-center medium-paddingTop">
+  <div class="row justify-content-center large-paddingTop">
     <mat-progress-spinner mode="indeterminate" strokeWidth="15" [diameter]="150"
                           [ngStyle]="{ margin: auto }"></mat-progress-spinner>
   </div>
@@ -149,18 +149,8 @@
                     <mat-icon svgIcon="{{'start'}}" class="background-svgColorChange" (click)="onEvent($event)"
                               (click)="startStopStream('start', element.Stream)"></mat-icon>
                   </div>
-                  <!--<div *ngIf="serviceControlList[element.Stream].includes('pause')" class="display-inlineFlex">-->
-                    <!--<mat-icon svgIcon="{{'pause'}}" class="background-svgColorChange" (click)="onEvent($event)"-->
-                              <!--(click)="pauseResumeStream('pause', element.Stream)"></mat-icon>-->
-                  <!--</div>-->
-                  <!--<div *ngIf="serviceControlList[element.Stream].includes('resume')" class="display-inlineFlex">-->
-                    <!--<mat-icon svgIcon="{{'start'}}" class="background-svgColorChange" (click)="onEvent($event)"-->
-                              <!--(click)="pauseResumeStream('resume', element.Stream)"></mat-icon>-->
-                  <!--</div>-->
                 </div>
               </div>
-
-              <!--<app-service-control></app-service-control>-->
             </div>
             <div
               *ngIf="!this.utilsSvc.compareStrings(column, 'Stream') && !this.utilsSvc.compareStrings(column, 'control')">

@@ -1,0 +1,10 @@
+"ZooKeeperTreeNodes" : "https://localhost:8443/streams/registry/nodeTree",
+
+"ZooKeeperBasePath" : "https://localhost:8443/streams/registry",
+
+"LoginRequestPath" : "https://localhost:8443/streams/authenticate",
+	
+SslConfigFilePath = C:\\development\\apache-tomcat-9.0.14\\conf\\streamsAdmin.jks
+
+String zkUsername = "admin";
+String zkPassword = "PassAdmin5758";

@@ -1,5 +1,5 @@
 
-  <div class=" small-paddingTop extraSmall-marginTop" fxLayout fxLayoutAlign="center center">
+  <div class="medium-paddingTop" fxLayout fxLayoutAlign="center center">
       <mat-form-field   class="filterInputField" fxFlex="40%">
           <input  (keyup)="searchNodeTree($event.target.value)" matInput matTooltip="Search for nodes in tree" placeholder="Search"  type="text">
       </mat-form-field>
@@ -17,8 +17,6 @@
     <div *matTreeNodeDef="let node; when: hasChild isVisible">
 
       <mat-tree-node disabled [ngClass]="{'navTreeFill':!this.utilsSvc.compareStrings(node.item, '/'+ this.pathToData),'navTreeSelected':this.utilsSvc.compareStrings(node.item, '/'+ this.pathToData)}" matTreeNodePadding matTreeNodePaddingIndent="20">
-
-        <!--<div style="display: flex; align-items: center;"  *ngIf="utilsSvc.compareStrings(node.visible, 'true')">-->
         <button  (click)="onExpandCall()" [attr.aria-label]="'toggle ' + node.filename" mat-icon-button matTreeNodeToggle>
           <mat-icon class="mat-icon-rtl-mirror" >
             {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
@@ -31,12 +29,12 @@
               <ng-template #includeSvg>
                 <div  class="display-inlineFlex">
                   {{utilsSvc.getNodePathEnd(node.item)}}
-                  <mat-icon svgIcon="{{utilsSvc.getNodePathEnd(node.item)}}" class="serviceIcon"></mat-icon>
+                  <mat-icon svgIcon="{{utilsSvc.getNodePathEnd(node.item)}}"  class="serviceIcon"></mat-icon>
                   <mark>{{this.utilsSvc.getNodePathEnd(node.item)}}</mark>
                 </div>
               </ng-template>
               <ng-template #zooKeeperSvg>
-                <div  class="display-inlineFlex">
+                <div *ngIf="iconMap.includes(node.item)" class="display-inlineFlex">
                   <mat-icon svgIcon="{{node.item}}" class="serviceIcon"></mat-icon>
                 </div>
                 <mark>{{this.utilsSvc.getNodePathEnd(node.item)}}</mark>
@@ -47,13 +45,13 @@
             <a routerLink="{{node.item}}" class="navTree" >
                 <div *ngIf="iconsRegistered.includes(utilsSvc.getNodePathEnd(node.item)); then includeSvg; else zooKeeperSvg"></div>
                 <ng-template #includeSvg>
-                  <div  class="display-inlineFlex">
+                  <div class="display-inlineFlex">
                     <mat-icon svgIcon="{{utilsSvc.getNodePathEnd(node.item)}}" class="serviceIcon"></mat-icon>
                     {{this.utilsSvc.getNodePathEnd(node.item)}}
                   </div>
                 </ng-template>
                 <ng-template #zooKeeperSvg>
-                  <div  class="display-inlineFlex">
+                  <div *ngIf="iconMap.includes(node.item)" class="display-inlineFlex">
                    <mat-icon svgIcon="{{node.item}}" class="serviceIcon"></mat-icon>
                   </div>
                   {{this.utilsSvc.getNodePathEnd(node.item)}}
@@ -80,7 +78,7 @@
                     </div>
                   </ng-template>
                   <ng-template #zooKeeperSvg>
-                    <div  class="display-inlineFlex">
+                    <div *ngIf="iconMap.includes(node.item)" class="display-inlineFlex">
                       <mat-icon svgIcon="{{node.item}}" class="serviceIcon"></mat-icon>
                     </div>
                      {{this.utilsSvc.getNodePathEnd(node.item)}}
@@ -98,7 +96,7 @@
                     </div>
                   </ng-template>
                   <ng-template #zooKeeperSvg>
-                    <div  class="display-inlineFlex">
+                    <div *ngIf="iconMap.includes(node.item)" class="display-inlineFlex">
                       <mat-icon svgIcon="{{node.item}}" class="serviceIcon"></mat-icon>
                     </div>
                     <mark>{{this.utilsSvc.getNodePathEnd(node.item)}}</mark>

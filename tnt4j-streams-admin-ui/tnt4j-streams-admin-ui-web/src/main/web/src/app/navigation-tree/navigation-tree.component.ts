@@ -9,6 +9,9 @@ import { DomSanitizer } from "@angular/platform-browser";
 import {UtilsService } from "../utils/utils.service";
 import {ConfigurationHandler } from '../config/configuration-handler';
 
+import { AutoRouteGenerator } from '../config/auto-route-generator';
+
+
 /** Nested node */
 export class FileNode {
   childrenChange = new BehaviorSubject<FileNode[]>([]);
@@ -59,6 +62,7 @@ export class NavigationTreeComponent implements OnInit  {
 
   /** all registered icons array */
   iconsRegistered = [];
+  iconMap;
 
   constructor(
     private database: nodeDatabase,
@@ -66,6 +70,7 @@ export class NavigationTreeComponent implements OnInit  {
     private router: Router,
     private utilsSvc: UtilsService,
     private matIconRegistry: MatIconRegistry,
+    private autoRoute: AutoRouteGenerator,
     private domSanitizer: DomSanitizer) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel,this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<FileFlatNode>(this.getLevel, this.isExpandable);
@@ -106,8 +111,13 @@ export class NavigationTreeComponent implements OnInit  {
 
    ngOnInit(){
      try{
+        this.iconMap = this.autoRoute.iconMap
+        let authToken = sessionStorage.getItem("authToken");
+         if(!authToken){
+           this.router.navigate(['login']);
+         }
         this.pathToData = this.router.url.substring(1);
-        let tempZooKeeperNodeList =   this.configurationHandler.getZooKeeperNodeList();
+        let tempZooKeeperNodeList =   this.autoRoute.getZooKeeperNodeList();
         this.database.initialize(tempZooKeeperNodeList);
         this.database.dataChange.subscribe(data => {
           this.dataSource.data = data;
@@ -115,7 +125,6 @@ export class NavigationTreeComponent implements OnInit  {
           this.insertTreeNode(this.treeControl.dataNodes);
           this.expandablePath.push("/"+this.pathToData);
           let item = JSON.parse(localStorage.getItem("openTreeNodes"));
-//          console.log("EXPANDED NODE SET", this.treeControl)
           this.expandNodesById( this.treeControl.dataNodes,this.expandablePath);
           if(!this.utilsSvc.compareStrings(item, 'undefined') && !this.utilsSvc.compareStrings(item, 'null')){
             this.expandNodesById( this.treeControl.dataNodes,item);
@@ -126,6 +135,8 @@ export class NavigationTreeComponent implements OnInit  {
         console.log("Problem on loading the tree nodes data for the tree view ", err);
      }
     }
+
+
 
   insertTreeNode(tempNode){
     let tempDataForNodes = tempNode;
@@ -235,12 +246,12 @@ export class NavigationTreeComponent implements OnInit  {
 
   private onExpandCall(){
     //this.rebuildTreeForData(  this.dataSource.data);
-    this.rememberExpandedTreeNodes(this.treeControl, this.expandedNodeSet);
-    this.forgetMissingExpandedNodes(this.treeControl, this.expandedNodeSet);
+    this.rememberExpandedTreeNodes(this.treeControl);
+    this.forgetMissingExpandedNodes(this.treeControl);
     localStorage.setItem("openTreeNodes", JSON.stringify(Array.from(this.expandedNodeSet)));
   }
 
-  private rememberExpandedTreeNodes( treeControl: FlatTreeControl<FileFlatNode>,expandedNodeSet: Set<string>) {
+  private rememberExpandedTreeNodes( treeControl: FlatTreeControl<FileFlatNode>) {
     if (treeControl.dataNodes) {
       treeControl.dataNodes.forEach((node) => {
 //        console.log("is expandable", treeControl.isExpandable(node), "is expanded", treeControl.isExpanded(node));
@@ -248,25 +259,28 @@ export class NavigationTreeComponent implements OnInit  {
            this.expandedNodeSet.add(node.item);
 //           console.log("Node information", node)
         }
-//        else if(treeControl.isExpandable(node) && !treeControl.isExpanded(node)) {
-//          if (treeControl.dataNodes.find((n) => n.item === node.item)) {
-//             console.log("Node To DELETE from SET", node)
-//             expandedNodeSet.delete(node.item);
-//          }
-//        }
-
       });
     }
   }
-
-  private forgetMissingExpandedNodes(treeControl: FlatTreeControl<FileFlatNode>, expandedNodeSet: Set<string>) {
+  private forgetMissingExpandedNodes(treeControl: FlatTreeControl<FileFlatNode>) {
     if (treeControl.dataNodes) {
       treeControl.dataNodes.forEach((node) => {
           if(treeControl.isExpandable(node) && !treeControl.isExpanded(node)) {
             this.expandedNodeSet.delete(node.item);
+            this.closeChildrenNodes(treeControl, node.item);
           }
       });
     }
+  }
+  private closeChildrenNodes(treeControl: FlatTreeControl<FileFlatNode>, dataNode : string){
+      if (treeControl.dataNodes) {
+          treeControl.dataNodes.forEach((node) => {
+              if(treeControl.isExpandable(node) && node.item.includes(dataNode)) {
+//                console.log("close children nodes", node);
+                this.expandedNodeSet.delete(node.item);
+              }
+          });
+        }
   }
 
 //  deleteNode(node:string) {
@@ -326,4 +340,5 @@ export class NavigationTreeComponent implements OnInit  {
     }
     return null;
   }
+
 }
