@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.text.StringSubstitutor;
-
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.StreamsAgent;
 import com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils;
@@ -24,16 +22,19 @@ import com.jkoolcloud.tnt4j.streams.custom.dirStream.StreamingJobListener;
 import com.jkoolcloud.tnt4j.streams.custom.dirStream.StreamingJobLogger;
 import com.jkoolcloud.tnt4j.streams.inputs.StreamingStatus;
 import com.jkoolcloud.tnt4j.streams.inputs.TNTInputStreamStatistics;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.Init;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.MetadataProvider;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StringUtils;
 
 public class StreamControls {
+
+	private static MetadataProvider metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
 
 	private static final String FILE_WILDCARD_NAME = "streams_job_*.xml";
 
 	public static void restartStreams(String streamName) {
 
-		String mainCfgPath = Init.getPaths().getMainConfigPath();
+		String mainCfgPath = metadataProvider.getMainCfgPath();
 		BufferedReader bufferedReader = null;
 		try {
 			bufferedReader = new BufferedReader(new FileReader(mainCfgPath));
@@ -138,7 +139,7 @@ public class StreamControls {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 
-		return StringSubstitutor.replace(template, placeholderToValue);
+		return StringUtils.substitutePlaceholders(template, placeholderToValue);
 	}
 
 	private static String saveConfig(String config, String dirPath, String cfgName) {
@@ -153,9 +154,9 @@ public class StreamControls {
 	}
 
 	public static void processRequest(String[] blocksArr) {
-		String streamTemplatePath = Init.getPaths().getReplayTemplatePath();
+		String streamTemplatePath = metadataProvider.getReplayTemplatePath();
 
-		String userRequests = Init.getPaths().getMonitoredPath();
+		String userRequests = metadataProvider.getMonitoredFolder();
 
 		if (streamTemplatePath == null || streamTemplatePath.isEmpty()) {
 			LoggerWrapper.addMessage(OpLevel.ERROR, "No template found");

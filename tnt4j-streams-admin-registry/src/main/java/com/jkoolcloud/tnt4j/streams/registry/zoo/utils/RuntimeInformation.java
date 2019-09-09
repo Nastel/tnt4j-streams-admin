@@ -25,6 +25,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 
 import com.codahale.metrics.jvm.ThreadDump;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.Init;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.streams.ZookeeperOutputStream;
 import com.sun.management.OperatingSystemMXBean;
 
@@ -191,7 +192,7 @@ public class RuntimeInformation {
 	}
 
 	public static String getMainConfigPath() {
-		String mainConfigPath = System.getProperty("mainCfg");
+		String mainConfigPath = Init.getPaths().getMainConfigPath();
 
 		return mainConfigPath;
 	}

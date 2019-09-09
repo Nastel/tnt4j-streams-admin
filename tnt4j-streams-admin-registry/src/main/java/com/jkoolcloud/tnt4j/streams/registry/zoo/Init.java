@@ -1,30 +1,16 @@
-/*
- * Copyright 2014-2019 JKOOL, LLC.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.jkoolcloud.tnt4j.streams.registry.zoo;
 
-import java.util.Collection;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.eclipse.jetty.http.HttpVersion;
@@ -35,34 +21,134 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.xml.sax.SAXException;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.streams.StreamsAgent;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.authentication.TokenAuth;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.JettyConfigProvider;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.*;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.customJettyLogger;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.StreamControls;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.CuratorUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.ValidatorUtils;
 
-/**
- * The type Init.
- */
 public class Init {
 
-	private static AtomicBoolean hasStreamsAdminStarted = new AtomicBoolean(false);
-	public static TokenAuth tokenAuth = new TokenAuth();
-	private static JettyConfigProvider jettyConfigProvider = new JettyConfigProvider(
-			System.getProperty("streamsAdmin"));
+	private static final Root root;
+
+	private static final Zookeeper zookeeper;
+	private static final Jetty jetty;
+	private static final Paths paths;
+	private static final Variables variables;
+
+	private static final TokenAuth readToken = new TokenAuth();
+	private static final TokenAuth actionToken = new TokenAuth();
+
+	private static Server server = new Server();
+	private static CuratorWrapper curatorWrapper;
+
+	private static AtomicBoolean streamsAdminRunning = new AtomicBoolean(false);
+
+	static {
+		root = JsonUtils.jsonToObject(System.getProperty("streamsAdmin"), Root.class);
+
+		zookeeper = root.getZookeeper();
+		jetty = root.getJetty();
+		paths = root.getPaths();
+		variables = root.getVariables();
+
+		String connectString = zookeeper.getConnectString();
+		String zklogin = zookeeper.getZklogin();
+		String zkpass = zookeeper.getZkpass();
+
+		curatorWrapper = new CuratorWrapper(zklogin, zkpass, connectString);
+		curatorWrapper.start();
+	}
+
+	public static TokenAuth getReadToken() {
+		return readToken;
+	}
+
+	public static TokenAuth getActionToken() {
+		return actionToken;
+	}
+
+	public static Zookeeper getZookeeper() {
+		return zookeeper;
+	}
+
+	public static Jetty getJetty() {
+		return jetty;
+	}
+
+	public static Paths getPaths() {
+		return paths;
+	}
+
+	private String replacePlaceholders(String content) {
+		return StringSubstitutor.replace(content, variables.getAdditionalProperties());
+	}
+
+	private void createNode(String path, String data) {
+		data = replacePlaceholders(data);
+		path = replacePlaceholders(path);
+		if (curatorWrapper.doesNodeExist(path)) {
+			curatorWrapper.setData(path, data);
+		} else {
+			curatorWrapper.createNode(path);
+			curatorWrapper.setData(path, data);
+		}
+
+		if (path.contains("_actionToken")) {
+			curatorWrapper.setData(path, actionToken.getIdentifier());
+		} else if (path.contains("_readToken")) {
+			curatorWrapper.setData(path, readToken.getIdentifier());
+		}
+
+	}
+
+	private void createBaseTree(List<AgentNode> agentNodeList) {
+		for (AgentNode agentNode : agentNodeList) {
+
+			String path = agentNode.getPath();
+			String data = JsonUtils.objectToString(agentNode.getAdditionalProperties());
+
+			createNode(path, data);
+		}
+	}
+
+	private void createStreamNodes(List<StreamNode> streamNodeList) {
+
+		Set<String> streams = null;
+		try {
+			streams = FileUtils.getStreamsAndClasses(paths.getMainConfigPath()).keySet();
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			e.printStackTrace();
+		}
+
+		for (StreamNode streamNode : streamNodeList) {
+			String template = streamNode.getPath();
+
+			Map<String, Object> subs = new HashMap<>();
+			for (String stream : streams) {
+				subs.put("streamName", stream);
+
+				String path = StringSubstitutor.replace(template, subs);
+
+				String data = JsonUtils.objectToString(streamNode.getAdditionalProperties());
+
+				createNode(path, data);
+			}
+		}
+	}
 
 	private ServerConnector setupSsl(Server server) {
 
-		String keyStorePath = jettyConfigProvider.getKeyStorePath();
-		String keyStorePassword = jettyConfigProvider.getKeyStorePassword();
-		String KeyManagerPassword = jettyConfigProvider.getKeyManagerPassword();
-		int jettySecurePort = Integer.parseInt(jettyConfigProvider.getJettySecurePort());
+		String keyStorePath = jetty.getKeyStorePath();
+		String keyStorePassword = jetty.getKeyStorePassword();
+		String KeyManagerPassword = jetty.getKeyManagerPassword();
+		int jettySecurePort = jetty.getSecurePort();
 
 		SslContextFactory sslContextFactory = new SslContextFactory.Server();
 		sslContextFactory.setKeyStorePath(keyStorePath);
@@ -90,9 +176,7 @@ public class Init {
 		return https;
 	}
 
-	private void startJetty(Properties properties) {
-
-		Server server = new Server();
+	private void configureConnectors() {
 
 		ServletContextHandler servletHandler = new ServletContextHandler();
 
@@ -101,7 +185,8 @@ public class Init {
 				"com.jkoolcloud.tnt4j.streams.registry.zoo.rest.RestScanner");
 
 		servletHandler.setInitParameter("resteasy.providers",
-				"com.jkoolcloud.tnt4j.streams.registry.zoo.authentication.RequestFilter");
+				"com.jkoolcloud.tnt4j.streams.registry.zoo.authentication.ReadRequestFilter,"
+						+ "com.jkoolcloud.tnt4j.streams.registry.zoo.authentication.ActionRequestFilter");
 
 		HandlerCollection handlers = new HandlerCollection();
 		handlers.setHandlers(new Handler[] { servletHandler, new DefaultHandler() });
@@ -110,7 +195,9 @@ public class Init {
 		server.setConnectors(new Connector[] { setupSsl(server) });
 
 		server.setRequestLog(new customJettyLogger());
+	}
 
+	private void startJetty() {
 		try {
 			server.start();
 		} catch (Exception e) {
@@ -118,70 +205,21 @@ public class Init {
 		}
 	}
 
-	public void createZkTree(Properties properties) {
-		String[] nodeList = properties.getProperty("nodeList").split(",");
-
-		for (String node : nodeList) {
-
-			String nodeDescription = properties.getProperty(node);
-
-			String[] nodePathAndEndpoint = nodeDescription.split(";");
-
-			// nodePathAndEndpoint must always contain a path, but an rest endpoint is optional
-			// 0 = zk path, 1 = rest endpoint
-			if (nodePathAndEndpoint.length == 2) {
-				if (!CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
-					CuratorUtils.createNode(nodePathAndEndpoint[0]);
-					CuratorUtils.setData(nodePathAndEndpoint[0], nodePathAndEndpoint[1]);
-				} else if (CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
-					CuratorUtils.setData(nodePathAndEndpoint[0], nodePathAndEndpoint[1]);
-				}
-			} else {
-				if (!CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
-					CuratorUtils.createNode(nodePathAndEndpoint[0]);
-				} else if (node.equals("authToken") && CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
-					CuratorUtils.setData(nodePathAndEndpoint[0], tokenAuth.getIdentifier());
-				}
-			}
+	private void stopJetty() {
+		try {
+			server.stop();
+		} catch (Exception e) {
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 	}
 
-	private void publishStreams(Properties properties) {
+	private void dirStreaming(String dir) {
 
-		String[] streamNodeNames = properties.getProperty("streamsNodeList").split(",");
-
-		Collection<String> streams = StreamsAgent.getRunningStreamNames();
-
-		for (String stream : streams) {
-			Map<String, Object> placeholders = new HashMap<>();
-			placeholders.put("streamName", stream);
-
-			for (String streamNodeName : streamNodeNames) {
-				String templateNodePath = properties.getProperty(streamNodeName);
-
-				String resolvedNodePath = StringSubstitutor.replace(templateNodePath, placeholders);
-
-				String[] nodePathAndEndpoint = resolvedNodePath.split(";");
-
-				// nodePathAndEndpoint must always contain a path, but an rest endpoint is optional
-				// 0 = zk path, 1 = rest endpoint
-				if (nodePathAndEndpoint.length == 2) {
-					if (!CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
-						CuratorUtils.createNode(nodePathAndEndpoint[0]);
-						CuratorUtils.setData(nodePathAndEndpoint[0], nodePathAndEndpoint[1]);
-					} else if (CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
-						CuratorUtils.setData(nodePathAndEndpoint[0], nodePathAndEndpoint[1]);
-					}
-				} else {
-					if (!CuratorUtils.doesNodeExist(nodePathAndEndpoint[0])) {
-						CuratorUtils.createNode(nodePathAndEndpoint[0]);
-					}
-				}
-			}
+		if (dir == null || dir.isEmpty()) {
+			LoggerWrapper.addMessage(OpLevel.INFO, "Dir streaming is off");
+			return;
 		}
-	}
 
-	private void startDaemons(Properties properties) {
 		ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2, new ThreadFactory() {
 			@Override
 			public Thread newThread(Runnable r) {
@@ -191,24 +229,15 @@ public class Init {
 			}
 		});
 
-		executorService.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				publishStreams(properties);
-			}
-		}, 1000, 5000, TimeUnit.MILLISECONDS);
-
 		executorService.submit(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					String dirToMonitor = properties.getProperty("userRequestsPath");
-					if (ValidatorUtils.isResourceAvailable(dirToMonitor, ValidatorUtils.Resource.DIRECTORY)) {
+					if (ValidatorUtils.isResourceAvailable(dir, ValidatorUtils.Resource.DIRECTORY)) {
 						LoggerWrapper.addMessage(OpLevel.INFO, "starting dir streaming");
-						StreamControls.dirStreaming(dirToMonitor);
+						StreamControls.dirStreaming(dir);
 					}
 				} catch (Exception e) {
-
 					LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 				}
 			}
@@ -216,18 +245,16 @@ public class Init {
 	}
 
 	public Init() {
-		if (hasStreamsAdminStarted.get()) {
-			return;
+
+		if (!streamsAdminRunning.get()) {
+			streamsAdminRunning.set(true);
+			createBaseTree(zookeeper.getAgentNodes());
+			createStreamNodes(zookeeper.getStreamNodes());
+			dirStreaming(paths.getMonitoredPath());
+			configureConnectors();
+			startJetty();
 		}
-		hasStreamsAdminStarted.set(true);
-
-		LoggerWrapper.addMessage(OpLevel.INFO, "Starting");
-
-		Properties properties = FileUtils.getProperties(System.getProperty("streamsAdmin"));
-
-		createZkTree(properties);
-		startDaemons(properties);
-		startJetty(properties);
 
 	}
+
 }

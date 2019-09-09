@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.Init;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 
 public class RuntimeInfoWrapper {
@@ -133,7 +134,7 @@ public class RuntimeInfoWrapper {
 	public static Map<String, Object> getVersionsProperties() {
 		Map<String, Object> versions = new HashMap<>();
 
-		Map<String, Object> streamVersionsMap = FileUtils.getLibsVersions(System.getProperty("libraries"),
+		Map<String, Object> streamVersionsMap = FileUtils.getLibsVersions(Init.getPaths().getLibrariesPath(),
 				Arrays.asList("tnt4j", "tnt4j-streams-core", "jesl"));
 
 		String javaVersion = RuntimeInformation.getJavaVersion();

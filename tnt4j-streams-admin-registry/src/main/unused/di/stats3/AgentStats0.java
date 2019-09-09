@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -12,31 +13,53 @@ import org.xml.sax.SAXException;
 
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.admin.utils.log.StringBufferAppender;
 import com.jkoolcloud.tnt4j.streams.inputs.StreamThread;
 import com.jkoolcloud.tnt4j.streams.inputs.TNTInputStreamStatistics;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.Init;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.MetadataProvider;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.RuntimeInfo;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.*;
 
 public class AgentStats {
 
+	private static final MetadataProvider metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
+
 	public static String getConfigs() {
 
-		List<Map<String, Object>> configs = FileUtils.getConfigFilesSystemProp();
+		Set<Map<String, Object>> fullConfigurationsList = new HashSet<>();
 
-		return JsonUtils.objectToString(configs);
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getConfigUiMetadata(),
+				new TypeReference<HashMap<String, Object>>() {
+				});
+
+		String configsPath = metadataProvider.getMainCfgPath();
+
+		List<Map<String, Object>> configs = FileUtils.getConfigs(configsPath);
+		List<Map<String, Object>> configs2 = FileUtils.getConfigFilesSystemProp();
+
+		Stream.of(configs, configs2).forEach(fullConfigurationsList::addAll);
+
+		Map<String, Object> box = new HashMap<>();
+
+		box.put("config", uiMetadata);
+		box.put("data", fullConfigurationsList);
+
+		return JsonUtils.objectToString(box);
 	}
 
 	private static String getFile(String file, String path) {
 
-		String filePath = FileUtils.findFile(path, file);
+		String contentPath = path;
+
+		String filePath = FileUtils.findFile(contentPath, file);
 		String content = null;
 
 		try {
-			content = FileUtils.readFile(filePath, Charset.defaultCharset());
+			content = com.jkoolcloud.tnt4j.streams.admin.utils.io.FileUtils.readFile(filePath,
+					Charset.defaultCharset());
 		} catch (IOException e) {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
@@ -59,21 +82,35 @@ public class AgentStats {
 	}
 
 	public static String getFile(String fileName) {
-		return AgentStats.getFile(fileName, Init.getPaths().getLogsPath());
+		return AgentStats.getFile(fileName, metadataProvider.getLogsPath());
 	}
 
 	public static String getDownloadables() {
 
-		List<String> logs = FileUtils.getAvailableFiles(Init.getPaths().getLogsPath());
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getDownloadablesUiMetadata(),
+				new TypeReference<HashMap>() {
+				});
+		String logsPath = metadataProvider.getLogsPath();
+
+		List<String> logs = FileUtils.getAvailableFiles(logsPath);
 
 		Map<String, Object> downloadablesMap = new HashMap<>();
 
 		downloadablesMap.put("logs", logs);
 
-		return JsonUtils.objectToString(downloadablesMap);
+		Map<String, Object> box = new HashMap<>();
+
+		box.put("config", uiMetadata);
+		box.put("data", downloadablesMap);
+
+		return JsonUtils.objectToString(box);
 	}
 
 	public static String getLogs() {
+
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getLogsUiMetadata(),
+				new TypeReference<HashMap>() {
+				});
 
 		StringBufferAppender stringBufferAppenderNormal = null;
 		StringBufferAppender stringBufferAppenderError = null;
@@ -93,23 +130,50 @@ public class AgentStats {
 			logs.put("Service error log", stringBufferAppenderError.getLogs());
 		}
 
-		return JsonUtils.objectToString(logs);
+		Map<String, Object> box = new HashMap<>();
+
+		box.put("config", uiMetadata);
+		box.put("data", logs);
+
+		return JsonUtils.objectToString(box);
 	}
 
 	public static String agentRuntime() {
-		return JsonUtils.objectToString(AgentStats.getRuntime());
+
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getStreamAgentUiMetadata(),
+				new TypeReference<HashMap<String, Object>>() {
+				});
+
+		Map<String, Object> box = new HashMap<>();
+
+		box.put("config", uiMetadata);
+		box.put("data", AgentStats.getRuntime());
+
+		return JsonUtils.objectToString(box);
 	}
 
 	public static String runtimeInformation() {
 
-		return JsonUtils.objectToString(AgentStats.getRuntime());
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getRuntimeUiMetadata(),
+				new TypeReference<HashMap<String, Object>>() {
+				});
+
+		Map<String, Object> box = new HashMap<>();
+
+		box.put("config", uiMetadata);
+		box.put("data", AgentStats.getRuntime());
+
+		return JsonUtils.objectToString(box);
 	}
 
 	public static String getSamples() {
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getSampleConfigsUiMetadata(),
+				new TypeReference<HashMap<String, Object>>() {
+				});
 
-		String streamConfigsPath = Init.getPaths().getSampleCfgsPath();
+		String streamConfigsPath = metadataProvider.getSampleCfgsPath();
 
-		String mainConfigPath = Init.getPaths().getMainConfigPath();
+		String mainConfigPath = metadataProvider.getMainCfgPath();
 
 		List<String> parsersUriList = null;
 		try {
@@ -118,23 +182,32 @@ public class AgentStats {
 			parsersUriList = new ArrayList<>();
 		}
 
-		List<Map<String, Object>> cfgNameToContent = new ArrayList<>();
+		List<Map<String, Object>> mapList = new ArrayList<>();
 
 		for (String parserUri : parsersUriList) {
 			String pathToParser = streamConfigsPath + "/" + parserUri;
 
 			File file = new File(pathToParser);
 
-			cfgNameToContent.add(FileUtils.FileNameAndContentToMap(file, "name", "config"));
+			mapList.add(FileUtils.FileNameAndContentToMap(file, "name", "config"));
 		}
-		cfgNameToContent.add(FileUtils.FileNameAndContentToMap(new File(mainConfigPath), "name", "config"));
+		mapList.add(FileUtils.FileNameAndContentToMap(new File(mainConfigPath), "name", "config"));
 
-		return JsonUtils.objectToString(cfgNameToContent);
+		Map<String, Object> box = new HashMap<>();
+
+		box.put("config", uiMetadata);
+		box.put("data", mapList);
+
+		return JsonUtils.objectToString(box);
 	}
 
 	public static String getThreadDump() {
 
 		String currentTime = TimeUtils.getCurrentTimeStr();
+
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getThreadDumpUiMetadata(),
+				new TypeReference<HashMap<String, Object>>() {
+				});
 
 		String threadDump = RuntimeInformation.getThreadDump();
 
@@ -143,12 +216,16 @@ public class AgentStats {
 		data.put("threadDump", threadDump);
 		data.put("timestamp", currentTime);
 
-		return JsonUtils.objectToString(data);
+		Map<String, Object> box = new HashMap<>();
+		box.put("config", uiMetadata);
+		box.put("data", data);
+
+		return JsonUtils.objectToString(box);
 	}
 
 	public static String getAllStreamsAndMetricsJson() {
 
-		String mainCfgPath = Init.getPaths().getMainConfigPath();
+		String mainCfgPath = metadataProvider.getMainCfgPath();
 
 		Map<String, Object> streamToClassMap = null;
 
@@ -158,9 +235,11 @@ public class AgentStats {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 
+		Set<String> streamNames = streamToClassMap.keySet();
+
 		Map<String, Map<String, Metric>> streamToMetricsMap = AgentStats.getAllStreamsAndMetrics();
 
-		for (String stream : streamToClassMap.keySet()) {
+		for (String stream : streamNames) {
 			if (!streamToMetricsMap.containsKey(stream)) {
 				streamToMetricsMap.put(stream, new HashMap<>());
 			}

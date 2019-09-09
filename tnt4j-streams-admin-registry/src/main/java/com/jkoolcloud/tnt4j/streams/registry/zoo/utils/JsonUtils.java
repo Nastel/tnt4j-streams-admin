@@ -16,11 +16,10 @@
 
 package com.jkoolcloud.tnt4j.streams.registry.zoo.utils;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
@@ -39,16 +38,6 @@ public class JsonUtils {
 
 	}
 
-	public static Map<String, Object> jsonToMap(String value, TypeReference typeReference) {
-		Map<String, Object> data = null;
-		try {
-			data = JsonUtils.mapper.readValue(value, typeReference);
-		} catch (IOException e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
-		}
-		return data;
-	}
-
 	public static String objectToString(Object json) {
 		String jsonStr = null;
 		try {
@@ -57,6 +46,18 @@ public class JsonUtils {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 		return jsonStr;
+	}
+
+	public static <T> T jsonToObject(String filePath, Class<T> cls) {
+
+		T data = null;
+		try {
+			data = JsonUtils.mapper.readValue(new File(filePath), cls);
+		} catch (IOException e) {
+			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+		}
+
+		return data;
 	}
 
 }
