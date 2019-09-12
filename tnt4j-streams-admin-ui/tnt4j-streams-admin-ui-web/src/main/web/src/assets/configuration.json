@@ -194,7 +194,7 @@
 			"MethodChoiceName" : "edit"
 	},
 	
-	"SecretKeyForEncryption" : "0123456789123456",
+	"SecretKeyForEncryption" : "0123456789123456pp",
 			
 	"ZooKeeperTreeNodes" : "https://localhost:8443/testLog/registry/nodeTree",
 	
@@ -203,6 +203,10 @@
 	"LoginRequestPath" : "https://localhost:8443/testLog/authenticate",
 	
 	"BaseAddress" : "https://localhost:8443/testLog",
+	
+	"reCaptchaRequest" : "https://localhost:8443/testLog/reCaptcha",
+	
+	"siteKey" : "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
 	
 	"ZooKeeperDataCall" : [
 		"/list",

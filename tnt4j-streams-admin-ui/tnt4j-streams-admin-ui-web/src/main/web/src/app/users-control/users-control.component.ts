@@ -51,8 +51,11 @@ export class UserControlComponent implements OnInit {
   clustersListFull: string[];
   clustersChoice = new FormControl();
 
-  //Encrypt data to send
+  //Encrypt data to send and authenticate properties
   encryptSecretKey: string;
+  reCaptchaCheck : boolean = false;
+  @ViewChild('reCaptcha') reCaptchaComponent;
+  reCaptchaKey: string = this.configurationHandler.CONFIG["siteKey"];
 
   //UsersTableParams
   @ViewChild('matUsersData') sortUsersData: MatSort;
@@ -136,10 +139,6 @@ export class UserControlComponent implements OnInit {
     }
   }
 
-//  public resolved(captchaResponse: string) {
-//    console.log(`Resolved captcha with response: ${captchaResponse}`);
-//  }
-
   onKeyInputRemoveUser(event){
     this.clearFormData();
     let username = event.target.value;
@@ -170,10 +169,8 @@ export class UserControlComponent implements OnInit {
     for(let user in  this.usersListForAdmin){
         let tempUserParamList = [];
         tempUserParamList["username"] =  this.usersListForAdmin[user];
-        tempUserParamList["password"] = "***********";
         usersInfo.push(tempUserParamList);
     }
-    this.displayedColumnsUsers = this.addParamToListIfNotExists(this.displayedColumnsUsers, "password");
     this.dataSourceUsers = new MatTableDataSource(usersInfo);
     setTimeout(() => this.dataSourceUsers.paginator = this.paginatorUsersData);
     setTimeout(() => this.dataSourceUsers.sort = this.sortUsersData);
@@ -486,6 +483,33 @@ export class UserControlComponent implements OnInit {
   clearFormData(){
      this.fillCheckUncheckObject(this.clustersList, "");
   }
+  /** ------------------------- The reCaptcha confirmation methods --------------------- */
+
+  public resolved(captchaResponse: string) {
+    if(captchaResponse!=null){
+      this.blockUI.start("Checking captcha...");
+      console.log(`Resolved captcha with response: ${captchaResponse}`);
+      console.log(captchaResponse);
+      try{
+        this.data.captchaCheck(captchaResponse).subscribe( data => {
+        console.log(data["re-captcha"]);
+
+          this.reCaptchaCheck = true;
+          this.blockUI.stop();
+          if(!this.utilsSvc.isObject(data["re-captcha"])){
+            this.controlUtils.openDialogWithHeader(data["re-captcha"], "Message", this.pathToData );
+          }
+        }, err =>{
+           this.reCaptchaCheck = false;
+           this.blockUI.stop();
+           console.log(err);
+         });
+      }catch(e){
+        console.log("Problem on resolving the reCaptcha response", e)
+        this.blockUI.stop();
+      }
+    }
+  }
 
   /** ------------------------- The methods to refresh the users table information --------------------- */
 
@@ -494,10 +518,15 @@ export class UserControlComponent implements OnInit {
       this.blockUI.start('Updating users list...');
       let data = {};
       console.log()
-      if(JSON.parse(this.userAdmin)){
-        data = await   this.data.loadUsersList("refreshUserList", clusterList).toPromise();
-      }else{
-        data = await   this.data.loadUserData("refreshUser", clusterList, this.username).toPromise();
+      try{
+        if(JSON.parse(this.userAdmin)){
+          data = await   this.data.loadUsersList("refreshUserList", clusterList).toPromise();
+        }else{
+          data = await   this.data.loadUserData("refreshUser", clusterList, this.username).toPromise();
+        }
+      }catch(e){
+        this.controlUtils.openDialogWithHeader("Problem occurred on reloading user data", "Error", this.pathToData );
+        this.blockUI.stop();
       }
       if(!this.utilsSvc.compareStrings(data["userList"], "undefined")){
         sessionStorage.removeItem("userList");
@@ -523,22 +552,31 @@ export class UserControlComponent implements OnInit {
 
   onSubmitCreateUser() {
     this.checkTheInput();
-    if(this.allDataFilled && this.passwordMatch){
-      this.blockUI.start('Adding a new user...');
-      let tempModal =  this.formFill["password"];
-      let username = this.formFill["username"];
-      let encryptedPassword = this.encryptData(tempModal);
-      this.data.addNewUser(this.userManagementActionConfig["MethodCallName"], username, encryptedPassword, this.userRightWithClustersSelected).subscribe( data => {
-        this.form.resetForm();
-        this.reloadUsersData(username);
-        this.blockUI.stop();
-        this.controlUtils.openDialogWithHeader(data["Register"], "Message", this.pathToData );
-      }, err =>{
-         this.blockUI.stop();
-         console.log("Problem on registering a new user");
-         console.log(err);
-       });
-    }
+    if(this.allDataFilled && this.passwordMatch && this.reCaptchaCheck){
+        this.reCaptchaCheck = false;
+        this.blockUI.start('Adding a new user...');
+        let tempModal =  this.formFill["password"];
+        let username = this.formFill["username"];
+        let encryptedPassword = this.encryptData(tempModal);
+        this.data.addNewUser(this.userManagementActionConfig["MethodCallName"], username, encryptedPassword, this.userRightWithClustersSelected).subscribe( data => {
+          this.form.resetForm();
+          this.reloadUsersData(username);
+          this.blockUI.stop();
+          this.controlUtils.openDialogWithHeader(data["Register"], "Message", this.pathToData );
+        }, err =>{
+           this.blockUI.stop();
+           console.log("Problem on registering a new user");
+           console.log(err);
+         });
+      }else{
+        if(!this.reCaptchaCheck){
+          this.controlUtils.openDialogWithHeader("reCaptcha component needs to be checked", "Oops", this.pathToData );
+        }else{
+        this.reCaptchaComponent.reset();
+        this.reCaptchaCheck = false;
+//        this.form.resetForm();
+        }
+      }
   }
 
   onSubmitEditUser(){
@@ -565,10 +603,11 @@ export class UserControlComponent implements OnInit {
               });
             }
           }else{
+                  this.blockUI.start('Editing user information...');
             this.data.editUserNonAdmin(this.userManagementActionConfig["MethodCallNameAdminFalse"], username, encryptedPassword, clustersWithRights).subscribe( data => {
               this.reloadUsersData(username);
-              this.blockUI.stop();
               this.controlUtils.openDialogWithHeader(data["Edit"], "Response", this.pathToData );
+              this.blockUI.stop();
             }, err =>{
                this.blockUI.stop();
                console.log("Problem on removing user from chosen clusters");
@@ -576,6 +615,7 @@ export class UserControlComponent implements OnInit {
             });
             this.blockUI.stop();
           }
+            this.blockUI.stop();
       }
     }
   }
@@ -661,6 +701,8 @@ export class UserControlComponent implements OnInit {
      this.infoUserCall(username);
     }
     this.formActionChoice = "info";
+    this.userManagementActionConfig = this.configurationHandler.CONFIG["UserManagementForm_"+this.formActionChoice];
+    this.formHeaderLabel = this.userManagementActionConfig["FormName"];
   }
 
   chooseSubmit(){

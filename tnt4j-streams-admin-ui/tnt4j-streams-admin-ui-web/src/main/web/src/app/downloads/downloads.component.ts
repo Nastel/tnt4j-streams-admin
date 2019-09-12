@@ -141,6 +141,7 @@ export class DownloadsComponent implements OnInit {
     console.log("Sending request to :", tempPath);
       this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
         try{
+        console.log(data)
           let fileName;
           let encodedFile;
           let result = data;

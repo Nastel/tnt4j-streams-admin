@@ -34,6 +34,7 @@ export class RequestInterceptor implements HttpInterceptor {
             }
      }
     return next.handle(request).pipe(catchError((error, caught) => {
+          console.log(error)
             this.handleAuthError(error);
             return of(error);
           }) as any);

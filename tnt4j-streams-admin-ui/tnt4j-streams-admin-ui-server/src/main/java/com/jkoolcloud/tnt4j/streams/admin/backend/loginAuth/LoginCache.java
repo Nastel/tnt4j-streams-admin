@@ -1,20 +1,22 @@
 package com.jkoolcloud.tnt4j.streams.admin.backend.loginAuth;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.jkoolcloud.tnt4j.streams.admin.backend.reCaptcha.CaptchaUtils;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.PropertyData;
 import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZookeeperAccessService;
 
@@ -54,21 +56,24 @@ public class LoginCache {
         ObjectMapper objMapper = new ObjectMapper();
         ObjectWriter writer = objMapper.writer();
         UsersUtils users = new UsersUtils();
+        HashMap<String, List> clustersWithRights = objMapper.readValue("{\"/streams/v1/clusters/clusterBlockchainMainnets\" : [\"read\",\"admin\",\"action\"]," +
+                "\"/streams/v1/clusters/clusterBlockchainTestnet\" : [\"read\",\"admin\",\"action\"]}", new TypeReference<Map<String, Object>>() {});
+        users.addUser(clustersWithRights,"admin","admin", false, true);
         /**
          *   FOR UPDATING SIMPLE USER TEST
-         *
-         *         HashMap<String, List> clustersWithRights = objMapper.readValue("{\"/streams/v1/clusters/clusterBlockchainMainnets\" : [\"read\"]," +
-         *                 "\"/streams/v1/clusters/clusterBlockchainTestnet\" : [\"read\"]}", new TypeReference<Map<String, Object>>() {});
-         *         users.updateUser(clustersWithRights,"basic", "U2FsdGVkX183M6qOtbz6+GvAs9P+shsMiQjxODSWpEQ=", false);
-         *
+
+                 HashMap<String, List> clustersWithRights = objMapper.readValue("{\"/streams/v1/clusters/clusterBlockchainMainnets\" : [\"read\"]," +
+                         "\"/streams/v1/clusters/clusterBlockchainTestnet\" : [\"read\"]}", new TypeReference<Map<String, Object>>() {});
+                 users.updateUser(clustersWithRights,"basic", "U2FsdGVkX183M6qOtbz6+GvAs9P+shsMiQjxODSWpEQ=", false);
+
          */
 
         /**
          *  FOR UPDATING USER LIST FOR SIMPLE USER
+            List clustersList = Arrays.asList(new String[]{"/streams/v1/clusters/clusterBlockchainMainnets", "/streams/v1/clusters/clusterBlockchainTestnet"});
+            users.getUserList(clustersList);
          */
-
-        List clustersList = Arrays.asList(new String[]{"/streams/v1/clusters/clusterBlockchainMainnets", "/streams/v1/clusters/clusterBlockchainTestnet"});
-        users.getUserList(clustersList);
+        CaptchaUtils.verify("sometoken");
         // LOG.info("token: {}", token);
        // LOG.info("The cache set after first initialization: {} - {}", cache.asMap(),  cache.getIfPresent(token));
     }

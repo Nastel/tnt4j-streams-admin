@@ -257,6 +257,21 @@
       background: #FAFAFA;
     }
   }
+
+  .small-formSubmitButton{
+    transition: 1s;
+    background-color: Transparent;
+    border: none;
+    height: 3em;
+    width: 4em;
+    border-radius: 0.7em;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    &:hover {
+      background: #FAFAFA;
+    }
+  }
   /* ----------Log show borders------------------------------------------------*/
   .logBorderBottom {
   border: 2px solid #D8D8D8;
@@ -313,6 +328,17 @@
   .agentRuntimeTable{
   max-height: 40em !important;
   padding: 5px 20px 5px 0px;
+  }
+
+  /* -------------reCapcha scale--------------------*/
+
+  .reCaptcha {
+    transform:scale(0.77);
+    transform-origin:10 0;
+  }
+  /* -------------User managemnet--------------------*/
+  .background-bleak{
+    background-color:#dddcdc ;
   }
 
   /* -----------------------------------------------        ONE PURPOSE STYLES            -----------------------------------------------------------*/
@@ -579,11 +605,19 @@
   border-bottom-width:1px;
   border-bottom-color:black;
   border-bottom-style: solid;
+  text-decoration-color: rgba(255, 255, 255, 0.5);
   }
+
+  /* ------------- CURSOR EFFECTS--------------------*/
   .mousePointer{
   cursor: pointer;
   }
-
+  .mouseAuto{
+  cursor: default;
+  }
+  .mouseHelp{
+  cursor: help;
+  }
   /* -------------CONTENT ALIGN--------------------*/
   .text-alignCenter{
   display: flex;

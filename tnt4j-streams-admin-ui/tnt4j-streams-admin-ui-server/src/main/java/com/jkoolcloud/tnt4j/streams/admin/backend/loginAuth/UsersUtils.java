@@ -554,9 +554,9 @@ public class UsersUtils {
         }
     }
 
-    public String trimFieldLegth(String input){
-        if(input.length()>50){
-            return input.substring(0,50);
+    public String trimFieldLegth(String input, int fieldCount){
+        if(input.length()>fieldCount){
+            return input.substring(0,fieldCount);
         }else{
             return input;
         }

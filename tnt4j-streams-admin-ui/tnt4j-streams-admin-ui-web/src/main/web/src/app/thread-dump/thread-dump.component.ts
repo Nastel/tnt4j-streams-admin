@@ -172,7 +172,7 @@ export class DialogOverviewExampleDialog {
   threadsTimeStamp = "";
 
   /** Service threads data */
-  threadData: [];
+  threadData: {};
   zooKeeperData: Object;
   nodeData = "";
 
@@ -203,7 +203,7 @@ export class DialogOverviewExampleDialog {
       this.dataService.getZooKeeperNodeData(pathToData).subscribe( data => {
         try{
           this.zooKeeperData = data;
-          let result =  JSON.parse(this.zooKeeperData.toString());
+          let result = data;
           //let config = JSON.parse(result["config"]);
           let config =  result["config"];
           result = result['data'];

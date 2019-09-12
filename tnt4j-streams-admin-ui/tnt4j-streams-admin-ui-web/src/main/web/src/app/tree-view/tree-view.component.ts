@@ -72,7 +72,7 @@ export class TreeViewComponent implements OnInit {
 
   choiceMaker(configuration){
     try{
-      if(!this.utilsSvc.compareStrings(configuration['componentLoad'], 'undefined')){
+      if(!this.utilsSvc.compareStrings(configuration['componentLoad'], 'undefined') && !this.utilsSvc.compareStrings(this.zooKeeperData['data'],"")){
         this.streamDataShowChoice = configuration['componentLoad'];
       }
       else{

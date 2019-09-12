@@ -1,365 +1,370 @@
-<block-ui [delayStart]="500" [delayStop]="500">
-<div  *ngIf="utilsSvc.compareStrings(userAdmin, 'true'); else notAdmin"  class="row" >
-  <!--------------- USER TABLE -------------------->
-  <div class="col-12 col-xl-1">
-  </div>
-  <div class="col-12 col-lg-6 col-xl-5 display-inline text-alignCenter small-marginTopBottom">
-    <div  class="loginBack fullWidth large-paddingLeftRight large-paddingTop small-marginLeftRight">
-      <!--------------- Form top -------------------->
-      <div class="display-inlineFlex text-alignCenter small-paddingBottom  extraLarge-fontSize">
-        <span class="text-alignCenter extraLarge-fontSize extraSmall-marginTop">User table</span>
-        <mat-icon class="serviceIcon" style="height:3em; width: 3em;" svgIcon="loginImage"></mat-icon>
-      </div>
-      <div  class="row" >
-        <div class="col-6">
-          <mat-form-field class="filterInputField" >
-            <input (keyup)="applyFilterUsers($event.target.value)" matInput placeholder="Filter">
-          </mat-form-field>
-        </div>
-        <div class="col-6 align-alignEnd">
-          <mat-icon (click)="reloadUsersData('')" class="mousePointer" matTooltip="Reload data" svgIcon="{{'update'}}"></mat-icon>
-        </div>
-      </div>
-      <mat-table  #matUsersData="matSort" [dataSource]="dataSourceUsers" matSort>
-        <ng-container *ngFor="let column of displayedColumnsUsers" matColumnDef="{{column}}">
-          <mat-header-cell *matHeaderCellDef [ngStyle]="{
-              'background-color': this.utilsSvc.getColorInnerLabels(),
-              'color': this.utilsSvc.getColorTableLabels()
-              }"  class="agentRuntimeServiceInformationTableHeader mat-Header " mat-sort-header>
-            <span>{{column}}</span>
-          </mat-header-cell>
-          <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom">
-            <span class="mobile-label small-marginRight">  {{column}} : </span>
-            <h6 class="noMargin"><b>{{element[column]}}</b></h6> </mat-cell>
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="displayedColumnsUsers"></mat-header-row>
-        <mat-row (click)="infoUserCall(row.username)" *matRowDef="let row; columns: displayedColumnsUsers;" class="mousePointer"></mat-row>
-      </mat-table>
-      <mat-paginator #paginatorUsersData
-                     [pageSizeOptions]="[5, 10, 15, 20]"
-                     [pageSize]="10" class="agentRuntimeInformationPagginator" style="background-color: #E6E6E6;">
-      </mat-paginator>
+<block-ui [delayStart]="100" [delayStop]="100">
+  <div  *ngIf="utilsSvc.compareStrings(userAdmin, 'true'); else notAdmin"  class="row" >
+    <!--------------- empty div for side margin  -------------------->
+    <div class="col-12 col-lg-2 col-xl-3">
     </div>
-  </div>
-  <!--------------- REGISTRATION FORM -------------------->
-  <div class="col-12 col-lg-6 col-xl-5 text-alignCenter display-inline small-marginTop">
-    <div  class="loginBack fullWidth large-paddingLeftRight large-paddingTop small-marginLeftRight">
+    <!--------------- REGISTRATION FORM -------------------->
+    <div class="col-12 col-lg-8 col-xl-6 text-alignCenter display-inline small-marginTop">
+      <div  class="loginBack fullWidth large-paddingLeftRight small-paddingTop small-marginLeftRight">
+        <!--------------- FORM -------------------->
+        <form #form="ngForm" (ngSubmit)="chooseSubmit()" name="form" novalidate>
+            <!--------------- Form top -------------------->
+            <div class="display-inlineFlex text-alignCenter extraLarge-fontSize">
+              <span class="text-alignCenter large-fontSize extraSmall-marginTop">User table</span>
+              <mat-icon class="serviceIcon" style="height:3em; width: 3em;" svgIcon="loginImage"></mat-icon>
+            </div>
 
-      <!--------------- FORM -------------------->
-      <form #form="ngForm" (ngSubmit)="chooseSubmit()" name="form" novalidate>
-        <div class="form-group">
-          <!--------------- Form top -------------------->
-          <div class="display-inlineFlex text-alignCenter extraLarge-fontSize">
-            <span class="text-alignCenter extraLarge-fontSize extraSmall-marginTop">{{formHeaderLabel}}</span>
-            <mat-icon class="serviceIcon" style="height:4em; width: 4em;" svgIcon="loginImage"></mat-icon>
-          </div>
-          <!--------------- FORM CHOICE buttons -------------------->
-          <div class="displayFlex  small-paddingBottom ">
-            <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'info')" class="displayFlex">
-              <button (click)="addUserCall(formFill.username)" class="formSubmitButton">
-                <mat-icon class='serviceIcon extraSmall-marginRight mousePointer'  matTooltip="Add new user" style="height: 3em; width: 3em;" svgIcon='addUser'></mat-icon>
-              </button>
-              <div *ngIf="!compareIfExists(formFill.username); else fullUsername" class="displayFlex">
-                <button class="formSubmitButton">
-                  <mat-icon  class='serviceIcon extraSmall-marginRight' matTooltip="Select a user by clicking it's row in user table" style="height: 3em; width: 3em;"  svgIcon='info'></mat-icon>
+                <!--------------- Form top -------------------->
+                <div  class="row " >
+                  <div class="col-6">
+                    <mat-form-field class="filterInputField" >
+                      <input (keyup)="applyFilterUsers($event.target.value)" matInput placeholder="Filter">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6 align-alignEnd">
+                    <button class="small-formSubmitButton mouseHelp">
+                      <mat-icon  class='serviceIcon extraSmall-marginRight mouseHelp' matTooltip="Select a user for editing by clicking on his row" style="height: 2.2em; width: 2.2em;"  svgIcon='info'></mat-icon>
+                    </button>
+                    <button class="small-formSubmitButton">
+                    <mat-icon (click)="reloadUsersData('')" class="mousePointer" matTooltip="Reload data" svgIcon="{{'update'}}"></mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <mat-table  #matUsersData="matSort" [dataSource]="dataSourceUsers" matSort>
+                  <ng-container *ngFor="let column of displayedColumnsUsers" matColumnDef="{{column}}">
+                    <mat-header-cell *matHeaderCellDef [ngStyle]="{
+                'background-color': this.utilsSvc.getColorInnerLabels(),
+                'color': this.utilsSvc.getColorTableLabels()
+                }"  class="agentRuntimeServiceInformationTableHeader mat-Header " mat-sort-header>
+                      <span>{{column}}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom">
+                      <span class="mobile-label small-marginRight">  {{column}} : </span>
+                      <h6 class="noMargin"><b>{{element[column]}}</b></h6> </mat-cell>
+                  </ng-container>
+
+                  <mat-header-row *matHeaderRowDef="displayedColumnsUsers"></mat-header-row>
+                  <mat-row (click)="infoUserCall(row.username)" *matRowDef="let row; columns: displayedColumnsUsers;" class="mousePointer"></mat-row>
+                </mat-table>
+                <mat-paginator #paginatorUsersData
+                               [pageSizeOptions]="[1, 5, 10, 20]"
+                               [pageSize]="5" class="agentRuntimeInformationPagginator" class="backgroundUnderline" style="background-color: #E6E6E6;">
+                </mat-paginator>
+            <!--------------- FORM CHOICE buttons -------------------->
+            <div class="display-inlineFlex text-alignCenter large-fontSize ">
+              <span class="text-alignCenter large-fontSize">{{formHeaderLabel}}</span>
+            </div>
+            <div class="displayFlex  background-bleak rounded-corners">
+              <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'info')" class="displayFlex">
+                <button (click)="addUserCall(formFill.username)" class="small-formSubmitButton">
+                  <mat-icon class='serviceIcon extraSmall-marginRight mousePointer'  matTooltip="Add new user" style="height: 2.2em; width: 2.2em;" svgIcon='addUser'></mat-icon>
                 </button>
+                <div *ngIf="!compareIfExists(formFill.username); else fullUsername" class="displayFlex">
+
+                </div>
+                <ng-template #fullUsername>
+                  <div class="displayFlex" >
+                    <button (click)="editUserCall(formFill.username)" class="small-formSubmitButton">
+                      <mat-icon  class='serviceIcon extraSmall-marginRight mousePointer ' matTooltip="Edit user information" style="height: 2.2em; width: 2.2em;" svgIcon='editUser'></mat-icon>
+                    </button>
+                    <button (click)="removeUserCall(formFill.username)" class="small-formSubmitButton">
+                      <mat-icon  class='serviceIcon extraSmall-marginRight mousePointer' matTooltip="Remove user" style="height: 2.2em; width: 2.2em;"  svgIcon='removeUser'></mat-icon>
+                    </button>
+                  </div>
+                </ng-template>
               </div>
-              <ng-template #fullUsername>
-                <div class="displayFlex" >
-                  <button (click)="editUserCall(formFill.username)" class="formSubmitButton">
-                    <mat-icon  class='serviceIcon extraSmall-marginRight mousePointer ' matTooltip="Edit user information" style="height: 3em; width: 3em;" svgIcon='editUser'></mat-icon>
-                  </button>
-                  <button (click)="removeUserCall(formFill.username)" class="formSubmitButton">
-                    <mat-icon  class='serviceIcon extraSmall-marginRight mousePointer' matTooltip="Remove user" style="height: 3em; width: 3em;"  svgIcon='removeUser'></mat-icon>
+            </div>
+
+            <!--------------- FORM ACTIONS buttons -------------------->
+            <div class="displayFlex  background-bleak rounded-corners">
+              <div *ngIf="!utilsSvc.compareStrings(formActionChoice, 'info')" class="displayFlex">
+                <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'edit')">
+                  <button  class="small-formSubmitButton">
+                    <mat-icon  class="serviceIcon extraSmall-marginRight mousePointer" matTooltip="Edit user" style="height: 2.2em; width: 2.2em;" svgIcon="edit"></mat-icon>
                   </button>
                 </div>
-              </ng-template>
-            </div>
-          </div>
+                <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'add')">
+                  <button class="small-formSubmitButton" >
+                    <mat-icon  class="serviceIcon extraSmall-marginRight mousePointer" matTooltip="Add user" style="height: 2.2em; width: 2.2em;" svgIcon="save"></mat-icon>
+                  </button>
+                </div>
+                <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'remove')">
+                  <button  class="small-formSubmitButton">
+                    <mat-icon  class="serviceIcon extraSmall-marginRight mousePointer" matTooltip="Remove user" style="height: 2.2em; width: 2.2em;" svgIcon="remove"></mat-icon>
+                  </button>
+                </div>
+              </div>
 
-          <!--------------- FORM ACTIONS buttons -------------------->
-          <div class="displayFlex">
+              <div *ngIf="!utilsSvc.compareStrings(formActionChoice, 'info')" class="displayFlex">
+                <button (click)="cancelAction(formFill.username)" class="small-formSubmitButton">
+                  <mat-icon  class='serviceIcon extraSmall-marginRight mousePointer' matTooltip="Cancel" style="height: 2.2em; width: 2.2em;"  svgIcon='cancel'></mat-icon>
+                </button>
+              </div>
+            </div>
+            <!--------------- The username data -------------------->
+            <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'edit') || utilsSvc.compareStrings(formActionChoice, 'add') || utilsSvc.compareStrings(formActionChoice, 'remove')
+            ||  utilsSvc.compareStrings(formActionChoice, 'info')">
+              <section class="form-group row">
+                <div class="col-12 alignStart">
+                  <mat-icon class="serviceIcon" svgIcon="usernameField"></mat-icon>
+                  <label class="large-fontSize small-marginLeft">Username*</label>
+                </div>
+                <div class="col-12 text-alignCenter">
+                  <div class="row col-12">
+                    <input #username="ngModel" [(ngModel)]="formFill.username" [disabled]="!utilsSvc.compareStrings(formActionChoice, 'add')"  [ngClass]="{ 'is-invalid': form.submitted && username.invalid }" autocomplete="username" class="col-12 form-control"
+                             maxlength="50" name="username" required style="width:70%" type="text" />
+                    <div *ngIf="form.submitted && username.invalid" class="col-12 invalid-feedback">
+                      <div *ngIf="username.errors.required" class="text-alignCenter">Username is required</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+            <!--------------- The password data -------------------->
+            <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'edit') || utilsSvc.compareStrings(formActionChoice, 'add')">
+              <section class="form-group row">
+                <div class="col-12 alignStart">
+                  <mat-icon class="serviceIcon" svgIcon="passwordField"></mat-icon>
+                  <label class="large-fontSize small-marginLeft">Password*</label>
+                </div>
+                <div class="col-12 text-alignCenter">
+                  <div class="row col-12">
+                    <input #password="ngModel" [(ngModel)]="formFill.password" [ngClass]="{ 'is-invalid': form.submitted && password.invalid }" autocomplete="current-password"
+                           class="col-12 form-control" maxlength="50" minlength="4" name="password" required style="width:70%" type="password" />
+                    <div *ngIf="form.submitted && password.invalid" class="col-12 invalid-feedback">
+                      <div *ngIf="password.errors.required" class="text-alignCenter">Password is required</div>
+                      <div *ngIf="password.errors.minlength" class="text-alignCenter">Password must be at least 4 characters</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section class="form-group row">
+                <div class="col-12 alignStart">
+                  <mat-icon class="serviceIcon" svgIcon="passwordField"></mat-icon>
+                  <label class="large-fontSize small-marginLeft">Confirm password*</label>
+                </div>
+                <div class="col-12 text-alignCenter">
+                  <div class="row col-12">
+                    <input #passwordConfirm="ngModel" [(ngModel)]="formFill.passwordConfirm" [ngClass]="{ 'is-invalid': form.submitted && passwordConfirm.invalid }" autocomplete="current-password"
+                           class="col-12 form-control" maxlength="50" minlength="{{formFill.password.length}}" name="passwordConfirm" required style="width:70%" type="password" />
+                    <div *ngIf="form.submitted && passwordConfirm.invalid" class="col-12 invalid-feedback">
+                      <div *ngIf="passwordConfirm.errors.required" class="text-alignCenter">Password repeat is required </div>
+                      <div *ngIf="passwordConfirm.errors.minlength" class="text-alignCenter">Password repeat must mach</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+            <!--------------- The data about user clusters and rights inside a material table for edit, add and info -------------------->
+            <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'edit') || utilsSvc.compareStrings(formActionChoice, 'add')|| utilsSvc.compareStrings(formActionChoice, 'info')">
+              <mat-form-field class="filterInputField" >
+                <input (keyup)="applyFilterUser($event.target.value)" matInput placeholder="Filter">
+              </mat-form-field>
+              <mat-table  #matUserData="matSort" [dataSource]="dataSourceUser" matSort >
+                <ng-container *ngFor="let column of displayedColumnsUser" matColumnDef="{{column}}">
+                  <mat-header-cell *matHeaderCellDef [ngStyle]="{
+                'background-color': this.utilsSvc.getColorInnerLabels(),
+                'color': this.utilsSvc.getColorTableLabels()
+                }"  class="agentRuntimeServiceInformationTableHeader mat-Header " mat-sort-header>
+                    <!--------------- Tooltips for user rights -------------------->
+                    <div *ngIf="utilsSvc.compareStrings(column, 'read')">
+                      <span>{{column}}</span>
+                      <span matTooltip="The user can view the selected clusters data">
+                        <mat-icon class="serviceIcon extraSmall-marginRight" style="height: 1.5em; width: 1.5em;" svgIcon="info"></mat-icon>
+                      </span>
+                    </div>
+                    <div *ngIf="utilsSvc.compareStrings(column, 'action')">
+                      <span>{{column}}</span>
+                      <span matTooltip="The user can control the streams actions (start/stop/replay block)">
+                        <mat-icon class="serviceIcon extraSmall-marginRight" style="height: 1.5em; width: 1.5em;" svgIcon="info"></mat-icon>
+                      </span>
+                    </div>
+                    <div *ngIf="utilsSvc.compareStrings(column, 'admin'); else ">
+                      <span>{{column}}</span>
+                      <span matTooltip="The user will be able to add users to the clusters that he is assigned to">
+                        <mat-icon class="serviceIcon extraSmall-marginRight" style="height: 1.5em; width: 1.5em;" svgIcon="info"></mat-icon>
+                      </span>
+                    </div>
+                    <div *ngIf="utilsSvc.compareStrings(column, 'cluster')">
+                      <span>{{column}} *</span>
+                      <mat-icon class="serviceIcon" svgIcon="cluster"></mat-icon>
+                    </div>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom">
+                    <span class="mobile-label small-marginRight">  {{column}}</span>
+                    <div *ngIf="utilsSvc.compareStrings(column, 'cluster'); else notCluster">
+                      <h6 class="small-marginRight"><b>{{element[column]}}</b></h6>
+                    </div>
+                    <ng-template #notCluster>
+                      <mat-checkbox (change)="onChangeGetRightsAndClusters(element['cluster'], column)" [checked]="checkUncheckedBoxes[element['cluster']][column] ||
+                      utilsSvc.compareStrings('undefined',checkUncheckedBoxes[element['cluster']][column])" [disabled]="checkUncheckedBoxes[element['cluster']][column] || utilsSvc.compareStrings(formActionChoice, 'info')" ></mat-checkbox>
+                    </ng-template>
+                  </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumnsUser"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumnsUser;"></mat-row>
+              </mat-table>
+              <mat-paginator #paginatorUserData
+                             [pageSizeOptions]="[2, 5, 10, 15, 20]"
+                             [pageSize]="5" class="agentRuntimeInformationPagginator" style="background-color: #E6E6E6;">
+              </mat-paginator>
+            </div>
+        </form>
+        <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'add')" class="text-alignCenter">
+          <re-captcha #reCaptcha (resolved)="resolved($event)" [siteKey]="reCaptchaKey"
+                      class="reCaptcha text-alignCenter"
+                      theme="light"></re-captcha>
+        </div>
+      </div>
+    </div>
+    <!--------------- empty div for side margin  -------------------->
+    <div class="col-12 col-lg-2 col-xl-3">
+    </div>
+  </div>
+
+
+
+
+<!--------------- FORM FOR SIMPLE USER -------------------->
+  <ng-template #notAdmin>
+    <div  class="row">
+      <div class="col-3"></div>
+      <div class="col-6 display-inline text-alignCenter small-marginTop">
+      <div  class="loginBack large-paddingLeftRight large-paddingTop large-marginLeftRight">
+
+        <!--------------- FORM -------------------->
+        <form #form="ngForm" (ngSubmit)="chooseSubmit()" name="form" novalidate>
+          <div class="form-group">
+            <!--------------- Form top -------------------->
+            <div class="display-inlineFlex text-alignCenter extraLarge-fontSize">
+              <span class="text-alignCenter extraLarge-fontSize extraSmall-marginTop">{{formHeaderLabel}}</span>
+              <mat-icon class="serviceIcon" style="height:4em; width: 4em;" svgIcon="loginImage"></mat-icon>
+            </div>
+            <!--------------- FORM ACTIONS buttons -------------------->
+
+            <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'info')">
+              <div class="displayFlex">
+                  <button  (click)= "editUserCall(formFill.username)" class="small-formSubmitButton">
+                    <mat-icon  class="serviceIcon extraSmall-marginRight mousePointer" matTooltip="Edit user" style="height: 2.2em; width: 2.2em;" svgIcon="edit"></mat-icon>
+                  </button>
+              </div>
+            </div>
+
             <div *ngIf="!utilsSvc.compareStrings(formActionChoice, 'info')" class="displayFlex">
               <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'edit')">
-                <button  class="formSubmitButton">
-                  <mat-icon  class="serviceIcon extraSmall-marginRight mousePointer" matTooltip="Edit user" style="height: 3em; width: 3em;" svgIcon="edit"></mat-icon>
+                <button  class="small-formSubmitButton">
+                  <mat-icon  class="serviceIcon extraSmall-marginRight mousePointer" matTooltip="Edit user" style="height: 2.2em; width: 2.2em;" svgIcon="edit"></mat-icon>
                 </button>
               </div>
-              <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'add')">
-                <button class="formSubmitButton">
-                  <mat-icon  class="serviceIcon extraSmall-marginRight mousePointer" matTooltip="Add user" style="height: 3em; width: 3em;" svgIcon="save"></mat-icon>
-                </button>
-              </div>
-              <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'remove')">
-                <button  class="formSubmitButton">
-                  <mat-icon  class="serviceIcon extraSmall-marginRight mousePointer" matTooltip="Remove user" style="height: 3em; width: 3em;" svgIcon="remove"></mat-icon>
-                </button>
-              </div>
+              <button (click)="cancelAction(formFill.username)" class="small-formSubmitButton">
+                <mat-icon  class='serviceIcon extraSmall-marginRight mousePointer' matTooltip="Cancel" style="height: 2.2em; width: 2.2em;"  svgIcon='cancel'></mat-icon>
+              </button>
             </div>
+            <!--------------- The username data -------------------->
+              <section class="form-group row">
+                <div class="col-12 alignStart">
+                  <mat-icon class="serviceIcon" svgIcon="usernameField"></mat-icon>
+                  <label class="large-fontSize small-marginLeft">Username*</label>
+                </div>
+                <div class="col-12 text-alignCenter">
+                  <div class="row col-12">
+                    <input #username="ngModel" [(ngModel)]="formFill.username" [disabled]="true" class="col-12 form-control"  maxlength="50"
+                           name="username" required style="width:70%" type="text" value="{{username}}" />
+                  </div>
+                </div>
+              </section>
+            <!--------------- The password data -------------------->
 
             <div *ngIf="!utilsSvc.compareStrings(formActionChoice, 'info')" class="displayFlex">
-              <button (click)="cancelAction(formFill.username)" class="formSubmitButton">
-                <mat-icon  class='serviceIcon extraSmall-marginRight mousePointer' matTooltip="Cancel" style="height: 3em; width: 3em;"  svgIcon='cancel'></mat-icon>
-              </button>
+              <section class="form-group row">
+                <div class="col-12 alignStart">
+                  <mat-icon class="serviceIcon" svgIcon="passwordField"></mat-icon>
+                  <label class="large-fontSize small-marginLeft">Password*</label>
+                </div>
+                <div class="col-12 text-alignCenter">
+                  <div class="row col-12">
+                    <input #password="ngModel" [(ngModel)]="formFill.password" [ngClass]="{ 'is-invalid': form.submitted && password.invalid }" autocomplete="current-password"
+                           class="col-12 form-control" maxlength="50" minlength="4" name="password" required style="width:70%" type="password" />
+                    <div *ngIf="form.submitted && password.invalid" class="col-12 invalid-feedback">
+                      <div *ngIf="password.errors.required" class="text-alignCenter">Password is required</div>
+                      <div *ngIf="password.errors.minlength" class="text-alignCenter">Password must be at least 4 characters</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section class="form-group row">
+                <div class="col-12 alignStart">
+                  <mat-icon class="serviceIcon" svgIcon="passwordField"></mat-icon>
+                  <label class="large-fontSize small-marginLeft">Confirm password*</label>
+                </div>
+                <div class="col-12 text-alignCenter">
+                  <div class="row col-12">
+                    <input #passwordConfirm="ngModel" [(ngModel)]="formFill.passwordConfirm" [ngClass]="{ 'is-invalid': form.submitted && passwordConfirm.invalid }" autocomplete="current-password"
+                           class="col-12 form-control" maxlength="50" minlength="{{formFill.password.length}}" name="passwordConfirm" required style="width:70%" type="password" />
+                    <div *ngIf="form.submitted && passwordConfirm.invalid" class="col-12 invalid-feedback">
+                      <div *ngIf="passwordConfirm.errors.required" class="text-alignCenter">Password repeat is required</div>
+                      <div *ngIf="passwordConfirm.errors.minlength" class="text-alignCenter">Password repeat must mach</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
             </div>
-          </div>
-          <!--------------- The username data -------------------->
-          <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'edit') || utilsSvc.compareStrings(formActionChoice, 'add') || utilsSvc.compareStrings(formActionChoice, 'remove')
-          ||  utilsSvc.compareStrings(formActionChoice, 'info')">
-            <section class="form-group row small-paddingBottom">
-              <div class="col-12 alignStart">
-                <mat-icon class="serviceIcon" svgIcon="usernameField"></mat-icon>
-                <label class="large-fontSize small-marginLeft">Username*</label>
-              </div>
-              <div class="col-12 text-alignCenter">
-                <div class="row col-12">
-                  <input #username="ngModel" [(ngModel)]="formFill.username" [disabled]="!utilsSvc.compareStrings(formActionChoice, 'add')"  [ngClass]="{ 'is-invalid': form.submitted && username.invalid }" autocomplete="username" class="col-12 form-control"
-                           maxlength="50" name="username" required style="width:70%" type="text" />
-                </div>
-              </div>
-            </section>
-          </div>
-          <!--------------- The password data -------------------->
-          <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'edit') || utilsSvc.compareStrings(formActionChoice, 'add')">
-            <section class="form-group row small-paddingBottom">
-              <div class="col-12 alignStart">
-                <mat-icon class="serviceIcon" svgIcon="passwordField"></mat-icon>
-                <label class="large-fontSize small-marginLeft">Password*</label>
-              </div>
-              <div class="col-12 text-alignCenter">
-                <div class="row col-12">
-                  <input #password="ngModel" [(ngModel)]="formFill.password" [ngClass]="{ 'is-invalid': form.submitted && password.invalid }" autocomplete="current-password"
-                         class="col-12 form-control" maxlength="50" minlength="4" name="password" required style="width:70%" type="password" />
-                  <div *ngIf="form.submitted && password.invalid" class="col-12 invalid-feedback">
-                    <div *ngIf="password.errors.required" class="text-alignCenter">Password is required</div>
-                    <div *ngIf="password.errors.minlength" class="text-alignCenter">Password must be at least 4 characters</div>
-                  </div>
-                </div>
-              </div>
-            </section>
-            <section class="form-group row small-paddingBottom">
-              <div class="col-12 alignStart">
-                <mat-icon class="serviceIcon" svgIcon="passwordField"></mat-icon>
-                <label class="large-fontSize small-marginLeft">Confirm password*</label>
-              </div>
-              <div class="col-12 text-alignCenter">
-                <div class="row col-12">
-                  <input #passwordConfirm="ngModel" [(ngModel)]="formFill.passwordConfirm" [ngClass]="{ 'is-invalid': form.submitted && passwordConfirm.invalid }" autocomplete="current-password"
-                         class="col-12 form-control" maxlength="50" minlength="4" name="passwordConfirm" required style="width:70%" type="password" />
-                  <div *ngIf="form.submitted && passwordConfirm.invalid" class="col-12 invalid-feedback">
-                    <!--<div *ngIf="passwordConfirm.errors.required" class="text-alignCenter">Password repeat is required</div>-->
-                    <div *ngIf="passwordConfirm.errors.minlength" class="text-alignCenter">Password repeat must mach</div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
-          <!--------------- The data about user clusters and rights inside a material table for edit, add and info -------------------->
-          <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'edit') || utilsSvc.compareStrings(formActionChoice, 'add')|| utilsSvc.compareStrings(formActionChoice, 'info')">
-            <mat-form-field class="filterInputField" >
-              <input (keyup)="applyFilterUser($event.target.value)" matInput placeholder="Filter">
-            </mat-form-field>
-            <mat-table  #matUserData="matSort" [dataSource]="dataSourceUser" matSort >
-              <ng-container *ngFor="let column of displayedColumnsUser" matColumnDef="{{column}}">
-                <mat-header-cell *matHeaderCellDef [ngStyle]="{
-              'background-color': this.utilsSvc.getColorInnerLabels(),
-              'color': this.utilsSvc.getColorTableLabels()
-              }"  class="agentRuntimeServiceInformationTableHeader mat-Header " mat-sort-header>
-                  <!--------------- Tooltips for user rights -------------------->
-                  <div *ngIf="utilsSvc.compareStrings(column, 'read')">
+            <!--------------- The data about user clusters and rights inside a material table for edit, add and info -------------------->
+              <mat-form-field class="filterInputField" >
+                <input (keyup)="applyFilterUser($event.target.value)" matInput placeholder="Filter">
+              </mat-form-field>
+              <mat-table  #matUserData="matSort" [dataSource]="dataSourceUser" matSort style="min-width:50em;">
+                <ng-container *ngFor="let column of displayedColumnsUser" matColumnDef="{{column}}">
+                  <mat-header-cell *matHeaderCellDef [ngStyle]="{
+                    'background-color': this.utilsSvc.getColorInnerLabels(),
+                    'color': this.utilsSvc.getColorTableLabels()
+                    }"  class="agentRuntimeServiceInformationTableHeader mat-Header " mat-sort-header>
                     <span>{{column}}</span>
-                    <span matTooltip="The user can view the selected clusters data">
-                      <mat-icon class="serviceIcon extraSmall-marginRight" style="height: 1.5em; width: 1.5em;" svgIcon="info"></mat-icon>
-                    </span>
-                  </div>
-                  <div *ngIf="utilsSvc.compareStrings(column, 'action')">
-                    <span>{{column}}</span>
-                    <span matTooltip="The user can control the streams actions (start/stop/replay block)">
-                      <mat-icon class="serviceIcon extraSmall-marginRight" style="height: 1.5em; width: 1.5em;" svgIcon="info"></mat-icon>
-                    </span>
-                  </div>
-                  <div *ngIf="utilsSvc.compareStrings(column, 'admin'); else ">
-                    <span>{{column}}</span>
-                    <span matTooltip="The user will be able to add users to the clusters that he is assigned to">
-                      <mat-icon class="serviceIcon extraSmall-marginRight" style="height: 1.5em; width: 1.5em;" svgIcon="info"></mat-icon>
-                    </span>
-                  </div>
-                  <div *ngIf="utilsSvc.compareStrings(column, 'cluster')">
-                    <span>{{column}} *</span>
-                    <mat-icon class="serviceIcon" svgIcon="cluster"></mat-icon>
-                  </div>
-                </mat-header-cell>
-                <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom">
-                  <span class="mobile-label small-marginRight">  {{column}}</span>
-                  <div *ngIf="utilsSvc.compareStrings(column, 'cluster'); else notCluster">
-                    <h6 class="small-marginRight"><b>{{element[column]}}</b></h6>
-                  </div>
-                  <ng-template #notCluster>
-                    <mat-checkbox (change)="onChangeGetRightsAndClusters(element['cluster'], column)" [checked]="checkUncheckedBoxes[element['cluster']][column] ||
-                    utilsSvc.compareStrings('undefined',checkUncheckedBoxes[element['cluster']][column])" [disabled]="checkUncheckedBoxes[element['cluster']][column] || utilsSvc.compareStrings(formActionChoice, 'info')" ></mat-checkbox>
-                  </ng-template>
-                </mat-cell>
-              </ng-container>
+                    <!--------------- Tooltips for user rights -------------------->
+                    <div *ngIf="utilsSvc.compareStrings(column, 'read')">
+                          <span matTooltip="The user can view the selected clusters data">
+                            <mat-icon class="serviceIcon extraSmall-marginRight" style="height: 1.5em; width: 1.5em;" svgIcon="info"></mat-icon>
+                          </span>
+                    </div>
+                    <div *ngIf="utilsSvc.compareStrings(column, 'action')">
+                          <span matTooltip="The user can control the streams actions (start/stop/replay block)">
+                            <mat-icon class="serviceIcon extraSmall-marginRight" style="height: 1.5em; width: 1.5em;" svgIcon="info"></mat-icon>
+                          </span>
+                    </div>
+                    <div *ngIf="utilsSvc.compareStrings(column, 'admin'); else ">
+                          <span matTooltip="The user will be able to add users to the clusters that he is assigned to">
+                            <mat-icon class="serviceIcon extraSmall-marginRight" style="height: 1.5em; width: 1.5em;" svgIcon="info"></mat-icon>
+                          </span>
+                    </div>
+                    <div *ngIf="utilsSvc.compareStrings(column, 'cluster')">
+                      <mat-icon class="serviceIcon" svgIcon="cluster"></mat-icon>
+                    </div>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom">
+                    <span class="mobile-label small-marginRight">  {{column}}</span>
+                    <div *ngIf="utilsSvc.compareStrings(column, 'cluster'); else notCluster">
+                      <h6 class="small-marginRight"><b>{{element[column]}}</b></h6>
+                    </div>
+                    <ng-template #notCluster>
+                      <mat-checkbox (change)="onChangeGetRightsAndClusters(element['cluster'], column)" [checked]="checkUncheckedBoxes[element['cluster']][column] ||
+                          utilsSvc.compareStrings('undefined',checkUncheckedBoxes[element['cluster']][column])" [disabled]="true" ></mat-checkbox>
+                    </ng-template>
+                  </mat-cell>
+                </ng-container>
 
-              <mat-header-row *matHeaderRowDef="displayedColumnsUser"></mat-header-row>
-              <mat-row *matRowDef="let row; columns: displayedColumnsUser;"></mat-row>
-            </mat-table>
-            <mat-paginator #paginatorUserData
-                           [pageSizeOptions]="[2, 5, 10, 15, 20]"
-                           [pageSize]="5" class="agentRuntimeInformationPagginator" style="background-color: #E6E6E6;">
-            </mat-paginator>
-          </div>
-          <!--<div *ngIf="utilsSvc.compareStrings(formActionChoice, 'add')">-->
-            <!--&lt;!&ndash;<re-captcha&ndash;&gt;-->
-              <!--&lt;!&ndash;(resolved)="resolved($event)"&ndash;&gt;-->
-              <!--&lt;!&ndash;siteKey="6LcOuyYTAAAAAHTjFuqhA52fmfJ_j5iFk5PsfXaU"&ndash;&gt;-->
-            <!--&lt;!&ndash;&gt;</re-captcha>&ndash;&gt;-->
-          <!--</div>-->
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-<!--------------- FORM FOR SIMPLE USER -------------------->
-<ng-template #notAdmin>
-  <div  class="row">
-    <div class="col-3"></div>
-    <div class="col-6 display-inline text-alignCenter small-marginTop">
-    <div  class="loginBack large-paddingLeftRight large-paddingTop large-marginLeftRight">
-
-      <!--------------- FORM -------------------->
-      <form #form="ngForm" (ngSubmit)="chooseSubmit()" name="form" novalidate>
-        <div class="form-group">
-          <!--------------- Form top -------------------->
-          <div class="display-inlineFlex text-alignCenter extraLarge-fontSize">
-            <span class="text-alignCenter extraLarge-fontSize extraSmall-marginTop">{{formHeaderLabel}}</span>
-            <mat-icon class="serviceIcon" style="height:4em; width: 4em;" svgIcon="loginImage"></mat-icon>
-          </div>
-          <!--------------- FORM ACTIONS buttons -------------------->
-
-          <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'info')">
-            <div class="displayFlex">
-                <button  (click)= "editUserCall(formFill.username)" class="formSubmitButton">
-                  <mat-icon  class="serviceIcon extraSmall-marginRight mousePointer" matTooltip="Edit user" style="height: 3em; width: 3em;" svgIcon="edit"></mat-icon>
-                </button>
+                <mat-header-row *matHeaderRowDef="displayedColumnsUser"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumnsUser;"></mat-row>
+              </mat-table>
+              <mat-paginator #paginatorUserData
+                             [pageSizeOptions]="[2, 5, 10, 15, 20]"
+                             [pageSize]="5" class="agentRuntimeInformationPagginator" style="background-color: #E6E6E6;">
+              </mat-paginator>
             </div>
-          </div>
-
-          <div *ngIf="!utilsSvc.compareStrings(formActionChoice, 'info')" class="displayFlex">
-            <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'edit')">
-              <button  class="formSubmitButton">
-                <mat-icon  class="serviceIcon extraSmall-marginRight mousePointer" matTooltip="Edit user" style="height: 3em; width: 3em;" svgIcon="edit"></mat-icon>
-              </button>
-            </div>
-            <button (click)="cancelAction(formFill.username)" class="formSubmitButton">
-              <mat-icon  class='serviceIcon extraSmall-marginRight mousePointer' matTooltip="Cancel" style="height: 3em; width: 3em;"  svgIcon='cancel'></mat-icon>
-            </button>
-          </div>
-          <!--------------- The username data -------------------->
-            <section class="form-group row small-paddingBottom">
-              <div class="col-12 alignStart">
-                <mat-icon class="serviceIcon" svgIcon="usernameField"></mat-icon>
-                <label class="large-fontSize small-marginLeft">Username*</label>
-              </div>
-              <div class="col-12 text-alignCenter">
-                <div class="row col-12">
-                  <input #username="ngModel" [(ngModel)]="formFill.username" [disabled]="true" class="col-12 form-control"  maxlength="50"
-                         name="username" required style="width:70%" type="text" value="{{username}}" />
-                </div>
-              </div>
-            </section>
-          <!--------------- The password data -------------------->
-
-          <div *ngIf="!utilsSvc.compareStrings(formActionChoice, 'info')" class="displayFlex">
-            <section class="form-group row small-paddingBottom">
-              <div class="col-12 alignStart">
-                <mat-icon class="serviceIcon" svgIcon="passwordField"></mat-icon>
-                <label class="large-fontSize small-marginLeft">Password*</label>
-              </div>
-              <div class="col-12 text-alignCenter">
-                <div class="row col-12">
-                  <input #password="ngModel" [(ngModel)]="formFill.password" [ngClass]="{ 'is-invalid': form.submitted && password.invalid }" autocomplete="current-password"
-                         class="col-12 form-control" maxlength="50" minlength="4" name="password" required style="width:70%" type="password" />
-                  <div *ngIf="form.submitted && password.invalid" class="col-12 invalid-feedback">
-                    <div *ngIf="password.errors.required" class="text-alignCenter">Password is required</div>
-                    <div *ngIf="password.errors.minlength" class="text-alignCenter">Password must be at least 4 characters</div>
-                  </div>
-                </div>
-              </div>
-            </section>
-            <section class="form-group row small-paddingBottom">
-              <div class="col-12 alignStart">
-                <mat-icon class="serviceIcon" svgIcon="passwordField"></mat-icon>
-                <label class="large-fontSize small-marginLeft">Confirm password*</label>
-              </div>
-              <div class="col-12 text-alignCenter">
-                <div class="row col-12">
-                  <input #passwordConfirm="ngModel" [(ngModel)]="formFill.passwordConfirm" [ngClass]="{ 'is-invalid': form.submitted && passwordConfirm.invalid }" autocomplete="current-password"
-                         class="col-12 form-control" maxlength="50" minlength="4" name="passwordConfirm" required style="width:70%" type="password" />
-                  <div *ngIf="form.submitted && passwordConfirm.invalid" class="col-12 invalid-feedback">
-                    <!--<div *ngIf="passwordConfirm.errors.required" class="text-alignCenter">Password repeat is required</div>-->
-                    <div *ngIf="passwordConfirm.errors.minlength" class="text-alignCenter">Password repeat must mach</div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
-          <!--------------- The data about user clusters and rights inside a material table for edit, add and info -------------------->
-            <mat-form-field class="filterInputField" >
-              <input (keyup)="applyFilterUser($event.target.value)" matInput placeholder="Filter">
-            </mat-form-field>
-            <mat-table  #matUserData="matSort" [dataSource]="dataSourceUser" matSort style="min-width:50em;">
-              <ng-container *ngFor="let column of displayedColumnsUser" matColumnDef="{{column}}">
-                <mat-header-cell *matHeaderCellDef [ngStyle]="{
-                  'background-color': this.utilsSvc.getColorInnerLabels(),
-                  'color': this.utilsSvc.getColorTableLabels()
-                  }"  class="agentRuntimeServiceInformationTableHeader mat-Header " mat-sort-header>
-                  <span>{{column}}</span>
-                  <!--------------- Tooltips for user rights -------------------->
-                  <div *ngIf="utilsSvc.compareStrings(column, 'read')">
-                        <span matTooltip="The user can view the selected clusters data">
-                          <mat-icon class="serviceIcon extraSmall-marginRight" style="height: 1.5em; width: 1.5em;" svgIcon="info"></mat-icon>
-                        </span>
-                  </div>
-                  <div *ngIf="utilsSvc.compareStrings(column, 'action')">
-                        <span matTooltip="The user can control the streams actions (start/stop/replay block)">
-                          <mat-icon class="serviceIcon extraSmall-marginRight" style="height: 1.5em; width: 1.5em;" svgIcon="info"></mat-icon>
-                        </span>
-                  </div>
-                  <div *ngIf="utilsSvc.compareStrings(column, 'admin'); else ">
-                        <span matTooltip="The user will be able to add users to the clusters that he is assigned to">
-                          <mat-icon class="serviceIcon extraSmall-marginRight" style="height: 1.5em; width: 1.5em;" svgIcon="info"></mat-icon>
-                        </span>
-                  </div>
-                  <div *ngIf="utilsSvc.compareStrings(column, 'cluster')">
-                    <mat-icon class="serviceIcon" svgIcon="cluster"></mat-icon>
-                  </div>
-                </mat-header-cell>
-                <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom">
-                  <span class="mobile-label small-marginRight">  {{column}}</span>
-                  <div *ngIf="utilsSvc.compareStrings(column, 'cluster'); else notCluster">
-                    <h6 class="small-marginRight"><b>{{element[column]}}</b></h6>
-                  </div>
-                  <ng-template #notCluster>
-                    <mat-checkbox (change)="onChangeGetRightsAndClusters(element['cluster'], column)" [checked]="checkUncheckedBoxes[element['cluster']][column] ||
-                        utilsSvc.compareStrings('undefined',checkUncheckedBoxes[element['cluster']][column])" [disabled]="true" ></mat-checkbox>
-                  </ng-template>
-                </mat-cell>
-              </ng-container>
-
-              <mat-header-row *matHeaderRowDef="displayedColumnsUser"></mat-header-row>
-              <mat-row *matRowDef="let row; columns: displayedColumnsUser;"></mat-row>
-            </mat-table>
-            <mat-paginator #paginatorUserData
-                           [pageSizeOptions]="[2, 5, 10, 15, 20]"
-                           [pageSize]="5" class="agentRuntimeInformationPagginator" style="background-color: #E6E6E6;">
-            </mat-paginator>
-          </div>
-      </form>
+        </form>
+      </div>
+      </div>
+      <div class="col-3"></div>
     </div>
-    </div>
-    <div class="col-3"></div>
-  </div>
-</ng-template>
+  </ng-template>
 </block-ui>

@@ -143,9 +143,9 @@ public class UsersEndpoint {
             try {
                 newUserInfo = mapper.readValue(userObject, HashMap.class);
                 username =  newUserInfo.get("username").toString();
-                username = usersUtils.trimFieldLegth(username);
+                username = usersUtils.trimFieldLegth(username, 50);
                 password = newUserInfo.get("password").toString();
-                password = usersUtils.trimFieldLegth(password);
+                password = usersUtils.trimFieldLegth(password, 100);
                 HashMap<String, List> clustersWithRights = (HashMap<String, List>) newUserInfo.get("clusters");
                 usersUtils.addUser(clustersWithRights, username, password, true, true);
                 return Response.status(200).entity("{ \"Register\" : \"New user "+username+" was added successfully!\" }").build();
@@ -182,7 +182,7 @@ public class UsersEndpoint {
                 if(usersUtils.checkTheUserForExclude(username)){
                     return Response.status(403).build();
                 }
-                username = usersUtils.trimFieldLegth(username);
+                username = usersUtils.trimFieldLegth(username, 50);
                 List<String> clusters = (List<String>) userInfoForRemove.get("clusters");
                 try {
                     usersUtils.removeUser(clusters, username, true);
@@ -223,9 +223,9 @@ public class UsersEndpoint {
                 if(usersUtils.checkTheUserForExclude(username)){
                     return Response.status(403).build();
                 }
-                username = usersUtils.trimFieldLegth(username);
+                username = usersUtils.trimFieldLegth(username, 50);
                 password = newUserInfo.get("password").toString();
-                password = usersUtils.trimFieldLegth(password);
+                password = usersUtils.trimFieldLegth(password, 100);
                 HashMap<String, List> clustersWithRights = (HashMap<String, List>) newUserInfo.get("clusters");
                 try {
                     LOG.info("Before edit user method call");
@@ -267,9 +267,9 @@ public class UsersEndpoint {
                 if(usersUtils.checkTheUserForExclude(username)){
                     return Response.status(403).build();
                 }
-                username = usersUtils.trimFieldLegth(username);
+                username = usersUtils.trimFieldLegth(username, 50);
                 password = newUserInfo.get("password").toString();
-                password = usersUtils.trimFieldLegth(password);
+                password = usersUtils.trimFieldLegth(password, 100);
                 HashMap<String, List> clustersWithRights = (HashMap<String, List>) newUserInfo.get("clusters");
                 try {
                     LOG.info("Before edit user method call");
