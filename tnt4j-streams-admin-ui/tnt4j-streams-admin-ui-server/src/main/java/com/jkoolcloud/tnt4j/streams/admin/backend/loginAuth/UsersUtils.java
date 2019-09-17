@@ -24,6 +24,7 @@ import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.PropertyData;
+import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZooKeeperConnectionManager;
 import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZookeeperAccessService;
 import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.utils.CuratorUtils;
 
@@ -193,6 +194,7 @@ public class UsersUtils {
      */
     public void addUser(HashMap<String, List> clustersAndRights, String username,
                                 String password, boolean decryptPass, boolean admin) throws AuthenticationException {
+
             String rights = "";
             boolean adminRights = false;
             CuratorFramework curatorFramework;
@@ -230,11 +232,11 @@ public class UsersUtils {
                     }
                 }
             } catch (Exception e) {
-                ZookeeperAccessService.stopConnectionAdmin(curatorFramework);
+                ZookeeperAccessService.stopConnectionCurator(curatorFramework);
                 e.printStackTrace();
             }
         if(!admin) {
-            ZookeeperAccessService.stopConnectionAdmin(curatorFramework);
+            ZookeeperAccessService.stopConnectionCurator(curatorFramework);
         }
     }
 
@@ -294,10 +296,10 @@ public class UsersUtils {
             userRemoval = false;
             LOG.error("Problem on removing user: "+username+" from cluster: "+pathsToNode);
             e.printStackTrace();
-            ZookeeperAccessService.stopConnectionAdmin(curatorFramework);
+            ZookeeperAccessService.stopConnectionCurator(curatorFramework);
         }
         if(!admin) {
-            ZookeeperAccessService.stopConnectionAdmin(curatorFramework);
+            ZookeeperAccessService.stopConnectionCurator(curatorFramework);
         }
     }
 
@@ -547,6 +549,9 @@ public class UsersUtils {
                 return true;
             } else {
                 LOG.info("No user with the token provided was found");
+                ZooKeeperConnectionManager zooManager = new ZooKeeperConnectionManager();
+                zooManager.setConnectionToken(header);
+                zooManager.removeClientConnection();
                 return false;
             }
         }else{

@@ -51,7 +51,7 @@ import { HttpHeaders } from '@angular/common/http';
   getZooKeeperNodeList(){
       try{
         var headers = this.returnHeaderWithToken();
-        this.http.get(this.CONFIG["ZooKeeperTreeNodes"], headers).subscribe(data => {
+        this.http.get(this.CONFIG["BaseAddress"] + this.CONFIG["ZooKeeperTreeNodes"], headers).subscribe(data => {
          this.zooKeeperTreeNodeList = data;
         });
       }

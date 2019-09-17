@@ -16,12 +16,11 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.utils.PropertyData;
 
 public class CaptchaUtils {
 
-    private static final String USER_AGENT = "Mozilla/5.0";
     private static Logger LOG = Logger.getLogger(CaptchaUtils.class);
 
     public static JsonNode verify(String reCaptchaResponse) throws Exception {
         String url = PropertyData.getProperty("verifyURL");
-        String secret = PropertyData.getProperty("secretKeyCache");
+        String secret = PropertyData.getProperty("secretKeyCaptcha");
         if (reCaptchaResponse == null || "".equals(reCaptchaResponse)) {
             return null;
         }
@@ -31,9 +30,6 @@ public class CaptchaUtils {
             HttpsURLConnection con = (HttpsURLConnection) urlConn.openConnection();
             // add reuqest header
             con.setRequestMethod("POST");
-            con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-            con.setRequestProperty("User-Agent", USER_AGENT);
-
             String postParams = "secret=" + secret + "&response="
                     + reCaptchaResponse;
 
@@ -45,9 +41,9 @@ public class CaptchaUtils {
             wr.close();
 
             int responseCode = con.getResponseCode();
-            LOG.info("\nSending 'POST' request to URL : " + url);
-            LOG.info("Post parameters : " + postParams);
-            LOG.info("Response Code : " + responseCode);
+            LOG.debug("\nSending 'POST' request to URL : " + url);
+            LOG.debug("Post parameters : " + postParams);
+            LOG.debug("Response Code : " + responseCode);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(
                     con.getInputStream()));
@@ -59,11 +55,12 @@ public class CaptchaUtils {
             }
             in.close();
 
-            LOG.info(response.toString());
             ObjectMapper mapper = new ObjectMapper();
             String responseValue = response.toString();
             JsonNode actualObj = mapper.readTree(responseValue);
-            LOG.info("response value: "+ responseValue);
+            LOG.debug("response value: "+ responseValue);
+            LOG.info("response value TRUE/FALSE: "+  actualObj.get("success"));
+
             return actualObj;
         }catch(Exception e){
             LOG.info("Problem on reading response for reCaptcha");

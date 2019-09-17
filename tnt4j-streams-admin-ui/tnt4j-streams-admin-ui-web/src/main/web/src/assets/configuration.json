@@ -109,17 +109,6 @@
 		"LatestBlockTime" : "time",
 		"LatestBlockQueryTime" : "time"
 	},
-	"IncompleteItemsConfig" : {
-		"tableName" : "Incomplete Items",
-		"controlName" : "Replay",
-		"NeededColumns" : {
-			"reason" : "Reason",
-			"activityName" : "Item Name",
-			"startTime" : "Start Time",
-			"count" : "Count",
-			"blockRepeat" : "Replay Item"
-		}
-	},
 	"NeededDataToGetJKoolIncompleteBlocks" : [
 		"ActivityName",
 		"EventCount",
@@ -134,8 +123,8 @@
 	],
 	
 	"LazyLoadDataLines" : {
-		"log" : 50,
-		"logErr" : 200,
+		"log" : 100,
+		"logErr" : 50,
 		"bottomLog" : 100,
 		"bottomLogLoadIntervalMS" : 10000
 	},
@@ -166,7 +155,6 @@
 	"BasePathToUsersPage" : "manageUser",
 	"LogToShowAtBottom" : "Service log",
 	"activeStreamRegistryNode" : "_streamsAndMetrics",
-	"logoutParamName" : "logout",
 	
 	"sessionTokenName" : "authToken",	
 	"sessionUserName" : "username",
@@ -196,15 +184,15 @@
 	
 	"SecretKeyForEncryption" : "0123456789123456pp",
 			
-	"ZooKeeperTreeNodes" : "https://localhost:8443/testLog/registry/nodeTree",
+	"ZooKeeperTreeNodes" : "/registry/nodeTree",
 	
-	"ZooKeeperBasePath" : "https://localhost:8443/testLog/registry",
+  "ZooKeeperBasePath" : "/registry",
 	
-	"LoginRequestPath" : "https://localhost:8443/testLog/authenticate",
+	"LoginRequestPath" : "/authenticate",
 	
-	"BaseAddress" : "https://localhost:8443/testLog",
+	"reCaptchaRequest" : "/reCaptcha",
 	
-	"reCaptchaRequest" : "https://localhost:8443/testLog/reCaptcha",
+	"BaseAddress" : "https://localhost:8443/testManager",
 	
 	"siteKey" : "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
 	
@@ -212,16 +200,14 @@
 		"/list",
 		"/blockReplay",
 		"/start",
-		"/stop",
-		"/pause",
-		"/resume"
+		"/stop"
 	],
 	
 	"PageColorConfigs" : {
 		"goodResponseHeaderFooter" : "#489431",
 		"colorInnerComponentLabels" : "#95ADB6",
 		
-		"labelTextColor" : "#000000",
+		"TitleTextColor" : "#000000",
 		"colorTableTextLabels" : "#000000",
 
 		"agentWindowStreamNoResponse" : "#DBB1BC",

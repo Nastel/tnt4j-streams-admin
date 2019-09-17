@@ -53,9 +53,6 @@ export class UserControlComponent implements OnInit {
 
   //Encrypt data to send and authenticate properties
   encryptSecretKey: string;
-  reCaptchaCheck : boolean = false;
-  @ViewChild('reCaptcha') reCaptchaComponent;
-  reCaptchaKey: string = this.configurationHandler.CONFIG["siteKey"];
 
   //UsersTableParams
   @ViewChild('matUsersData') sortUsersData: MatSort;
@@ -483,33 +480,6 @@ export class UserControlComponent implements OnInit {
   clearFormData(){
      this.fillCheckUncheckObject(this.clustersList, "");
   }
-  /** ------------------------- The reCaptcha confirmation methods --------------------- */
-
-  public resolved(captchaResponse: string) {
-    if(captchaResponse!=null){
-      this.blockUI.start("Checking captcha...");
-      console.log(`Resolved captcha with response: ${captchaResponse}`);
-      console.log(captchaResponse);
-      try{
-        this.data.captchaCheck(captchaResponse).subscribe( data => {
-        console.log(data["re-captcha"]);
-
-          this.reCaptchaCheck = true;
-          this.blockUI.stop();
-          if(!this.utilsSvc.isObject(data["re-captcha"])){
-            this.controlUtils.openDialogWithHeader(data["re-captcha"], "Message", this.pathToData );
-          }
-        }, err =>{
-           this.reCaptchaCheck = false;
-           this.blockUI.stop();
-           console.log(err);
-         });
-      }catch(e){
-        console.log("Problem on resolving the reCaptcha response", e)
-        this.blockUI.stop();
-      }
-    }
-  }
 
   /** ------------------------- The methods to refresh the users table information --------------------- */
 
@@ -552,8 +522,7 @@ export class UserControlComponent implements OnInit {
 
   onSubmitCreateUser() {
     this.checkTheInput();
-    if(this.allDataFilled && this.passwordMatch && this.reCaptchaCheck){
-        this.reCaptchaCheck = false;
+    if(this.allDataFilled && this.passwordMatch){
         this.blockUI.start('Adding a new user...');
         let tempModal =  this.formFill["password"];
         let username = this.formFill["username"];
@@ -568,14 +537,6 @@ export class UserControlComponent implements OnInit {
            console.log("Problem on registering a new user");
            console.log(err);
          });
-      }else{
-        if(!this.reCaptchaCheck){
-          this.controlUtils.openDialogWithHeader("reCaptcha component needs to be checked", "Oops", this.pathToData );
-        }else{
-        this.reCaptchaComponent.reset();
-        this.reCaptchaCheck = false;
-//        this.form.resetForm();
-        }
       }
   }
 

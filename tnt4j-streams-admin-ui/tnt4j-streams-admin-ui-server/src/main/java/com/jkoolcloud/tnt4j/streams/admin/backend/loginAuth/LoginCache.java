@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.curator.framework.CuratorFramework;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -18,6 +19,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.jkoolcloud.tnt4j.streams.admin.backend.reCaptcha.CaptchaUtils;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.PropertyData;
+import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZooKeeperConnectionManager;
 import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZookeeperAccessService;
 
 public class LoginCache {
@@ -31,6 +33,7 @@ public class LoginCache {
     private static boolean bypassSecurity;
     /** debug */
     private static String token ="";
+    ZooKeeperConnectionManager zooManager = new ZooKeeperConnectionManager();
 
     /**
      * MEthod used to ensure that only one instance of guava cache would be created
@@ -49,7 +52,7 @@ public class LoginCache {
      */
     public static void main(String[] args) throws Exception {
         LoginCache login =  new LoginCache();
-        login.generateTokenForUser();
+        String userToken = login.generateTokenForUser();
         login.checkIfUserExistInCache(token);
         login.checkForSuccessfulLogin("basic:basic");
 
@@ -59,17 +62,12 @@ public class LoginCache {
         HashMap<String, List> clustersWithRights = objMapper.readValue("{\"/streams/v1/clusters/clusterBlockchainMainnets\" : [\"read\",\"admin\",\"action\"]," +
                 "\"/streams/v1/clusters/clusterBlockchainTestnet\" : [\"read\",\"admin\",\"action\"]}", new TypeReference<Map<String, Object>>() {});
         users.addUser(clustersWithRights,"admin","admin", false, true);
-        /**
-         *   FOR UPDATING SIMPLE USER TEST
-
-                 HashMap<String, List> clustersWithRights = objMapper.readValue("{\"/streams/v1/clusters/clusterBlockchainMainnets\" : [\"read\"]," +
-                         "\"/streams/v1/clusters/clusterBlockchainTestnet\" : [\"read\"]}", new TypeReference<Map<String, Object>>() {});
-                 users.updateUser(clustersWithRights,"basic", "U2FsdGVkX183M6qOtbz6+GvAs9P+shsMiQjxODSWpEQ=", false);
-
+        /**FOR UPDATING SIMPLE USER TEST
+             HashMap<String, List> clustersWithRights = objMapper.readValue("{\"/streams/v1/clusters/clusterBlockchainMainnets\" : [\"read\"]," +
+                     "\"/streams/v1/clusters/clusterBlockchainTestnet\" : [\"read\"]}", new TypeReference<Map<String, Object>>() {});
+             users.updateUser(clustersWithRights,"basic", "U2FsdGVkX183M6qOtbz6+GvAs9P+shsMiQjxODSWpEQ=", false);
          */
-
-        /**
-         *  FOR UPDATING USER LIST FOR SIMPLE USER
+        /** FOR UPDATING USER LIST FOR SIMPLE USER
             List clustersList = Arrays.asList(new String[]{"/streams/v1/clusters/clusterBlockchainMainnets", "/streams/v1/clusters/clusterBlockchainTestnet"});
             users.getUserList(clustersList);
          */
@@ -88,6 +86,12 @@ public class LoginCache {
      */
     public void setUserCount(int count){
         userCount = count;
+    }
+
+    public void newLogin(){
+        isUserAdmin = false;
+        token ="";
+        bypassSecurity = false;
     }
 
     public Boolean getIsUserAdmin() {
@@ -149,13 +153,10 @@ public class LoginCache {
     public Boolean checkIfUserExistInCache(String data) {
         data = data.replace("\"","");
         String value  = cache.getIfPresent(data);
-       // LOG.info("The user from cache exist: {}", value);
         if(value != null){
             return true;
         }
         else{
-           // LOG.info("Disconnect from ZooKeeper: {}", data);
-           // disconnectFromZooKeeeper();
             bypassSecurity = false;
             return  false;
         }
@@ -167,9 +168,7 @@ public class LoginCache {
      */
     public void removeTheTokenFromCache(String token){
         bypassSecurity = false;
-       // LOG.info("Before token remove: {} - {}", cache.asMap(),  cache.getIfPresent(token));
         cache.invalidate(token);
-       // LOG.info("After token remove: {} - {}", cache.asMap(),  cache.getIfPresent(token));
     }
 
     /**
@@ -239,9 +238,12 @@ public class LoginCache {
         //LOG.info("The cache set after first initialization: {} - {}", cache.asMap(),  cache.getIfPresent(token));
     }
 
-    public void disconnectFromZooKeeeper(){
+    public void disconnectFromZooKeeper(String token){
         ZookeeperAccessService zooAccess = new ZookeeperAccessService();
-        zooAccess.destroy();
+        zooManager.setConnectionToken(token);
+        CuratorFramework connection = zooManager.getClientConnection();
+        zooManager.removeClientConnection();
+        ZookeeperAccessService.stopConnectionCurator(connection);
     }
 
     public boolean checkForSuccessfulLogin(String credentials){

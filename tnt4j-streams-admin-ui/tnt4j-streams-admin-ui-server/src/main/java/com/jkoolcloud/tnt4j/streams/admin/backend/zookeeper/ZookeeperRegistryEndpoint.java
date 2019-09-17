@@ -66,7 +66,7 @@ public class ZookeeperRegistryEndpoint {
 		if(checkIfUserExistAndBypassLogin(header)) {
 			ObjectMapper mapper = new ObjectMapper();
 			try {
-				String value = mapper.writeValueAsString(zookeeperAccessService.getTreeNodes());
+				String value = mapper.writeValueAsString(zookeeperAccessService.getTreeNodes(header));
 				return  Response.status(200).entity(value).build();
 
 			} catch (Exception e) {
@@ -98,7 +98,7 @@ public class ZookeeperRegistryEndpoint {
 					pathToNode.append("/").append(node);
 				}
 				String value = mapper.writeValueAsString(
-						zookeeperAccessService.getServiceNodeInfoFromLinkForReplay(pathToNode.toString()));
+						zookeeperAccessService.getServiceNodeInfoFromLinkForReplay(pathToNode.toString(), header));
 				LOG.info("Response to block replay request: "+ value);
 				return Response.status(200).entity("{ \"action\" : \""+value+"\"}").build();
 			} catch (Exception e) {
@@ -130,7 +130,7 @@ public class ZookeeperRegistryEndpoint {
 				}
 				LOG.info("Path created from URL: "+ pathToNode.toString());
 				String value = mapper.writeValueAsString(
-						zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0));
+						zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0, header));
 				LOG.info("Start stream response from ZooKeeper: "+ value);
 				return Response.status(200).entity("{ \"action\" : \""+value+"\"}").build();
 			} catch (Exception e) {
@@ -161,7 +161,7 @@ public class ZookeeperRegistryEndpoint {
 					pathToNode.append("/").append(node);
 				}
 				String value = mapper.writeValueAsString(
-				zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0));
+				zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0, header));
 				LOG.info("Stop stream response from ZooKeeper: "+ value);
 				return Response.status(200).entity("{ \"action\" : \""+value+"\"}").build();
 			} catch (Exception e) {
@@ -191,7 +191,7 @@ public class ZookeeperRegistryEndpoint {
 				for (PathSegment node : nodePath) {
 					pathToNode.append("/").append(node);
 				}
-				String value = mapper.writeValueAsString(zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0));
+				String value = mapper.writeValueAsString(zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0, header));
 				return Response.status(200).entity(value).build();
 			} catch (Exception e) {
 				LOG.error("Error on reading node from ZooKeeper", e);
@@ -220,7 +220,7 @@ public class ZookeeperRegistryEndpoint {
 					pathToNode.append("/").append(node);
 				}
 				pathToNode.append("/logs");
-				String value = mapper.writeValueAsString(zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), logLineCount));
+				String value = mapper.writeValueAsString(zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), logLineCount, header));
 				return Response.status(200).entity(value).build();
 			} catch (Exception e) {
 				LOG.error("Error on reading node from ZooKeeper", e);
@@ -246,6 +246,9 @@ public class ZookeeperRegistryEndpoint {
 				return true;
 			} else {
 				LOG.info("No user with the token provided was found");
+				ZooKeeperConnectionManager zooManager = new ZooKeeperConnectionManager();
+				zooManager.setConnectionToken(header);
+				zooManager.removeClientConnection();
 				return false;
 			}
 		}else{

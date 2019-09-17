@@ -379,13 +379,13 @@ public class CuratorUtils {
 							}
 						}
 					}catch (Exception e){
-						LOG.error("No node access for the user return false");
+//						LOG.error("No node access for the user return false");
 						return false;
 					}
 				}
 			}
 		}catch(Exception e){
-			LOG.error("Problem while checking if user has action rights on login");
+//			LOG.error("Problem while checking if user has action rights on login");
 			return false;
 		}
 		return false;

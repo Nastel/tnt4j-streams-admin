@@ -211,11 +211,6 @@
               </mat-paginator>
             </div>
         </form>
-        <div *ngIf="utilsSvc.compareStrings(formActionChoice, 'add')" class="text-alignCenter">
-          <re-captcha #reCaptcha (resolved)="resolved($event)" [siteKey]="reCaptchaKey"
-                      class="reCaptcha text-alignCenter"
-                      theme="light"></re-captcha>
-        </div>
       </div>
     </div>
     <!--------------- empty div for side margin  -------------------->

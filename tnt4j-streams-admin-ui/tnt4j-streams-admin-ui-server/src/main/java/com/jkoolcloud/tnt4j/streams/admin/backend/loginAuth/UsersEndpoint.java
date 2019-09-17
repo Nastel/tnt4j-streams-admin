@@ -16,7 +16,6 @@
 
 package com.jkoolcloud.tnt4j.streams.admin.backend.loginAuth;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,8 +28,11 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jkoolcloud.tnt4j.streams.admin.backend.reCaptcha.CaptchaUtils;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
+import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZooKeeperConnectionManager;
 
 
 /**
@@ -40,6 +42,8 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
 @Path("/authenticate")
 public class UsersEndpoint {
     private static Logger LOG = Logger.getLogger(UsersEndpoint.class);
+
+    ZooKeeperConnectionManager zooManager = new ZooKeeperConnectionManager();
 
     @Inject
     private UsersUtils usersUtils;
@@ -54,26 +58,34 @@ public class UsersEndpoint {
     @Produces(ClsConstants.MIME_TYPE_JSON)
     public Response doGetRepositoryInfo(@HeaderParam("Authorization") String header, @HeaderParam("test") String test) {
         LoginCache cache = new LoginCache();
+        cache.newLogin();
         cache.setIsUserAdmin(false);
         ObjectMapper mapper = new ObjectMapper();
         String token = ""; String loginFailMessage="";
         try {
             HashMap Authorizations = mapper.readValue(header, HashMap.class);
-            if(usersUtils.checkTheUserForExclude(Authorizations.get("username").toString())){
-                return Response.status(403).build();
+            String captchaToken = (String) Authorizations.get("responseCaptcha");
+            JsonNode response = CaptchaUtils.verify(captchaToken);
+            if (response != null) {
+                if(usersUtils.checkTheUserForExclude(Authorizations.get("username").toString())){
+                    return Response.status(403).build();
+                }
+                String loginResponse = usersUtils.loginTheUserByCredentials(Authorizations.get("username").toString(), Authorizations.get("password").toString());
+                if(!loginResponse.isEmpty()){
+                    return Response.status(401).entity(loginResponse).build();
+                }
+                token = cache.getGeneratedToken();
+                loginFailMessage = cache.getLoginStatus();
+                LOG.info(token);
+                loginFailMessage = "{ \"Login\" : \""+loginFailMessage+"\" }";
+                if(token.isEmpty()){
+                    LOG.info("Failed login: "+loginFailMessage);
+                    return Response.status(401).entity(loginFailMessage).build();
+                }
+            }else{
+                return Response.status(200).entity("{ \"Login\" : \"Problem on verifying the recapcha\" }").build();
             }
-            String loginResponse = usersUtils.loginTheUserByCredentials(Authorizations.get("username").toString(), Authorizations.get("password").toString());
-            if(!loginResponse.isEmpty()){
-                return Response.status(401).entity(loginResponse).build();
-            }
-            token = cache.getGeneratedToken();
-            loginFailMessage = cache.getLoginStatus();
-            loginFailMessage = "{ \"Login\" : \""+loginFailMessage+"\" }";
-            if(token.isEmpty()){
-                LOG.info("Failed login: "+loginFailMessage);
-                return Response.status(401).entity(loginFailMessage).build();
-            }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         HashMap usersList = cache.getUserMap();
@@ -109,7 +121,7 @@ public class UsersEndpoint {
             cache.removeTheTokenFromCache(header);
             userStillExist = cache.checkIfUserExistInCache(header);
             if(!userStillExist) {
-                cache.disconnectFromZooKeeeper();
+                cache.disconnectFromZooKeeper(header);
                 cache.setBypassSecurity(false);
                 cache.setUserCount(0);
                 cache.clearUserMap();
@@ -141,6 +153,8 @@ public class UsersEndpoint {
         ObjectMapper mapper = new ObjectMapper();
         if(usersUtils.checkIfUserExistAndBypassLogin(header, cache)){
             try {
+                zooManager.setConnectionToken(header);
+
                 newUserInfo = mapper.readValue(userObject, HashMap.class);
                 username =  newUserInfo.get("username").toString();
                 username = usersUtils.trimFieldLegth(username, 50);
@@ -176,6 +190,9 @@ public class UsersEndpoint {
 
         if(usersUtils.checkIfUserExistAndBypassLogin(header, cache)){
             try {
+
+                zooManager.setConnectionToken(header);
+
                 LOG.info("Trying to remove a user from ZooKeeper repo");
                 userInfoForRemove = mapper.readValue(userDeleteObject, HashMap.class);
                 username =  userInfoForRemove.get("username").toString();
@@ -218,6 +235,8 @@ public class UsersEndpoint {
         LOG.info("Trying to edit user data");
         if(usersUtils.checkIfUserExistAndBypassLogin(header, cache)){
             try {
+                zooManager.setConnectionToken(header);
+
                 newUserInfo = mapper.readValue(userObject, HashMap.class);
                 username =  newUserInfo.get("username").toString();
                 if(usersUtils.checkTheUserForExclude(username)){
@@ -262,6 +281,8 @@ public class UsersEndpoint {
         LOG.info("Trying to edit user data");
         if(usersUtils.checkIfUserExistAndBypassLogin(header, cache)){
             try {
+                zooManager.setConnectionToken(header);
+
                 newUserInfo = mapper.readValue(userObject, HashMap.class);
                 username =  newUserInfo.get("username").toString();
                 if(usersUtils.checkTheUserForExclude(username)){

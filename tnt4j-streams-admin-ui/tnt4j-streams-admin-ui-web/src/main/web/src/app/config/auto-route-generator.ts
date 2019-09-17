@@ -57,7 +57,7 @@ export class AutoRouteGenerator
         this.http.get<any> (this.jsonFile).subscribe (data => {
           this.CONFIG = data;
           var headers = this.returnHeaderWithToken();
-            this.http.get(this.CONFIG["ZooKeeperTreeNodes"], headers).subscribe(data => {
+            this.http.get(this.CONFIG["BaseAddress"]+this.CONFIG["ZooKeeperTreeNodes"], headers).subscribe(data => {
               this.zooKeeperTreeNodeList = data;
               this.createDynamic();
               if(!this.utilsSvc.compareStrings(this.zooKeeperTreeNodeList, "undefined")&&!this.utilsSvc.compareStrings(this.zooKeeperTreeNodeList, "null")){
@@ -81,7 +81,7 @@ export class AutoRouteGenerator
   getZooKeeperNodeList(){
       try{
         var headers = this.returnHeaderWithToken();
-        this.http.get(this.CONFIG["ZooKeeperTreeNodes"], headers).subscribe(data => {
+        this.http.get(this.CONFIG["BaseAddress"]+this.CONFIG["ZooKeeperTreeNodes"], headers).subscribe(data => {
          this.zooKeeperTreeNodeList = data;
          let clusters = "";
          for(let node in this.zooKeeperTreeNodeList){
@@ -113,7 +113,7 @@ export class AutoRouteGenerator
 //     console.log(this.CONFIG);
       var headers = this.returnHeaderWithToken();
 //      console.log("REad data from ZooKeeper tree");
-      this.zooKeeperTreeNodeList = await  this.http.get(this.CONFIG["ZooKeeperTreeNodes"], headers).toPromise();
+      this.zooKeeperTreeNodeList = await  this.http.get(this.CONFIG["BaseAddress"]+ this.CONFIG["ZooKeeperTreeNodes"], headers).toPromise();
       for(let node in this.zooKeeperTreeNodeList){
         if(this.utilsSvc.compareStrings(this.utilsSvc.getNodePathEnd(node),"clusters")){
             console.log(node);
@@ -179,7 +179,7 @@ export class AutoRouteGenerator
       let serviceUrl : string;
       if(!this.utilsSvc.compareStrings(zooKeeperPath, 'undefined')){
         let pathLink = zooKeeperPath.replace(this.configurationHandler.CONFIG["BasePathHide"],'');
-        let urlBuild = this.configurationHandler.CONFIG["ZooKeeperBasePath"];
+        let urlBuild =this.configurationHandler.CONFIG["BaseAddress"]+ this.configurationHandler.CONFIG["ZooKeeperBasePath"];
         let urlChoice = this.configurationHandler.CONFIG["ZooKeeperDataCall"];
         if(!this.utilsSvc.compareStrings(urlBuild, "undefined")){
             serviceUrl = urlBuild + pathLink + urlChoice[0];
@@ -201,7 +201,7 @@ export class AutoRouteGenerator
         zooKeeperPath = zooKeeperPath.substr(1);
         let pathLink = zooKeeperPath.replace(this.CONFIG["BasePathHide"],'');
         let serviceUrl : string
-        let urlBuild = this.configurationHandler.CONFIG["ZooKeeperBasePath"];
+        let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+ this.configurationHandler.CONFIG["ZooKeeperBasePath"];
            let urlChoice = this.configurationHandler.CONFIG["ZooKeeperDataCall"];
            if(!this.utilsSvc.compareStrings(urlBuild, "undefined")){
                serviceUrl = urlBuild + pathLink + urlChoice[0];
@@ -255,9 +255,7 @@ export class AutoRouteGenerator
       const template = '';
       const tmpCmp = Component ({template: template}) (class {});
       const tmpModule = NgModule ({declarations: [tmpCmp]}) (class {});
-      let elementsToExcludeFromTreeView = this.configurationHandler.CONFIG["excludeFromTreeView"];
       let userPath = this.configurationHandler.CONFIG["BasePathToUsersPage"];
-      let nodesToExcludeArray = this.getArrayOfNodesToExclude(elementsToExcludeFromTreeView);
       this.compiler.compileModuleAsync (tmpModule).then ((module) => {
         const appRoutes = [...router.config];
         let route;
@@ -269,7 +267,6 @@ export class AutoRouteGenerator
         this.utilsSvc.navigateToCorrectPathAfterRefreshOrURlChange(router);
       });
       for (let name in this.zooKeeperTreeNodeList) {
-        if(!nodesToExcludeArray.includes(name)){ //!elementsToExcludeFromTreeView.includes(this.utilsSvc.getNodePathEnd(name))){
           name = name.substring(1);
           this.compiler.compileModuleAsync (tmpModule).then ((module) => {
             const appRoutes = [...router.config];
@@ -278,7 +275,6 @@ export class AutoRouteGenerator
             appRoutes.push (route);
             router.resetConfig (appRoutes);
           });
-        }
       }
 
       this.compiler.compileModuleAsync (tmpModule).then ((module) => {

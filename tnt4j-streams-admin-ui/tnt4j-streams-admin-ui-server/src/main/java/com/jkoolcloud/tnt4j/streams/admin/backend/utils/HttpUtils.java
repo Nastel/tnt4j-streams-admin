@@ -184,7 +184,7 @@ public class HttpUtils {
 			if (ignoreHostnameVerifier) {
 				con.setHostnameVerifier((s, sslSession) -> true);
 			}
-			LOG.info("http URL "+ httpsUrl);
+//			LOG.info("http URL "+ httpsUrl);
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String line;
 			while ((line = bufferedReader.readLine()) != null) {
@@ -194,7 +194,7 @@ public class HttpUtils {
 			bufferedReader.close();
 
 		} catch (SocketTimeoutException e) {
-			LOG.error("The provided endpoint: "+ httpsUrl + " took to long to respond ( > 5s )");
+//			LOG.error("The provided endpoint: "+ httpsUrl + " took to long to respond ( > 5s )");
 			return "The provided endpoint took to long to respond ( > 5s )";
 		} catch (MalformedURLException e) {
 			LOG.error("The provided endpoint: "+ httpsUrl + " returned an empty string MalformedURLException");

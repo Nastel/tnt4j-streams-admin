@@ -32,7 +32,7 @@ export class DataService {
     let serviceUrl : string;
     if(!this.utilsSvc.compareStrings(zooKeeperPath, 'undefined')){
       let pathLink = zooKeeperPath.replace(this.configurationHandler.CONFIG["BasePathHide"],'');
-      let urlBuild = this.configurationHandler.CONFIG["ZooKeeperBasePath"];
+      let urlBuild = this.configurationHandler.CONFIG["BaseAddress"] + this.configurationHandler.CONFIG["ZooKeeperBasePath"];
       let urlChoice = this.configurationHandler.CONFIG["ZooKeeperDataCall"];
       if(!this.utilsSvc.compareStrings(urlBuild, "undefined")){
           serviceUrl = urlBuild + pathLink + urlChoice[0];
@@ -54,7 +54,7 @@ export class DataService {
     let serviceUrl : string;
     if(!this.utilsSvc.compareStrings(zooKeeperPath, 'undefined')){
        let pathLink = zooKeeperPath.replace(this.configurationHandler.CONFIG["BasePathHide"],'');
-       let urlBuild = this.configurationHandler.CONFIG["ZooKeeperBasePath"];
+       let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+ this.configurationHandler.CONFIG["ZooKeeperBasePath"];
        let urlChoice = this.configurationHandler.CONFIG["ZooKeeperDataCall"];
        for(let choice of urlChoice){
          if(choice.includes(controlChoice)){
@@ -72,12 +72,12 @@ export class DataService {
   /**
     Call login request with credentials inside header and return the response or error message.
   */
-  getBackEndLoginResponse(pathToEndpoint: string, password :string, username: string){
+  getBackEndLoginResponse(pathToEndpoint: string, password :string, username: string, reCaptcha :string){
     try{
-    let input = "{ \"password\" : \""+password+"\", \"username\" : \""+username+"\" } ";
+    let input = "{ \"password\" : \""+password+"\", \"username\" : \""+username+"\" , \"responseCaptcha\" : \""+reCaptcha+"\" } ";
     console.log(input)
       var header = { headers: new HttpHeaders().set('Authorization',  input)}
-      let urlBuild = this.configurationHandler.CONFIG["LoginRequestPath"];
+      let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
       let serviceUrl = urlBuild + "/"+ pathToEndpoint;
       return this.http.get(serviceUrl,  header);
     }catch(err){
@@ -90,7 +90,7 @@ export class DataService {
   */
   getLogoutRequest(pathToEndpoint: string, endpoint : string ){
     try{
-      let urlBuild = this.configurationHandler.CONFIG["LoginRequestPath"];
+      let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
       let serviceUrl = urlBuild + "/"+ endpoint;
       return this.http.get(serviceUrl);
     }catch(err){
@@ -123,7 +123,7 @@ export class DataService {
   */
   addNewUser(pathToPost: string, username: string, password: string, clustersWithRights){
   console.log(clustersWithRights);
-    let urlBuild = this.configurationHandler.CONFIG["LoginRequestPath"];
+    let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
     let serviceUrl = urlBuild + "/"+ pathToPost;
     console.log(serviceUrl);
     var header = this.returnHeaderWithToken();
@@ -139,7 +139,7 @@ export class DataService {
     A utils method to help manage users by removing them from ZooKeeper
   */
   removeUser(addressPath: string, username: string, clusterNames: string[]){
-    let urlBuild = this.configurationHandler.CONFIG["LoginRequestPath"];
+    let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
     let serviceUrl = urlBuild + "/"+ addressPath;
     console.log(serviceUrl);
     var header = this.returnHeaderWithToken();
@@ -154,7 +154,7 @@ export class DataService {
     A utils method to help manage users by refreshing the users list for admin
   */
   loadUsersList(addressPath: string, clusters :string){
-    let urlBuild = this.configurationHandler.CONFIG["LoginRequestPath"];
+    let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
     let serviceUrl = urlBuild + "/"+ addressPath;
     console.log(serviceUrl);
     let clusterList = clusters.split(';');
@@ -167,7 +167,7 @@ export class DataService {
     A utils method to help manage users by refreshing single user information
   */
   loadUserData(addressPath: string, clusters :string, username : string){
-    let urlBuild = this.configurationHandler.CONFIG["LoginRequestPath"];
+    let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
     let serviceUrl = urlBuild + "/"+ addressPath;
     console.log(serviceUrl);
     let clusterList = clusters.split(';');
@@ -180,7 +180,7 @@ export class DataService {
     A utils method to help manage users editing the chosen user password or rights
   */
   editUser(addressPath: string, username: string, password: string, clustersWithRights){
-    let urlBuild = this.configurationHandler.CONFIG["LoginRequestPath"];
+    let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
     let serviceUrl = urlBuild + "/"+ addressPath;
     console.log(serviceUrl);
     var header = this.returnHeaderWithToken();
@@ -197,7 +197,7 @@ export class DataService {
     A utils method that lets a simple user edit his password
   */
   editUserNonAdmin(addressPath: string, username: string, password: string, clustersWithRights){
-    let urlBuild = this.configurationHandler.CONFIG["LoginRequestPath"];
+    let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
     let serviceUrl = urlBuild + "/"+ addressPath;
     console.log(serviceUrl);
     var header = this.returnHeaderWithToken();
@@ -213,10 +213,20 @@ export class DataService {
     A method to protect from dos and similar attacks.
   */
   captchaCheck(responseToken : string){
-    let serviceUrl = this.configurationHandler.CONFIG["reCaptchaRequest"];
+    let serviceUrl =this.configurationHandler.CONFIG["BaseAddress"]+ this.configurationHandler.CONFIG["reCaptchaRequest"];
     console.log(serviceUrl);
     var header = this.returnHeaderWithToken();
     console.log("header", header);
     return this.http.post(serviceUrl,{  "responseCaptcha" : responseToken }, header);
   }
+
+    /**
+      A method to protect from dos and similar attacks.
+    */
+    captchaCheckUnauthorized(urlEnd: string, responseToken : string){
+      let serviceUrl =this.configurationHandler.CONFIG["BaseAddress"]+ this.configurationHandler.CONFIG["reCaptchaRequest"];
+      serviceUrl = serviceUrl +"/"+urlEnd;
+      console.log(serviceUrl);
+      return this.http.post(serviceUrl,{  "responseCaptcha" : responseToken });
+    }
 }

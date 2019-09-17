@@ -20,7 +20,6 @@ export class LogoutComponent implements OnInit {
   result: {};
   returnBack : boolean;
   //Params used to display or clear data;.
-  logoutParam : string;
   tokenName : string
   usernameSession : string;
   username : string;
@@ -37,11 +36,10 @@ export class LogoutComponent implements OnInit {
     logout(){
       this.blockUI.start("Loading...");
       let tempPath = this.configurationHandler.CONFIG["serviceRegistryStartNode"];
-      this.data.getLogoutRequest(this.pathToData, this.logoutParam).subscribe( data => {
+      this.data.getLogoutRequest(this.pathToData, "logout").subscribe( data => {
         this.result = data;
         if(this.result){
         sessionStorage.clear();
-          //this.controlUtils.openDialogWithHeader(this.result[this.logoutParam],"Alert", this.pathToData);
           this.userActiveToken = "";
           this.username = "";
 
@@ -64,7 +62,6 @@ export class LogoutComponent implements OnInit {
   ngOnInit() {
     this.tokenName = this.configurationHandler.CONFIG["sessionTokenName"];
     this.usernameSession = this.configurationHandler.CONFIG["sessionUserName"];
-    this.logoutParam = this.configurationHandler.CONFIG["logoutParamName"];
     this.userActiveToken = sessionStorage.getItem(this.tokenName);
     this.userAdmin = sessionStorage.getItem("admin");
     this.username = sessionStorage.getItem(this.usernameSession);

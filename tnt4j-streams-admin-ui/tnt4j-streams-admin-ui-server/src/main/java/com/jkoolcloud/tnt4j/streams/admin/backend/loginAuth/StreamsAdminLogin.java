@@ -103,7 +103,6 @@ public class StreamsAdminLogin implements LoginModule {
             else if (loginCache.checkForSuccessfulLogin(username+":"+password)) {
 //            if ( (username.equals("test") && password.equals("test")) || (username.equals("admin") && password.equals("admin"))) {
                 userGroups = getRoles();
-                loginCache.generateTokenForUser();
                 isAuthenticated = true;
                 //LOG.info("Login successful");
                 return true;
@@ -159,7 +158,7 @@ public class StreamsAdminLogin implements LoginModule {
     public boolean abort() throws LoginException {
         if (!isAuthenticated) {
             return false;
-        } else if (isAuthenticated && !commitSucceeded) {
+        } else if (!commitSucceeded) {
             isAuthenticated = false;
             username = null;
             password = null;

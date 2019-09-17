@@ -30,17 +30,14 @@ export class nodeDatabase{
     private utilsSvc: UtilsService) {}
 
   getTreeList(tempZooKeeperNodeList): Map<string, string[]>{
-    let elementsToExcludeFromTreeView = this.configurationHandler.CONFIG["excludeFromTreeView"];
     let dataMap = new Map<string, string[]>();
     for(let node in tempZooKeeperNodeList){
       let tempArray = [];
          let tempParent: string;
          for(let nodeInside in tempZooKeeperNodeList){
              if(this.utilsSvc.compareStrings(node, tempZooKeeperNodeList[nodeInside])){
-                if(!elementsToExcludeFromTreeView.includes(this.utilsSvc.getNodePathEnd(nodeInside))){
                    tempArray.push(nodeInside)
                    tempParent = tempZooKeeperNodeList[nodeInside];
-                }
              }
           }
           if (tempArray !== undefined && tempArray.length != 0) {

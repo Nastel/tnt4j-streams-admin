@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component,ViewChild, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { Router, RouterModule} from '@angular/router';
 import { ControlUtils } from "../utils/control.utils";
@@ -19,6 +19,12 @@ export class LoginComponent implements OnInit {
   loginResponse: string;
   result: {};
   encryptSecretKey: string;
+  pathToData : string;
+
+  //reCaptcha
+  reCaptchaCheck : boolean = false;
+  @ViewChild('reCaptcha') reCaptchaComponent;
+  reCaptchaKey: string = this.configurationHandler.CONFIG["siteKey"];
 
   //Form data
   model: any = {};
@@ -27,6 +33,7 @@ export class LoginComponent implements OnInit {
   tokenName : string
   usernameSession : string;
   @BlockUI() blockUI: NgBlockUI;
+  captchaResponse: string;
 
   constructor(private data: DataService,
               private router: Router,
@@ -36,6 +43,7 @@ export class LoginComponent implements OnInit {
 
 
   ngOnInit() {
+    this.pathToData = this.router.url.substring(1);
     this.encryptSecretKey = this.configurationHandler.CONFIG["SecretKeyForEncryption"];
     let tempPath = this.configurationHandler.CONFIG["serviceRegistryStartNode"];
     this.tokenName = this.configurationHandler.CONFIG["sessionTokenName"];
@@ -51,29 +59,37 @@ export class LoginComponent implements OnInit {
     let pathToData = this.router.url.substring(1);
     let tempModal =  this.model["password"];
     tempModal = this.encryptData(tempModal);
-    sessionStorage.setItem( this.usernameSession, this.model["username"]);
-    this.data.getBackEndLoginResponse(pathToData, tempModal, this.model["username"]).subscribe( data => {
-      this.result = data;
-      console.log("the response from back end", JSON.stringify(this.result));
-        if(!this.utilsSvc.compareStrings(this.result["token"], "") || !this.utilsSvc.compareStrings(this.result["token"], "undefined")){
-          sessionStorage.setItem(this.tokenName, this.result["token"]);
-          sessionStorage.setItem("admin", this.result["admin"]);
-          if(!this.utilsSvc.compareStrings(this.result["userList"], "undefined")){
-            sessionStorage.setItem("userList", JSON.stringify(this.result["userList"]));
+    if(this.captchaResponse!=null){
+     console.log(this.captchaResponse);
+      sessionStorage.setItem( this.usernameSession, this.model["username"]);
+      this.data.getBackEndLoginResponse(pathToData, tempModal, this.model["username"], this.captchaResponse).subscribe( data => {
+        this.result = data;
+        console.log("the response from back end", JSON.stringify(this.result));
+          if(!this.utilsSvc.compareStrings(this.result["token"], "") && !this.utilsSvc.compareStrings(this.result["token"], "undefined") && this.reCaptchaCheck){
+            sessionStorage.setItem(this.tokenName, this.result["token"]);
+            sessionStorage.setItem("admin", this.result["admin"]);
+            if(!this.utilsSvc.compareStrings(this.result["userList"], "undefined")){
+              sessionStorage.setItem("userList", JSON.stringify(this.result["userList"]));
+            }
+            this.blockUI.stop();
+            location.reload();
+          } else{
+            this.doNotVerify();
+            this.blockUI.stop();
+            this.controlUtils.openDialogWithHeader("Problem, on confirming form input! Did you fill all the data fields needed?", "Ooops", pathToData);
           }
+      }, err =>{
+          this.doNotVerify();
           this.blockUI.stop();
-          location.reload();
-        }
-        else{
-          this.blockUI.stop();
-          this.controlUtils.openDialogWithHeader(this.result.toString(), "Ooops", pathToData);
-        }
-    }, err =>{
-        this.blockUI.stop();
-        console.log("Problem on authorizations");
-        this.model["password"] = "";
-        console.log(err);
-     });
+          console.log("Problem on authorizations");
+          this.model["password"] = "";
+          console.log(err);
+       });
+     }else{
+       this.blockUI.stop();
+       this.controlUtils.openDialogWithHeader("Problem on resolving the reCaptcha response", "Response", this.pathToData );
+       this.doNotVerify();
+     }
   }
 
   encryptData(data) {
@@ -83,6 +99,57 @@ export class LoginComponent implements OnInit {
         console.log("Problem on encryption: " + e);
       }
     }
+
+  /** ------------------------- The reCaptcha confirmation methods --------------------- */
+
+//  public resolved(captchaResponse: string) {
+//    if(captchaResponse!=null){
+//      this.blockUI.start("Checking captcha...");
+//      console.log(`Resolved captcha with response: ${captchaResponse}`);
+//      console.log(captchaResponse);
+//      try{
+//        this.data.captchaCheckUnauthorized("unauthorized",captchaResponse).subscribe( data => {
+//        let result = data["re-captcha"];
+//        console.log(data["re-captcha"]);
+//          if(result['success']){
+//            this.reCaptchaCheck = true;
+//          }else{
+//            this.reCaptchaCheck = false;
+//            this.doNotVerify();
+//            this.controlUtils.openDialogWithHeader(result['success'], "Response", this.pathToData );
+//          }
+//          this.blockUI.stop();
+//          if(!this.utilsSvc.isObject(data["re-captcha"])){
+//            this.controlUtils.openDialogWithHeader(data["re-captcha"], "Response", this.pathToData );
+//          }
+//        }, err =>{
+//           this.doNotVerify();
+//           this.reCaptchaCheck = false;
+//           this.blockUI.stop();
+//           console.log(err);
+//         });
+//      }catch(e){
+//        console.log("Problem on resolving the reCaptcha response", e)
+//        this.blockUI.stop();
+//      }
+//    }else{
+//       this.controlUtils.openDialogWithHeader("Problem on resolving the reCaptcha response", "Response", this.pathToData );
+//       this.doNotVerify();
+//     }
+//  }
+
+
+  public resolved(captchaResponse: string) {
+    if(captchaResponse!=null){
+      this.reCaptchaCheck = true;
+      this.captchaResponse = captchaResponse;
+    }else{
+      this.reCaptchaCheck = false;
+    }
+  }
+  doNotVerify(){
+      this.reCaptchaComponent.reset();
+  }
 
 
 }

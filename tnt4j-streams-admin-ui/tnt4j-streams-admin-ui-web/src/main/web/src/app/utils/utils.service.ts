@@ -112,7 +112,7 @@ export class UtilsService
   }
 
   public getColorForText(): string{
-       return  this.configurationHandler.CONFIG["PageColorConfigs"]["labelTextColor"];
+       return  this.configurationHandler.CONFIG["PageColorConfigs"]["TitleTextColor"];
   }
 
   public getColorTableLabels(): string{
