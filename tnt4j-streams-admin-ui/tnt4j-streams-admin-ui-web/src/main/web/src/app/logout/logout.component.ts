@@ -94,7 +94,7 @@ export class LogoutComponent implements OnInit {
       let userPath = this.configurationHandler.CONFIG["BasePathToUsersPage"];
       if(this.utilsSvc.compareStrings(this.pathToData, userPath)){
         this.returnBack = true;
-        this.router.navigate(["/streams/v1/clusters"]);
+        this.router.navigate([this.configurationHandler.CONFIG["BasePathHide"]+"/clusters"]);
       }else{
         this.returnBack = false;
         this.router.navigate(["/"+userPath]);

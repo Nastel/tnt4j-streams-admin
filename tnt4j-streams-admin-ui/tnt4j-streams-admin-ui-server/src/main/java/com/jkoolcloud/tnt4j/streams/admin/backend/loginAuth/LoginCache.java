@@ -2,8 +2,6 @@ package com.jkoolcloud.tnt4j.streams.admin.backend.loginAuth;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -11,9 +9,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.log4j.Logger;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -51,17 +46,38 @@ public class LoginCache {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
+        ZookeeperAccessService zooAccess = new ZookeeperAccessService();
+        ZooKeeperConnectionManager zooManager = new ZooKeeperConnectionManager();
+        zooAccess.init();
         LoginCache login =  new LoginCache();
         String userToken = login.generateTokenForUser();
-        login.checkIfUserExistInCache(token);
-        login.checkForSuccessfulLogin("basic:basic");
+        token = userToken;
+        zooManager.setConnectionToken(userToken);
+        login.checkIfUserExistInCache(userToken);
+        login.checkForSuccessfulLogin("admin:admin");
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/threadDump", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/sampleConfigurations", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/runtimeInformation", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/logs", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/configurations", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream/incomplete", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream/metrics", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream/repository", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/_streamsAndMetrics", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets", 0, userToken);
+        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/streamsAdmin_error.log", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream/_stop", 0, userToken);
+//        zooAccess.getServiceNodeInfoFromLink("/clusters", 0, userToken);
 
-        ObjectMapper objMapper = new ObjectMapper();
-        ObjectWriter writer = objMapper.writer();
-        UsersUtils users = new UsersUtils();
-        HashMap<String, List> clustersWithRights = objMapper.readValue("{\"/streams/v1/clusters/clusterBlockchainMainnets\" : [\"read\",\"admin\",\"action\"]," +
-                "\"/streams/v1/clusters/clusterBlockchainTestnet\" : [\"read\",\"admin\",\"action\"]}", new TypeReference<Map<String, Object>>() {});
-        users.addUser(clustersWithRights,"admin","admin", false, true);
+//        ObjectMapper objMapper = new ObjectMapper();
+//        ObjectWriter writer = objMapper.writer();
+//        UsersUtils users = new UsersUtils();
+//        HashMap<String, List> clustersWithRights = objMapper.readValue("{\"/streams/v2/clusters/clusterBlockchainMainnets\" : [\"read\",\"admin\",\"action\"]," +
+//                "\"/streams/v2/clusters/clusterBlockchainTestnet\" : [\"read\",\"admin\",\"action\"]}", new TypeReference<Map<String, Object>>() {});
+//        users.addUser(clustersWithRights,"admin","admin", false, true);
         /**FOR UPDATING SIMPLE USER TEST
              HashMap<String, List> clustersWithRights = objMapper.readValue("{\"/streams/v1/clusters/clusterBlockchainMainnets\" : [\"read\"]," +
                      "\"/streams/v1/clusters/clusterBlockchainTestnet\" : [\"read\"]}", new TypeReference<Map<String, Object>>() {});

@@ -5,7 +5,7 @@ import { LoginComponent } from './login/login.component';
 import {TreeViewComponent} from './tree-view/tree-view.component';
 
 const routes: Routes = [
-  { path: 'streams/v1/clusters', component: TreeViewComponent},
+  { path: 'streams/v2/clusters', component: TreeViewComponent},
   { path: 'login', component: LoginComponent}
 ];
 

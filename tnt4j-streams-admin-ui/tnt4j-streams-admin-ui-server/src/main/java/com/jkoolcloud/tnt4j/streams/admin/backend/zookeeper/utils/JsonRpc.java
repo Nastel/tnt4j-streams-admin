@@ -19,11 +19,11 @@ package com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.utils;
 import java.util.HashMap;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZookeeperAccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The type Json rpc.
@@ -56,6 +56,21 @@ public class JsonRpc {
 		this.method = method;
 		this.params = params;
 		this.id = id;
+	}
+
+	/**
+	 *
+	 * @param jsonInString
+	 * @return
+	 */
+	public static boolean isJSONValid(String jsonInString ) {
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			HashMap myMap = objectMapper.readValue(jsonInString, HashMap.class);
+			return true;
+		} catch (Throwable e) {
+			return false;
+		}
 	}
 
 	/**
@@ -214,21 +229,6 @@ public class JsonRpc {
 			return new JsonRpc(jsonrpc, method, params, id);
 		}
 
-	}
-
-	/**
-	 *
-	 * @param jsonInString
-	 * @return
-	 */
-	public static boolean isJSONValid(String jsonInString ) {
-		try {
-			ObjectMapper objectMapper = new ObjectMapper();
-			HashMap myMap = objectMapper.readValue(jsonInString, HashMap.class);
-			return true;
-		} catch (Throwable e) {
-			return false;
-		}
 	}
 
 

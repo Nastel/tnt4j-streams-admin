@@ -179,8 +179,8 @@ public class HttpUtils {
 		try {
 			HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 			con.setRequestProperty("Authorization", tempToken);
-			con.setConnectTimeout(5000);
-			con.setReadTimeout(5000);
+			con.setConnectTimeout(10000);
+			con.setReadTimeout(10000);
 			if (ignoreHostnameVerifier) {
 				con.setHostnameVerifier((s, sslSession) -> true);
 			}
@@ -195,7 +195,7 @@ public class HttpUtils {
 
 		} catch (SocketTimeoutException e) {
 //			LOG.error("The provided endpoint: "+ httpsUrl + " took to long to respond ( > 5s )");
-			return "The provided endpoint took to long to respond ( > 5s )";
+			return "The provided endpoint took to long to respond ( > 10s )";
 		} catch (MalformedURLException e) {
 			LOG.error("The provided endpoint: "+ httpsUrl + " returned an empty string MalformedURLException");
 			return "MalformedURLException";

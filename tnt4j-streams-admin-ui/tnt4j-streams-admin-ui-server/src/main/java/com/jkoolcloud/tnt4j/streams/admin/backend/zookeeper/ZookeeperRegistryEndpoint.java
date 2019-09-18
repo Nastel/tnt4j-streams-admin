@@ -16,6 +16,7 @@
 
 package com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -97,18 +98,22 @@ public class ZookeeperRegistryEndpoint {
 				for (PathSegment node : nodePath) {
 					pathToNode.append("/").append(node);
 				}
-				String value = mapper.writeValueAsString(
-						zookeeperAccessService.getServiceNodeInfoFromLinkForReplay(pathToNode.toString(), header));
-				LOG.info("Response to block replay request: "+ value);
-				return Response.status(200).entity("{ \"action\" : \""+value+"\"}").build();
+				HashMap tempMap = zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0, header);
+				String value = mapper.writeValueAsString(tempMap.get("data"));
+				if(value.equals("") || value.isEmpty()) {
+					return Response.status(200).entity("{ \"action\" : \"No response received ( action token missing )\"}").build();
+				}else{
+					LOG.info("Response to block replay request: "+ value);
+					return Response.status(200).entity("{ \"action\" : "+value+"}").build();
+				}
 			} catch (Exception e) {
 				LOG.error("Error on trying to replay item : ", e);
-				return Response.status(200).entity("{ \"action\" : \"Error on trying to replay item: "+e+"\"}").build();
+				return Response.status(200).entity("{ \"action\" : \"Error on trying to replay item\"}").build();
 			}
 		}
 		else{
 			LOG.info("Return a 401 inside node call");
-			return Response.status(401).entity("Tried to access protected resources").build();
+			return Response.status(401).entity("{ \"action\" : \"Tried to access protected resources\"").build();
 		}
 	}
 
@@ -129,18 +134,23 @@ public class ZookeeperRegistryEndpoint {
 					pathToNode.append("/").append(node);
 				}
 				LOG.info("Path created from URL: "+ pathToNode.toString());
-				String value = mapper.writeValueAsString(
-						zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0, header));
-				LOG.info("Start stream response from ZooKeeper: "+ value);
-				return Response.status(200).entity("{ \"action\" : \""+value+"\"}").build();
+				HashMap tempMap = zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0, header);
+				String value = mapper.writeValueAsString(tempMap.get("data"));
+				LOG.info(value);
+				if(value.equals("") || value.isEmpty()) {
+					return Response.status(200).entity("{ \"action\" : \"No response received ( action token missing )\"}").build();
+				}else{
+					LOG.info("Response to stream start: "+ value);
+					return Response.status(200).entity("{ \"action\" : "+value+"}").build();
+				}
 			} catch (Exception e) {
 				LOG.error("Error on reading starting stream", e);
-				return Response.status(200).entity("{ \"action\" : \"Error on reading starting stream: "+e+"\"}").build();
+				return Response.status(200).entity("{ \"action\" : \"Error on reading starting stream\"}").build();
 			}
 		}
 		else{
 			LOG.info("Return a 401 inside node call");
-			return Response.status(401).entity("Tried to access protected resources").build();
+			return Response.status(401).entity("{ \"action\" : \"Tried to access protected resources\"").build();
 		}
 	}
 
@@ -160,18 +170,22 @@ public class ZookeeperRegistryEndpoint {
 				for (PathSegment node : nodePath) {
 					pathToNode.append("/").append(node);
 				}
-				String value = mapper.writeValueAsString(
-				zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0, header));
-				LOG.info("Stop stream response from ZooKeeper: "+ value);
-				return Response.status(200).entity("{ \"action\" : \""+value+"\"}").build();
+				HashMap tempMap = zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0, header);
+				String value = mapper.writeValueAsString(tempMap.get("data"));
+				if(value.equals("") || value.isEmpty()) {
+					return Response.status(200).entity("{ \"action\" : \"No response received ( action token missing )\"}").build();
+				}else{
+					LOG.info("Response to stream stop: "+ value);
+					return Response.status(200).entity("{ \"action\" : "+value+"}").build();
+				}
 			} catch (Exception e) {
 				LOG.error("Error on reading stopping stream", e);
-				return Response.status(200).entity("{ \"action\" : \"Error on reading stopping stream: "+e+"\"}").build();
+				return Response.status(200).entity("{ \"action\" : \"Error on reading stopping stream\"}").build();
 			}
 		}
 		else{
 			LOG.info("Return a 401 inside node call");
-			return Response.status(401).entity("Tried to access protected resources").build();
+			return Response.status(401).entity("{ \"action\" : \"Tried to access protected resources\"").build();
 		}
 	}
 

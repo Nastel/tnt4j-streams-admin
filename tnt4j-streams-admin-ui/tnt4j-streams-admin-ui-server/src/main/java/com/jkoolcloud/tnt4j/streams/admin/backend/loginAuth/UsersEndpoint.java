@@ -65,7 +65,7 @@ public class UsersEndpoint {
         try {
             HashMap Authorizations = mapper.readValue(header, HashMap.class);
             String captchaToken = (String) Authorizations.get("responseCaptcha");
-            JsonNode response = CaptchaUtils.verify(captchaToken);
+            JsonNode response =  CaptchaUtils.verify(captchaToken);
             if (response != null) {
                 if(usersUtils.checkTheUserForExclude(Authorizations.get("username").toString())){
                     return Response.status(403).build();
@@ -326,6 +326,7 @@ public class UsersEndpoint {
         ObjectMapper mapper = new ObjectMapper();
         if(usersUtils.checkIfUserExistAndBypassLogin(header, cache)){
             try {
+                zooManager.setConnectionToken(header);
                 cache.setUserCount(0);
                 infoForUserUpdate = mapper.readValue(userInformationForEdit, HashMap.class);
                 List<String> clusters = (List<String>) infoForUserUpdate.get("clusters");

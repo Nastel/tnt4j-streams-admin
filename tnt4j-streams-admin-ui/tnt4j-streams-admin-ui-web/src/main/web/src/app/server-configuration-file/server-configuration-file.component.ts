@@ -71,7 +71,7 @@ export class ServerConfigurationFileComponent implements OnInit {
   loadZooKeeperNodeData(pathToData){
     try{
       this.nodeConf = this.treeView.nodeConf;
-      this.zooKeeperData = this.treeView.zooKeeperData["data"];
+      this.zooKeeperData = JSON.parse(this.treeView.zooKeeperData["data"]);
       this.configChoiceData =  this.zooKeeperData[0]['name'];
       this.responseShow("good")
     }
@@ -79,25 +79,6 @@ export class ServerConfigurationFileComponent implements OnInit {
       this.responseShow("bad");
       console.log("Problem on default node while trying to prepare the showing of node data AGENT LOGS", err);
     }
-
-//      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
-//        try{
-//          this.zooKeeperData = data;
-//          this.serviceConfigParent =  JSON.parse(this.zooKeeperData.toString());
-//          console.log("CONFIGURATIONS DATA", this.serviceConfigParent);
-//          this.serviceConfigParent = this.serviceConfigParent['data'];
-//          this.configChoiceData =  this.serviceConfigParent[0]['name'];
-//          this.valueThatChangesOnDataLoad = true;
-//        }catch(err){
-//          console.log("Problem on getting server configurations ", err);
-//        }
-//      },
-//       err =>{
-//         this.valueThatChangesForSpinnerOnResponse = true;
-//         this.valueThatChangesOnDataLoad = false;
-//         console.log("Service Config data was not loaded correctly: ", err);
-//       }
-//      );
    }
 
    configFileChoice(choice){

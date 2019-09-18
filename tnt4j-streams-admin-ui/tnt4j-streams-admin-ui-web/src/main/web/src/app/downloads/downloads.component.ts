@@ -146,18 +146,18 @@ export class DownloadsComponent implements OnInit {
           let encodedFile;
           let result = data;
           this.fileZipData = result; //JSON.parse(result.toString());
+          console.log(this.fileZipData )
           if(!this.utilsSvc.compareStrings(this.fileZipData, "undefined")){
-            if( this.fileZipData['data'].includes("Error")){
+            if(this.utilsSvc.compareStrings(this.fileZipData['data'], "undefined")){
               this.controlUtils.openDialog("Error: File download failed - File size to big", this.pathToData);
                 console.log("File download failed : File size to big");
             }
             else{
-              let dataRaw = this.fileZipData["data"];
+              let dataRaw = this.fileZipData["data"]['data'];
               if(!this.utilsSvc.compareStrings(dataRaw, "undefined")){
                 var bytes = this._base64ToArrayBuffer(dataRaw);
               }
               var blob=new Blob([bytes], {type: "application/stream"});
-
               var link=document.createElement('a');
               link.href=window.URL.createObjectURL(blob);
               console.log( link.href);
@@ -168,7 +168,7 @@ export class DownloadsComponent implements OnInit {
             }
           }
         } catch(err) {
-                 this.controlUtils.openDialog("Error: Problem while trying to download the file"+err, this.pathToData);
+                 this.controlUtils.openDialog("Error: Problem while trying to download the file: "+err, this.pathToData);
                  console.log("Problem while trying to download the file" , err);
               }
       },

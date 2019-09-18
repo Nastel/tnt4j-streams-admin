@@ -9,7 +9,6 @@ import { UtilsService } from "../utils/utils.service";
 import { DataService } from '../data.service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import { TreeViewComponent } from '../tree-view/tree-view.component'
-import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
 import { ControlUtils } from "../utils/control.utils";
 
@@ -85,7 +84,6 @@ export class AgentRuntimeComponent implements OnInit {
   valueThatChangesForSpinnerOnResponse = false;
   streamRegistryNode = this.configurationHandler.CONFIG["activeStreamRegistryNode"];
   agentStatus = true;
-  @BlockUI() blockUI: NgBlockUI;
 
   streamDataShowChoice: string;
   iconsRegistered = [];
@@ -552,7 +550,6 @@ export class AgentRuntimeComponent implements OnInit {
   }
 
   startStopStream(streamState, streamName){
-    this.blockUI.start("Loading...");
     try{
       let path = this.pathToData  + "/" + streamName;
       if(this.utilsSvc.compareStrings(streamState,"stop")){
@@ -563,25 +560,20 @@ export class AgentRuntimeComponent implements OnInit {
         console.log("Starting ...");
          this.controlUtils.startStream(path);
       }
-     this.blockUI.stop();
     }catch(e){
       console.log("Problem occurred in start/stop");
       console.log(e);
-      this.blockUI.stop();
     }
   }
 
   replayTheBlockFromInput(streamName, blockNumber){
     try{
-       this.blockUI.start("Starting block replay...");
        console.log("Trying to replay block: ", blockNumber, " from stream: ", streamName)
        let path = this.pathToData  + "/" + streamName;
        this.controlUtils.replayBlock(path, blockNumber);
-       this.blockUI.stop();
     }catch(e){
      console.log("Problem occurred in start/stop");
      console.log(e);
-     this.blockUI.stop();
     }
   }
 

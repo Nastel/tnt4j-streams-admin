@@ -280,7 +280,7 @@ export class AutoRouteGenerator
       this.compiler.compileModuleAsync (tmpModule).then ((module) => {
         const appRoutes = [...router.config];
         let route;
-        route = {path: "**", redirectTo: '/streams/v1/clusters', runGuardsAndResolvers: 'always'};
+        route = {path: "**", redirectTo: this.CONFIG["BasePathHide"]+'/clusters', runGuardsAndResolvers: 'always'};
         appRoutes.push (route);
         router.resetConfig (appRoutes);
       });

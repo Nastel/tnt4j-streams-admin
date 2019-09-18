@@ -10,6 +10,8 @@ import { ConfigurationHandler } from '../config/configuration-handler';
 })
 export class HeaderComponent implements OnInit {
 
+  basePath: string;
+
   constructor(
           private configurationHandler:ConfigurationHandler,
           private router: Router,
@@ -18,7 +20,9 @@ export class HeaderComponent implements OnInit {
   navbarOpen = false;
   pathToIcon: string;
 
-  ngOnInit() {}
+  ngOnInit() {
+     this.basePath = this.configurationHandler.CONFIG["BasePathHide"]+'clusters';
+  }
 
   toggleNavbar() {
     this.navbarOpen = !this.navbarOpen;

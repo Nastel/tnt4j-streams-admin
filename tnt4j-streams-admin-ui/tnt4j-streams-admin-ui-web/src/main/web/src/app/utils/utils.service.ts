@@ -44,7 +44,7 @@ export class UtilsService
     if(!authToken || this.compareStrings(authToken, "null")){
        router.navigate(['/login']);
     }else if(this.compareStrings(currentPath, "null") || this.compareStrings(currentPath, "undefined")){
-       router.navigate(['/streams/v1/clusters']);
+       router.navigate([this.configurationHandler.CONFIG["BasePathHide"]+'/clusters']);
     }else{
       console.log("Do not navigate");
     }
@@ -98,7 +98,6 @@ export class UtilsService
   }
 
   public valueExists(value){
-  console.log(value)
     if(!this.compareStrings(value, "undefined")){
       if(!(value==null)&&!(value=="")){
            return true;
@@ -340,7 +339,7 @@ export class UtilsService
 
    public breadcrumbTitle (stringParam): string {
 
-       let string = stringParam.replace('streams/v1/','');
+       let string = stringParam.replace(this.configurationHandler.CONFIG["BasePathHide"]+'/','');
        return string;
    }
 

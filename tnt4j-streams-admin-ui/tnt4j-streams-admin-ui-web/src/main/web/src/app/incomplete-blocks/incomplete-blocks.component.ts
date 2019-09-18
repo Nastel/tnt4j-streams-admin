@@ -4,7 +4,6 @@ import { Injectable } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
-import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
 import { ControlUtils } from "../utils/control.utils";
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -61,7 +60,6 @@ export class IncompleteBlocksComponent implements OnInit {
 /** Front end prop */
   valueThatChangesOnDataLoad = true;
   valueThatChangesForSpinnerOnResponse = false;
-  @BlockUI() blockUI: NgBlockUI;
 
     /** ZooKeeper loaded data */
    zooKeeperData: Object;
@@ -123,11 +121,11 @@ export class IncompleteBlocksComponent implements OnInit {
     let queryToJkool = linkUrlAddress.replace(re1, "jk_maxrows=1000");
     console.log(" <-----> JKool  Blocks No Receipt", linkUrlAddress);
     this.responseShow("");
-    this.data.getLinkData(linkUrlAddress).subscribe(data => {
+//    this.data.getLinkData(linkUrlAddress).subscribe(data => {
       try{
         setTimeout(() => this.dataSource.paginator = this.paginator);
-        this.incompleteBlocksNoReceiptFull = data['rows'];
-        console.log(" <-----> JKool  Blocks No Receipt", data);
+        this.incompleteBlocksNoReceiptFull =  this.zooKeeperData['rows'];
+        console.log(" <-----> JKool  Blocks No Receipt", this.zooKeeperData);
           this.getNeededDataFromBlockNoReceipt(this.incompleteBlocksNoReceiptFull );
           this.formatData( this.incompleteBlocksDataNoReceipt, "incompleteNoReceipt");
           this.createTableWhenDataLoaded();
@@ -136,11 +134,11 @@ export class IncompleteBlocksComponent implements OnInit {
         console.log("Problem while trying to read data from incomplete blocks no receipt", err);
       }
       this.responseShow("good")
-    },
-     err =>{
-       this.responseShow("bad");
-       console.log("Problem on reading incomplete blocks no receipt data: ", err);
-     });
+//    },
+//     err =>{
+//       this.responseShow("bad");
+//       console.log("Problem on reading incomplete blocks no receipt data: ", err);
+//     });
   }
 
   getNeededDataFromBlockNoReceipt(dataBlockRows){
@@ -186,10 +184,10 @@ export class IncompleteBlocksComponent implements OnInit {
       this.responseShow("");
       let re1 = new RegExp("jk_maxrows=100");
       let queryToJkool = linkUrlAddress.replace(re1, "jk_maxrows=1000");
-      this.data.getLinkData(queryToJkool).subscribe(data => {
+//      this.data.getLinkData(queryToJkool).subscribe(data => {
         try{
-          this.fullBlocksDataFromJKool = data['rows'];
-          console.log(" <-----> JKool  Blocks Transaction count mismatch", data);
+          this.fullBlocksDataFromJKool = this.zooKeeperData['rows']; //data['rows'];
+          console.log(" <-----> JKool  Blocks Transaction count mismatch", this.zooKeeperData);
             setTimeout(() => this.dataSource.paginator = this.paginator);
             this.getNeededDataFromBlockRows(this.fullBlocksDataFromJKool);
             let tempData = this.incompleteBlocksData;
@@ -199,11 +197,11 @@ export class IncompleteBlocksComponent implements OnInit {
           console.log("Problem while trying to read data from incomplete blocks", err);
         }
         this.responseShow("good");
-     },
-     err =>{
-       this.responseShow("bad");
-       console.log("Problem on reading incomplete blocks data: ", err);
-     });
+//     },
+//     err =>{
+//       this.responseShow("bad");
+//       console.log("Problem on reading incomplete blocks data: ", err);
+//     });
   }
 
 /**
@@ -368,15 +366,12 @@ export class IncompleteBlocksComponent implements OnInit {
 
   public replayTheBlockFromInput(blockNumber){
     try{
-      this.blockUI.start("Starting block replay...");
       let activityName = blockNumber.replace(/,/g, '');
       console.log("Trying to replay block "+ activityName+" ...");
       this.controlUtils.replayBlock(this.pathToData, activityName);
-      this.blockUI.stop();
     }catch(e){
       console.log("Problem occurred in start/stop");
       console.log(e);
-      this.blockUI.stop();
     }
   }
 

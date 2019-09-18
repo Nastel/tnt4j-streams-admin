@@ -10,7 +10,6 @@ import { UtilsService } from "../utils/utils.service";
 import { DataService } from '../data.service';
 import { ControlUtils } from "../utils/control.utils";
 import { TreeViewComponent } from '../tree-view/tree-view.component'
-import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
 @Component({
   selector: 'app-service-data',
@@ -36,7 +35,7 @@ export class ServiceDataComponent implements OnInit {
   /** Values for showing data loading properties */
   valueThatChangesOnDataLoad = false;
   valueThatChangesForSpinnerOnResponse = true;
-  @BlockUI() blockUI: NgBlockUI;
+
 
  /** Stream control window properties */
     blockNumber="";
@@ -193,7 +192,6 @@ export class ServiceDataComponent implements OnInit {
 
     startStopStream(streamState){
       try{
-        this.blockUI.start("Loading...");
           if(this.utilsSvc.compareStrings(streamState,"stop")){
              console.log("Stopping ...");
              this.controlUtils.stopStream(this.pathToData);
@@ -202,24 +200,19 @@ export class ServiceDataComponent implements OnInit {
              console.log("Starting ...");
              this.controlUtils.startStream(this.pathToData);
           }
-        this.blockUI.stop();
       }catch(e){
         console.log("Problem occurred in start/stop");
         console.log(e);
-        this.blockUI.stop();
       }
     }
 
   public replayTheBlockFromInput(blockNumber){
     try{
-      this.blockUI.start("Starting block replay...");
       console.log("Trying to replay block "+ blockNumber+" ...");
       this.controlUtils.replayBlock(this.pathToData, blockNumber);
-      this.blockUI.stop();
     }catch(e){
       console.log("Problem occurred in start/stop");
       console.log(e);
-      this.blockUI.stop();
     }
   }
 

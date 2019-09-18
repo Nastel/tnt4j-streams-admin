@@ -57,41 +57,6 @@ public class ZookeeperAccessService {
 
 	private static ZooKeeperConnectionManager zooManager = new ZooKeeperConnectionManager();
 
-
-	/**
-	 * The entry point of application.
-	 *
-	 * @param args the input arguments
-	 * @throws Exception the exception
-	 */
-	public static void main(String[] args) throws Exception {
-		ZookeeperAccessService zooAccess = new ZookeeperAccessService();
-//		zooManager.addClientConnection("digest:admin:admin");
-//		zooAccess.getTreeNodes();
-
-		LOG.debug("Hello this is a debug message");
-		LOG.info("Hello this is an info message");
-//		zooAccess.checkIfConnected();
-//		zooAccess.getServiceNodeData("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream2");
-//		zooAccess.getListOfChildNodesWithChildren("/streams/v1/clusters/clusterBlockchainMainnets/streamsAgentEth");
-//		zooAccess.getServiceNodeData("/clusters/clusterBlockchainMainnets/streamsAgentEth/threadDump");
-//		zooAccess.getServiceNodeData("/clusters/clusterBlockchainMainnets/streamsAgentEth");
-//		zooAccess.getServiceNodeData("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/streamAdminLogger.log");
-//		zooAccess.getServiceNodeData("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/streamAdminLogger.log");
-//      zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/tnt4j-streams-activities.log");
-//      zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth");
-//		zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/sampleConfigurations");
-//		zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/_streamsAndMetrics", 0);
-//		zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream2");
-//		zooAccess.getServiceNodeInfoFromLinkForReplay("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream2/8316044");
-//		zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/sampleConfigurations", 0);
-//		zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/file.txt");
-//		zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/logs", 3);
-//		zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream2/_start", 0);
-//		zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets");
-		zooAccess.destroy();
-	}
-
 	/**
 	 * Init ZooKeeper connection.
 	 */
@@ -175,8 +140,10 @@ public class ZookeeperAccessService {
 	public static HashMap getResponseInJson(String data) {
 		HashMap dataMap = new HashMap<>();
 		try {
-			if (JsonRpc.isJSONValid(data)) {
-				ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = new ObjectMapper();
+			if(data.charAt(0) == '[') {
+				dataMap.put("data", data);
+			} else if (JsonRpc.isJSONValid(data)) {
 				dataMap = objectMapper.readValue(data, HashMap.class);
 			} else {
 				dataMap.put("dataReading", data);
@@ -390,8 +357,8 @@ public class ZookeeperAccessService {
 						} else{
 							if(!userConnected) {
 								userConnected = true;
-								String token = cache.generateTokenForUser();
-								zooManager.setConnectionToken(token);
+								String tokenNeeded = cache.generateTokenForUser();
+								zooManager.setConnectionToken(tokenNeeded);
 								zooManager.setClientConnection(client);
 							}
 							userAdmin = CuratorUtils.checkIfUserIsAdmin(client, tempClusterNode, credentials);
@@ -535,31 +502,52 @@ public class ZookeeperAccessService {
 	public HashMap getServiceNodeInfoFromLink(String pathToData, int logLineCount, String userToken) {
 		setTokenAndGetConn(userToken);
 		String responseLink, responseData;
-		HashMap dataMap = new HashMap(), actionNodes = new HashMap();
+		HashMap dataMap = new HashMap(), actionNodes, configMap, responseMap;
 
 		try {
 			String requestToken = getTheTokenFromZooKeeper(pathToData, AUTH_NODE_PATH_READ_RIGHTS);
 			if (requestToken.length() > 2) {
 				requestToken = TOKEN_TYPE + " " + requestToken;
 				actionNodes = doChecksForSpecialNeedsNodes(pathToData);
-				responseLink = actionNodes.get("responseLink").toString();
-				if (actionNodes.get("token") != null) {
+				configMap = getResponseInJson(actionNodes.get("responseLink").toString());
+				responseLink = configMap.get("data").toString();
+				LOG.info("The link from zkNode: "+responseLink);
+				if(actionNodes.get("token") != null){
 					String token = actionNodes.get("token").toString();
 					requestToken = token;
 				}
 				responseData = HttpUtils.readUrlAsStringWithToken(responseLink, true, requestToken);
+				responseMap = getResponseInJson(responseData);
+				String value = (String) responseMap.get("dataReading");
+				if(value != null) {
+					configMap.put("data",value);
+				}else {
+					if (getAddressEnding(pathToData).equals(ACTIVE_STREAMS_REGISTRY_NODE)) {
+						configMap = formatIfMetricsDataStreams(responseMap, pathToData);
+					} else if(responseData.charAt(0) == '['){
+						configMap.put("data", responseData);
+						configMap = formatIfMetricsData(configMap, pathToData);
+						configMap.put("Response link", responseLink);
+					} else {
+						configMap.put("data", responseMap);
+						configMap = formatIfMetricsData(configMap, pathToData);
+						configMap.put("Response link", responseLink);
+					}
+				}
 				//responseData = "{\"data\":{\"Service error log\":[],\"Service log\":[\"2019-08-20 10:17:18,017| INFO\", \"|com.jkoolcloud.tnt4j.streams.inputs.RestStream| =>  Invoking RESTful service POST request:\", \" url=https://mainnet.infura.io/v3/5fc47c37ebd24bc68c4f203742da9752, reqData= | RUNTIME=24964@EC2AMAZ-8CBM9A6#SERVER=EC2AMAZ\", \"-8CBM9A6#NETADDR=172.31.45.251#DATACENTER=UNKNOWN#GEOADDR=UNKNOWNrn\"],\"config\":{\"componentLoad\":\"logs\",\"streamsIcon\":\"<svg height='2.5em' id='svg8' version='1.1' viewBox='2 2 9 9' xmlns='http://www.w3.org/2000/svg' xmlns:cc='http://creativecommons.org/ns#' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:svg='http://www.w3.org/2000/svg'><defs id='defs2'/><g id='layer1' transform='translate(0,-284.29998)'><path d='m 4.9388885,287.12215 4.9388893,-2e-5 v 0.7056 H 4.9388885 Z' id='path4487' style='fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'/><path d='m 4.9388888,288.53327 4.9388892,-2e-5 v 0.7056 H 4.9388888 Z' id='path4507' style='fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'/><path d='m 4.9388888,289.94442 0.7055559,-5e-5 v 0.70557 l -0.7055559,8e-5 z' id='path4511' style='fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'/><path d='m 4.9388888,291.35554 h 0.7055559 v 0.70555 H 4.9388888 Z' id='path4513' style='fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'/><path d='m 4.9388888,292.76661 h 0.7055559 v 0.70557 H 4.9388888 Z' id='path4517' style='fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'/><path d='m 2.8222225,287.12213 h 1.4111108 v 0.70552 H 2.8222225 Z' id='rect4537' style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'/><path d='m 2.8222225,288.53325 h 1.4111108 v 0.70554 H 2.8222225 Z' id='path4540' style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'/><path d='m 2.8222225,289.94442 h 1.4111108 v 0.70552 H 2.8222225 Z' id='path4544' style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'/><path d='m 2.8222225,291.35554 h 1.4111108 v 0.70552 H 2.8222225 Z' id='path4546' style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'/><path d='m 2.8222225,292.76666 h 1.4111108 v 0.70552 H 2.8222225 Z' id='path4548' style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'/><path d='M 10.301112,293.89583 9.1722226,292.7669' id='path4562' style='fill:none;stroke:#000000;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'/><path d='m 8.1138888,289.94471 a 1.7638888,1.7638888 0 0 0 -1.7638887,1.76387 1.7638888,1.7638888 0 0 0 1.7638887,1.76389 1.7638888,1.7638888 0 0 0 1.7638892,-1.76389 1.7638888,1.7638888 0 0 0 -1.7638892,-1.76387 z m 0,0.70552 a 1.0583334,1.0583334 0 0 1 1.0583336,1.05835 1.0583334,1.0583334 0 0 1 -1.0583336,1.05832 1.0583334,1.0583334 0 0 1 -1.0583332,-1.05832 1.0583334,1.0583334 0 0 1 1.0583332,-1.05835 z' id='path4564' style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'/><rect height='0.70555556' id='rect4599' style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:0.37647059;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1' width='0.70555556' x='4.2333331' y='287.1221'/><rect height='0.70555556' id='rect4601' style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:0.37647059;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1' width='0.70555556' x='4.2333331' y='288.53323'/><rect height='0.70555556' id='rect4605' style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:0.37647059;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1' width='0.70555556' x='4.2333331' y='289.94437'/><rect height='0.70555556' id='rect4607' style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:0.37647059;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1' width='0.70555556' x='4.2333331' y='291.3555'/><rect height='0.70555556' id='rect4609' style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:0.37647059;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1' width='0.70555556' x='4.2333331' y='292.76663'/></g></svg>\"}}}\n" + "\t";
 				if (logLineCount != 0) {
 					dataMap = getLogLineNumberSpecified(responseData, logLineCount);
 				} else {
-					dataMap = getResponseInJson(responseData);
+					dataMap = configMap;
 				}
 			} else {
 				responseLink = SERVICES_REGISTRY_START_PARENT + pathToData;
 				String responseInfo = readNode(responseLink);
 				dataMap = getResponseInJson(responseInfo);
+				dataMap.put("childrenNodes", getListOfChildNodes(SERVICES_REGISTRY_START_PARENT + pathToData));
+				dataMap.put("Response link", responseLink);
 			}
-			dataMap = formatIfMetricsData(dataMap, pathToData, responseLink);
+
 		} catch (Exception e) {
 			LOG.error("Error on query for node information " + pathToData);
 			LOG.error("Error", e);
@@ -627,24 +615,34 @@ public class ZookeeperAccessService {
 	 *
 	 * @param dataMap
 	 * @param pathToData
-	 * @param responseLink
 	 * @return
 	 */
-	private HashMap formatIfMetricsData(HashMap dataMap, String pathToData, String responseLink) {
+	private HashMap formatIfMetricsData(HashMap dataMap, String pathToData) {
+		HashMap tempMap = dataMap;
+		if (checkIfMetricsData(dataMap)) {
+			String serviceName = getStreamName(dataMap);
+			tempMap.put("data", getMetricsWithFormatting(dataMap, serviceName));
+		}
+		tempMap.put("childrenNodes", getListOfChildNodes(SERVICES_REGISTRY_START_PARENT + pathToData));
+		//LOG.info("data from data [}", tempMap);
+		return tempMap;
+	}
+
+	/**
+	 * Check if the data got is from metrics and if true format according to the method inside ServiceData class
+	 *
+	 * @param dataMap
+	 * @param pathToData
+	 * @return
+	 */
+	private HashMap formatIfMetricsDataStreams(HashMap dataMap, String pathToData) {
 		HashMap tempMap = dataMap;
 		if (getAddressEnding(pathToData).equals(ACTIVE_STREAMS_REGISTRY_NODE)) {
 			for (Object serviceName : dataMap.keySet()) {
+
 				tempMap.put(serviceName, getMetricsWithFormattingStreams(dataMap.get(serviceName), serviceName.toString()));
 			}
-		} else {
-			if (checkIfMetricsData(dataMap)) {
-				String serviceName = getStreamName(dataMap);
-				tempMap.put("data", getMetricsWithFormatting(dataMap, serviceName));
-			}
-			tempMap.put("childrenNodes", getListOfChildNodes(SERVICES_REGISTRY_START_PARENT + pathToData));
-			tempMap.put("Response link", responseLink);
 		}
-		//LOG.info("data from data [}", tempMap);
 		return tempMap;
 	}
 
@@ -654,17 +652,24 @@ public class ZookeeperAccessService {
 	 * @param pathToData
 	 * @return
 	 */
-	private HashMap doChecksForSpecialNeedsNodes(String pathToData) {
+	private HashMap doChecksForSpecialNeedsNodes(String pathToData) throws JsonProcessingException {
 		String responseLink = "";
-		HashMap respone = new HashMap();
+		HashMap respone = new HashMap(), configMap;
 		boolean actionCall = false;
 		String tempPathToNode = SERVICES_REGISTRY_START_PARENT + pathToData;
 		if (checkIfNeededURLDownload(pathToData, "downloadables")) {
 			tempPathToNode = RequestPath.getPathOfSpecifiedLength(tempPathToNode, 8);
 			tempPathToNode = tempPathToNode.substring(0, tempPathToNode.length() - 1);
 			responseLink = readNode(tempPathToNode);
-			responseLink = responseLink + "/" + getAddressEnding(pathToData);
 			respone.put("responseLink", responseLink);
+			configMap = getResponseInJson(responseLink);
+			responseLink = configMap.get("data").toString();
+			responseLink = responseLink + "/" + getAddressEnding(pathToData);
+
+			ObjectMapper objMapper = new ObjectMapper();
+			ObjectWriter writer = objMapper.writer();
+			configMap.put("data", responseLink);
+			responseLink = writer.writeValueAsString(configMap);
 		} else if (checkIfNeededURLControls(pathToData, "_stop") || checkIfNeededURLControls(pathToData, "_start")) {
 			actionCall = true;
 			responseLink = readNode(tempPathToNode);
@@ -679,7 +684,7 @@ public class ZookeeperAccessService {
 			respone.put("token", token);
 		}
 		respone.put("responseLink", responseLink);
-		LOG.info("Response link that makes the call to ZooKeeper REST " + responseLink);
+//		LOG.info("Response link that makes the call to ZooKeeper REST " + responseLink);
 		return respone;
 	}
 
@@ -707,7 +712,7 @@ public class ZookeeperAccessService {
 		try {
 			Stat statResponse = client.checkExists().forPath(parentPath);
 			if (statResponse == null) {
-				LOG.info("No node exists for path: {} Check the call URL or ZooKeeper node tree " + parentPath);
+				LOG.info("No node exists for path. Check the call URL or ZooKeeper node tree " + parentPath);
 			} else {
 				serviceDiscovery = ServiceDiscoveryBuilder.builder(String.class).client(client)
 						.basePath(parentPath).build();

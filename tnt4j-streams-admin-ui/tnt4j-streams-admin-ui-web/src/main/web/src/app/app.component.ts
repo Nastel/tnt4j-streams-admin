@@ -14,11 +14,5 @@ export class AppComponent{
   }
 
   ngOnInit(){
-//    let pathUrl = this.router.url.substring(1);
-//
-//     setTimeout((console.log(pathUrl), 1000))
-//     if(pathUrl===''){
-//       this.router.navigate(['/streams/v1/clusters']);
-//     }
   }
 }
