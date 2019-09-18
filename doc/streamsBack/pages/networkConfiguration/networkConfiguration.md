@@ -12,7 +12,7 @@ There are 3 components
 
 Zookeeper must have an open port (by default it is 2181) to listen for incoming connections from StreamsAdminUI and StreamsAdminClient
 
-StreamAdminClient must have an open port to listen for incoming requests from from StreamsAdminUI
+StreamAdminClient must have an open port to listen for incoming requests from StreamsAdminUI
 
 A top down view of our components
 

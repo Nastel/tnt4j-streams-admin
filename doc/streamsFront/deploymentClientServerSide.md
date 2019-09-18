@@ -11,8 +11,8 @@
 3. For the ui-server build  copy the .war file from **\tnt4j-streams-admin-ui\tnt4j-streams-admin-ui-server\target** and paste it into the serverSide folder. 
 4. Rename the file from the previous step to "streamsadminservices" .
 5. Copy the configuration files from the [deploymentDir](/tnt4j-streams-admin-ui/deploymentDir/serverSideConfigurationFiles) to serverSide deployment folder.
-6. The final deployment directory contains two folders for deployment the ***serverSide*** and ***clientSide*** folders.
-		<br>
+6. The final deployment directory contains two folders for deployment the
+    ***serverSide*** and ***clientSide*** folders.
 ![](./serverSide/1.png)
 ## Deployment server side: 
 
@@ -21,15 +21,10 @@
 -   Go to **serverSide** directory and open the file  named **streamsProperties.properties** set the property named ***ZooKeeperAddress*** to the ZooKeeper ip that we will be connecting to.
 -   Set the secret key to match the one that you got from Google reCaptcha.
 
-| Parameter name | Value/description/example | Explanation           |
-| -- | -- | -- |
-|  ZooKeeperAddress  |  172.31.39.60:2181    |  The ZooKeeper ip address used for connecting to ZooKeeper|
-|  secretKeyCaptcha |  6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe, *or any other received from Google*.  | Should be used depending on domain |
-<br>
-
-![](./serverSide/2.png)
-![](./serverSide/3.png)
-
+|  Parameter name   |   Value/description/example |  Explanation |
+| --- | --- | --- |
+|  ZooKeeperAddress  |  ZooKeeper-ip   |  The ZooKeeper ip address used for connecting to ZooKeeper|
+|  secretKeyCaptcha | Secret key received from Google. | Should be used depending on domain|
 -   Copy the **streamsProperties.properties** from server side deployment directory to ***c:\\Program Files\\Apache Software  Foundation\\Tomcat 9.0\\conf\\*** directory.
 
 ### Step 2
@@ -60,7 +55,7 @@
       - Open the **streamsProperties.properties** file and set the path to custom trustStore: 
         `SslConfigFilePath = C:\\development\\apache-tomcat-9.0.14\\conf\\streamsAdmin.jks`
        - Set the trustStore password:
-        `SslPass = passPhrase`
+        `SslPass = <passPhrase>`
         
 ### Step 4 
 
@@ -79,7 +74,7 @@
 
 | Parameter name | Value/description/example | Explanation           |
 | -- | -- | -- |
-| *siteKey*             | _6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI, or any other received from Google._ |   Should be changed to the needed domain   |
+| siteKey             |  Site key received from Google. |   Should be changed to the needed domain   |
 | ZooKeeperTreNodes     | /registry/nodeTree | Used to get the main node tree   |
 | ZooKeeperBasePath     | /registry | Used to get all the data from nodes and preform stream actions|
 | LoginRequestPath      | /authenticate         | Used for user management  |
