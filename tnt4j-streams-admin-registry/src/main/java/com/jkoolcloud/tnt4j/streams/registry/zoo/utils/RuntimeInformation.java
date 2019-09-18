@@ -106,14 +106,6 @@ public class RuntimeInformation {
 		return System.getProperty("tnt4j.config");
 	}
 
-	public static String getQuartzConfigPath() {
-		return System.getProperty("quartz");
-	}
-
-	public static String getZkTreeConfigPath() {
-		return System.getProperty("zkTree");
-	}
-
 	public static Double getSystemLoadAvg() {
 		return ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage();
 	}

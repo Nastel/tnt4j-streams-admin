@@ -136,7 +136,8 @@ public class Init {
 
 				String path = StringSubstitutor.replace(template, subs);
 
-				String data = JsonUtils.objectToString(streamNode.getAdditionalProperties());
+				String data = StringSubstitutor.replace(JsonUtils.objectToString(streamNode.getAdditionalProperties()),
+						subs);
 
 				createNode(path, data);
 			}

@@ -154,16 +154,12 @@ public class RuntimeInfoWrapper {
 
 		String log4jConfigPath = RuntimeInformation.getLog4jConfigPath();
 		String tnt4jLogPath = RuntimeInformation.getTnt4jLogPath();
-		String quartzConfigPath = RuntimeInformation.getQuartzConfigPath();
-		String zkTreeConfigPath = RuntimeInformation.getZkTreeConfigPath();
 
 		String mainConfig = RuntimeInformation.getMainConfigPath();
 		String samplesPath = RuntimeInformation.getSamplesPath(mainConfig);
 
 		configsInfo.put("Log4j config path", log4jConfigPath);
 		configsInfo.put("TNT4J config path", tnt4jLogPath);
-		configsInfo.put("Quartz config path", quartzConfigPath);
-		configsInfo.put("Zookeeper tree config path", zkTreeConfigPath);
 		configsInfo.put("Main stream agent config path", mainConfig);
 		configsInfo.put("Stream configs (samples)", samplesPath);
 
