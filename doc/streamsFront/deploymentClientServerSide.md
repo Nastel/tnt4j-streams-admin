@@ -58,7 +58,7 @@
  
 7.   ***Optional:*** if custom keystore will be used:
       - Open the **streamsProperties.properties** file and set the path to custom trustStore: 
-        `SslConfigFilePath = C:\\\\development\\\\apache-tomcat-9.0.14\\\\conf\\\\streamsAdmin.jks`
+        `SslConfigFilePath = C:\\development\\apache-tomcat-9.0.14\\conf\\streamsAdmin.jks`
        - Set the trustStore password:
         `SslPass = passPhrase`
         

@@ -35,7 +35,7 @@ This step is purely optional, we are disabling zookeeper admin server that start
 in the file **zkServer.cmd** add the following system property 
 
 ```java
-"-Dzookeeper.admin.enableServer=false" 
+"-Dzookeeper.admin.enableServer=false"
 ```
 
 After adding the property the zkServer.cmd should look like this

@@ -6,17 +6,17 @@ Open json
 
 ![img](../../screenshots/deployment/configPaths.png)
 
-set logs folder
+set **logsPath** to point to logs folder
 
 ![img](../../screenshots/deployment/pointerToLogs.png)
 
-set sample configs folder
+set **sampleCfgsPath** to point to the location where parsers are located
 
 ![img](../../screenshots/deployment/pointerToSamples.png)
 
 ![img](../../screenshots/deployment/pointerToEthereumSamples.png)
 
-set main config xml
+set **mainConfigPath** to point to the main xml config
 
 ![img](../../screenshots/deployment/pointerToSamples.png)
 
@@ -24,14 +24,14 @@ set main config xml
 
 ![img](../../screenshots/deployment/pointerToEthInfuraCfg.png)
 
-set replay
+set **replayTemplatePath** to point to the replay file
 
 ![img](../../screenshots/deployment/pointerToReplayXmlFile.png)
 
-set user requests folder
+set **userRequestsPath** to point to the userRequestsFolder
 
 ![img](../../screenshots/deployment/pointerToUserRequests.png)
 
-set libraries path
+set **librariesPath** to point to the lib folder
 
 ![img](../../screenshots/deployment/pointerToLib.png)
