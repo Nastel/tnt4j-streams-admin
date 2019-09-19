@@ -68,7 +68,6 @@ public class StreamControls {
 		dm.addStreamingJobListener(new StreamingJobListener() {
 			@Override
 			public void onProgressUpdate(StreamingJob job, int current, int total) {
-
 			}
 
 			@Override
@@ -77,12 +76,10 @@ public class StreamControls {
 
 			@Override
 			public void onFailure(StreamingJob job, String msg, Throwable exc, String code) {
-
 			}
 
 			@Override
 			public void onStatusChange(StreamingJob job, StreamingStatus status) {
-
 			}
 
 			@Override
@@ -105,12 +102,10 @@ public class StreamControls {
 					LoggerWrapper.addMessage(OpLevel.INFO,
 							String.format("File >>%s<< at path >>%s<< was not found", fileToBeDeleted, pathToFile));
 				}
-
 			}
 
 			@Override
 			public void onStreamEvent(StreamingJob job, OpLevel level, String message, Object source) {
-
 			}
 		});
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {

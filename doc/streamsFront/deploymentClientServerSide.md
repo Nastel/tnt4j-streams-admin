@@ -8,7 +8,7 @@
 2. Rename the file from the previous step to "streamsadmin" .
 3. For the ui-server side you need to copy the .war file from the build target directory **\tnt4j-streams-admin-ui\tnt4j-streams-admin-ui-server\target\tnt4j-streams-admin-ui-server-1.0** and paste it into the serverSide folder.
 4. Rename the file from the previous step to "streamsadminservices" .
-5. Copy the configuration files from the [deploymentDir](/tnt4j-streams-admin-ui/deploymentDir/serverSideConfigurationFiles) to serverSide deployment folder.
+5. Copy the configuration files from the [deploymentDir](/tnt4j-streams-admin-ui/config/ui-server) to serverSide deployment folder.
 6. The final deployment directory contains two folders for deployment the
     ***serverSide*** and ***clientSide*** folders.
 ![](./serverSide/1.png)
@@ -72,7 +72,7 @@
 ## Deployment client side:
 
 1.   Inside the client side deployment directory go to **clientSide\streamsadmin\assets** folder.
-2.  Copy the file named **configuration.json** from [deploymentDir](/tnt4j-streams-admin-ui/deploymentDir/clientSideConfigurationFiles) and paste it into the assets folder.
+2.  Copy the file named **configuration.json** from [deploymentDir](/tnt4j-streams-admin-ui/config/ui-client) and paste it into the assets folder.
 3. Open the **configuration.json** file. Update the parameters found in the table below:
 
 | Parameter name | Value/description/example | Explanation           |

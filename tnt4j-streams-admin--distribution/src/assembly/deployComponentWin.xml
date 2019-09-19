@@ -85,6 +85,22 @@
             <outputDirectory>config</outputDirectory>
             <lineEnding>crlf</lineEnding>
         </fileSet>
+        <fileSet>
+            <directory>../tnt4j-streams-admin-cli/config</directory>
+            <includes>
+                <include>**/*.*</include>
+            </includes>
+            <outputDirectory>config/cli</outputDirectory>
+            <lineEnding>crlf</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>../tnt4j-streams-admin-ui/config</directory>
+            <includes>
+                <include>**/*.*</include>
+            </includes>
+            <outputDirectory>config</outputDirectory>
+            <lineEnding>crlf</lineEnding>
+        </fileSet>
         <!-- static content -->
         <fileSet>
             <directory>../</directory>
