@@ -1,1 +1,0 @@
-set JAVA_OPTS=%JAVA_OPTS% -Djava.security.auth.login.config=c:\k2\jaas.config

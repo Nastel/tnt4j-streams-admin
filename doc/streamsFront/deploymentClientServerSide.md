@@ -1,14 +1,12 @@
-
-
 - [Deployment of client and server](#deployment-of-client-and-server)
   - [Deployment server side](#deployment-server-side)
   - [Deployment client side](#deployment-client-side)
 
 # Deployment of client and server
 ## Preparing the deployment directory
-1. The example of the full deployment can be found inside the [deployment directory](/tnt4j-streams-admin-ui/deploymentDir/exampleDeployDir) .
-2. After building the ui-web project create the deployment package and copy the content of **\tnt4j-streams-admin-ui\tnt4j-streams-admin-ui-web\src\main\web\dist** folder into the deployment packages clientSide folder.
-3. For the ui-server build  copy the .war file from **\tnt4j-streams-admin-ui\tnt4j-streams-admin-ui-server\target** and paste it into the serverSide folder. 
+1. Building the ui-web project will create the deployment directory targer. Copy **\tnt4j-streams-admin-ui\tnt4j-streams-admin-ui-web\target\tnt4j-streams-admin-ui-web-1.10.0-SNAPSHOT** war into the deployment packages clientSide folder.
+2. Rename the file from the previous step to "streamsadmin" .
+3. For the ui-server side you need to copy the .war file from the build target directory **\tnt4j-streams-admin-ui\tnt4j-streams-admin-ui-server\target\tnt4j-streams-admin-ui-server-1.10.0-SNAPSHOT** and paste it into the serverSide folder.
 4. Rename the file from the previous step to "streamsadminservices" .
 5. Copy the configuration files from the [deploymentDir](/tnt4j-streams-admin-ui/deploymentDir/serverSideConfigurationFiles) to serverSide deployment folder.
 6. The final deployment directory contains two folders for deployment the
@@ -19,12 +17,15 @@
 ### Step 1
 
 -   Go to **serverSide** directory and open the file  named **streamsProperties.properties** set the property named ***ZooKeeperAddress*** to the ZooKeeper ip that we will be connecting to.
--   Set the secret key to match the one that you got from Google reCaptcha.
+-   Set the ***secretKeyCaptcha***  to match the one that you got from Google reCaptcha.
+-   Set the ***secretKey*** value to any you want (it has to match the one set in client configurations)
 
 |  Parameter name   |   Value/description/example |  Explanation |
 | --- | --- | --- |
 |  ZooKeeperAddress  |  ZooKeeper-ip   |  The ZooKeeper ip address used for connecting to ZooKeeper|
 |  secretKeyCaptcha | Secret key received from Google. | Should be used depending on domain|
+| secretKey | Used for password encryption and decryption | Should be the same as in the client side configuration file |
+
 -   Copy the **streamsProperties.properties** from server side deployment directory to ***c:\\Program Files\\Apache Software  Foundation\\Tomcat 9.0\\conf\\*** directory.
 
 ### Step 2
@@ -70,16 +71,15 @@
 
 ## Deployment client side:
 
-1.   Inside the client side deployment directory go to **clientSide\streamsadmin\assets** folder and open the **configuration.json** file. Update the parameters found in the table below:
+1.   Inside the client side deployment directory go to **clientSide\streamsadmin\assets** folder.
+2.  Copy the file named **configuration.json** from [deploymentDir](/tnt4j-streams-admin-ui/deploymentDir/clientSideConfigurationFiles) and paste it into the assets folder.
+3. Open the **configuration.json** file. Update the parameters found in the table below:
 
 | Parameter name | Value/description/example | Explanation           |
 | -- | -- | -- |
 | siteKey             |  Site key received from Google. |   Should be changed to the needed domain   |
-| ZooKeeperTreNodes     | /registry/nodeTree | Used to get the main node tree   |
-| ZooKeeperBasePath     | /registry | Used to get all the data from nodes and preform stream actions|
-| LoginRequestPath      | /authenticate         | Used for user management  |
-| reCaptchaRequest      | /reCaptcha            | Used for captcha verification |
-| BaseAddress           | [https://www.gocypher.com/streamsadminservices](https://gocypher.com/streamsadminservices/reCaptcha) | [gocypher.com](http://gocypher.com/) should be changed to the needed domain |
-2. The properties inside the configuraiton.json file that needs to be changed:
+| BaseAddress           | [https://www.gocypher.com/ streamsadminservices](https://gocypher.com/streamsadminservices/reCaptcha) | [gocypher.com](http://gocypher.com/) should be changed to the needed domain |
+|SecretKeyForEncryption| "SecretKeyForEncryption" : "encryptionKey" | A value used for pass encryption and decryption. Value should be the same as in server side configuration |
+4. The properties inside the configuraiton.json file that needs to be changed:
 ![](./serverSide/5.png)
-3.  Copy the ***streamsadmin*** folder  from client side deployment directory to ***c:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\webapps\\*** directory.
+5.  Copy the ***streamsadmin.war*** from client side deployment directory to ***c:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\webapps\\*** directory.
