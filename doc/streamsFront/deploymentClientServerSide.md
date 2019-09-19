@@ -4,9 +4,9 @@
 
 # Deployment of client and server
 ## Preparing the deployment directory
-1. Building the ui-web project will create the deployment directory targer. Copy **\tnt4j-streams-admin-ui\tnt4j-streams-admin-ui-web\target\tnt4j-streams-admin-ui-web-1.10.0-SNAPSHOT** war into the deployment packages clientSide folder.
+1. Building the ui-web project will create the deployment directory targer. Copy **\tnt4j-streams-admin-ui\tnt4j-streams-admin-ui-web\target\tnt4j-streams-admin-ui-web-1.0** war into the deployment packages clientSide folder.
 2. Rename the file from the previous step to "streamsadmin" .
-3. For the ui-server side you need to copy the .war file from the build target directory **\tnt4j-streams-admin-ui\tnt4j-streams-admin-ui-server\target\tnt4j-streams-admin-ui-server-1.10.0-SNAPSHOT** and paste it into the serverSide folder.
+3. For the ui-server side you need to copy the .war file from the build target directory **\tnt4j-streams-admin-ui\tnt4j-streams-admin-ui-server\target\tnt4j-streams-admin-ui-server-1.0** and paste it into the serverSide folder.
 4. Rename the file from the previous step to "streamsadminservices" .
 5. Copy the configuration files from the [deploymentDir](/tnt4j-streams-admin-ui/deploymentDir/serverSideConfigurationFiles) to serverSide deployment folder.
 6. The final deployment directory contains two folders for deployment the

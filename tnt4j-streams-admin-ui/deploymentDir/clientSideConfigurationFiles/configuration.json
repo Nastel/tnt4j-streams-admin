@@ -195,17 +195,19 @@
 	},
 	
 			
-	"ZooKeeperTreeNodes" : "//DomainName/streamsadminservices/registry/nodeTree",
-
-	"ZooKeeperBasePath" : "//DomainName/streamsadminservices/registry",
-
-	"LoginRequestPath" : "//DomainName/streamsadminservices/authenticate",
-
-	"BaseAddress" : "//DomainName/streamsadminservices",
+	"ZooKeeperTreeNodes" : "/registry/nodeTree",
 	
-	"reCaptchaRequest" : "//DomainName/streamsadminservices/reCaptcha",
+	"ZooKeeperBasePath" : "/registry",
 	
-	"siteKey" : "ReCaptchaKey",
+	"LoginRequestPath" : "/authenticate",
+	
+	"reCaptchaRequest" : "/reCaptcha",
+	
+	"BaseAddress" : "//<DomainName>/streamsadminservices/reCaptcha",
+	
+	"siteKey" : "<ReCaptchaKey>",
+	
+	"SecretKeyForEncryption" : "<encryptionKey>",
 
 	"ZooKeeperDataCall" : [
 		"/list",
@@ -227,8 +229,5 @@
 		"badResponse" : "#CD1F1F",
 		
 		"componentsBackgroundColor" : "#E6E6E6"
-	},
-	
-	
-	"SecretKeyForEncryption" : "encryptionKey"
+	}
 }

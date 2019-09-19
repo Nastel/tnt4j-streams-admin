@@ -22,6 +22,7 @@
         <quartz.version>2.3.1</quartz.version>
         <jetty.version>9.4.19.v20190610</jetty.version>
         <jboss.resteasy.version>4.2.0.Final</jboss.resteasy.version>
+        <tnt4j.streams.version>1.10.0-SNAPSHOT</tnt4j.streams.version>
     </properties>
 
     <build>
@@ -90,7 +91,7 @@
         <dependency>
             <groupId>com.jkoolcloud.tnt4j.streams</groupId>
             <artifactId>tnt4j-streams-core</artifactId>
-            <version>1.10.0-SNAPSHOT</version>
+            <version>${tnt4j.streams.version}</version>
         </dependency>
 
         <dependency>
@@ -175,7 +176,7 @@
         <dependency>
             <groupId>com.jkoolcloud.tnt4j.streams</groupId>
             <artifactId>tnt4j-streams-core</artifactId>
-            <version>1.10.0-SNAPSHOT</version>
+            <version>${tnt4j.streams.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
