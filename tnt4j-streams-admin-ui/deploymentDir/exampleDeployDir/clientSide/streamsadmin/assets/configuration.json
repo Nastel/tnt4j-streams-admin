@@ -230,5 +230,5 @@
 	},
 	
 	
-	"SecretKeyForEncryption" : "0123456789123456pp"
+	"SecretKeyForEncryption" : "encryptionKey"
 }
