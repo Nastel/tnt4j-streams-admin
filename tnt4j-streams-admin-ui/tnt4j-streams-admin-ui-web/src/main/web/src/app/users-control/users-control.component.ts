@@ -5,10 +5,10 @@ import { ControlUtils } from "../utils/control.utils";
 import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
 import {MatPaginator, MatTableDataSource, MatSort } from '@angular/material';
-//test for block on load
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
-
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+
+import { GoogleAnalyticsService } from '../services/google-analytics.service';
 
 import * as CryptoJS from 'crypto-js';
 
@@ -88,16 +88,21 @@ export class UserControlComponent implements OnInit {
   formActionChoice: string = "info";
 
   constructor(private data: DataService,
-              private router: Router,
+              private router : Router,
               private controlUtils : ControlUtils,
-              public utilsSvc: UtilsService,
-              private configurationHandler:ConfigurationHandler) { }
+              public utilsSvc : UtilsService,
+              private configurationHandler : ConfigurationHandler,
+              private googleAnalyticsService : GoogleAnalyticsService) { }
 
   ngOnInit(){
     this.userRightWithClustersSelected = {};
     this.rightsArray = this.createRightsToBinaryArray();
     this.loadDataFromSessionAndConfig();
     this.setValuesForDropdownClusterSelect();
+  }
+
+  sendUserTestAddEvent(username : string){
+    this.googleAnalyticsService.eventEmitter("Add user", "Create a new user: "+ username,"Admin created a new user", 50);
   }
 
   loadDataFromSessionAndConfig(){
@@ -531,6 +536,7 @@ export class UserControlComponent implements OnInit {
           this.form.resetForm();
           this.reloadUsersData(username);
           this.blockUI.stop();
+          this.sendUserTestAddEvent(username);
           this.controlUtils.openDialogWithHeader(data["Register"], "Message", this.pathToData );
         }, err =>{
            this.blockUI.stop();

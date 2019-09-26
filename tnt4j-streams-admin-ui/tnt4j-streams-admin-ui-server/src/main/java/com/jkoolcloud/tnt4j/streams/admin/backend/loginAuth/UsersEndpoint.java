@@ -28,9 +28,7 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jkoolcloud.tnt4j.streams.admin.backend.reCaptcha.CaptchaUtils;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
 import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZooKeeperConnectionManager;
 
@@ -64,9 +62,10 @@ public class UsersEndpoint {
         String token = ""; String loginFailMessage="";
         try {
             HashMap Authorizations = mapper.readValue(header, HashMap.class);
-            String captchaToken = (String) Authorizations.get("responseCaptcha");
-            JsonNode response =  CaptchaUtils.verify(captchaToken);
-            if (response != null) {
+//            String captchaToken = (String) Authorizations.get("responseCaptcha");
+//            JsonNode response =  CaptchaUtils.verify(captchaToken);
+//            if (response != null) {
+
                 if(usersUtils.checkTheUserForExclude(Authorizations.get("username").toString())){
                     return Response.status(403).build();
                 }
@@ -82,9 +81,9 @@ public class UsersEndpoint {
                     LOG.info("Failed login: "+loginFailMessage);
                     return Response.status(401).entity(loginFailMessage).build();
                 }
-            }else{
-                return Response.status(200).entity("{ \"Login\" : \"Problem on verifying the recapcha\" }").build();
-            }
+//            }else{
+//                return Response.status(200).entity("{ \"Login\" : \"Problem on verifying the recapcha\" }").build();
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -157,9 +156,9 @@ public class UsersEndpoint {
 
                 newUserInfo = mapper.readValue(userObject, HashMap.class);
                 username =  newUserInfo.get("username").toString();
-                username = usersUtils.trimFieldLegth(username, 50);
+                username = usersUtils.trimFieldLength(username, 50);
                 password = newUserInfo.get("password").toString();
-                password = usersUtils.trimFieldLegth(password, 100);
+                password = usersUtils.trimFieldLength(password, 100);
                 HashMap<String, List> clustersWithRights = (HashMap<String, List>) newUserInfo.get("clusters");
                 usersUtils.addUser(clustersWithRights, username, password, true, true);
                 return Response.status(200).entity("{ \"Register\" : \"New user "+username+" was added successfully!\" }").build();
@@ -199,7 +198,7 @@ public class UsersEndpoint {
                 if(usersUtils.checkTheUserForExclude(username)){
                     return Response.status(403).build();
                 }
-                username = usersUtils.trimFieldLegth(username, 50);
+                username = usersUtils.trimFieldLength(username, 50);
                 List<String> clusters = (List<String>) userInfoForRemove.get("clusters");
                 try {
                     usersUtils.removeUser(clusters, username, true);
@@ -242,9 +241,9 @@ public class UsersEndpoint {
                 if(usersUtils.checkTheUserForExclude(username)){
                     return Response.status(403).build();
                 }
-                username = usersUtils.trimFieldLegth(username, 50);
+                username = usersUtils.trimFieldLength(username, 50);
                 password = newUserInfo.get("password").toString();
-                password = usersUtils.trimFieldLegth(password, 100);
+                password = usersUtils.trimFieldLength(password, 100);
                 HashMap<String, List> clustersWithRights = (HashMap<String, List>) newUserInfo.get("clusters");
                 try {
                     LOG.info("Before edit user method call");
@@ -288,9 +287,9 @@ public class UsersEndpoint {
                 if(usersUtils.checkTheUserForExclude(username)){
                     return Response.status(403).build();
                 }
-                username = usersUtils.trimFieldLegth(username, 50);
+                username = usersUtils.trimFieldLength(username, 50);
                 password = newUserInfo.get("password").toString();
-                password = usersUtils.trimFieldLegth(password, 100);
+                password = usersUtils.trimFieldLength(password, 100);
                 HashMap<String, List> clustersWithRights = (HashMap<String, List>) newUserInfo.get("clusters");
                 try {
                     LOG.info("Before edit user method call");

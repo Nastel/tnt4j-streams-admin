@@ -6,6 +6,8 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import javax.naming.AuthenticationException;
+
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.log4j.Logger;
 
@@ -255,11 +257,15 @@ public class LoginCache {
     }
 
     public void disconnectFromZooKeeper(String token){
-        ZookeeperAccessService zooAccess = new ZookeeperAccessService();
-        zooManager.setConnectionToken(token);
-        CuratorFramework connection = zooManager.getClientConnection();
-        zooManager.removeClientConnection();
-        ZookeeperAccessService.stopConnectionCurator(connection);
+        try {
+            ZookeeperAccessService zooAccess = new ZookeeperAccessService();
+            zooManager.setConnectionToken(token);
+            CuratorFramework connection = zooManager.getClientConnection();
+            zooManager.removeClientConnection();
+            ZookeeperAccessService.stopConnectionCurator(connection);
+        }catch (AuthenticationException e){
+            LOG.info("Connection timeout: "+ e);
+        }
     }
 
     public boolean checkForSuccessfulLogin(String credentials){

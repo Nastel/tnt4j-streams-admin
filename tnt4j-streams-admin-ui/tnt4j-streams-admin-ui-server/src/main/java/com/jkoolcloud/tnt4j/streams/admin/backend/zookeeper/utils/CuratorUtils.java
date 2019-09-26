@@ -307,13 +307,12 @@ public class CuratorUtils {
 		try {
 			List<ACL> aclList = curator.getACL().forPath(nodePath);
 			for (ACL acl : aclList){
+				LOG.info("USERS ACL data ------> "+acl);
 				HashMap usersData = new HashMap<String, String>();
 				userCount++;
 				String userId = acl.getId().getId().split(":")[0];
 				boolean userHasActionRights = checkIfUserHasActionRights(curator, nodePath, userId);
-				String scheme = acl.getId().getScheme();
 				int permissions = acl.getPerms();
-//				LOG.info("USERS LIST data------>"+ userId+"  "+nodePath+"  "+permissions +"  "+scheme);
                 if(!utils.checkTheUserForExclude(userId)){
                     usersData.put("username", userId);
                     usersData.put("cluster", nodePath);

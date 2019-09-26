@@ -22,6 +22,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
+import javax.naming.AuthenticationException;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -91,7 +92,7 @@ public class ZookeeperAccessService {
 		}
 	}
 
-	public static CuratorFramework getConnection() {
+	public static CuratorFramework getConnection() throws AuthenticationException {
 		return zooManager.getClientConnection();
 	}
 
@@ -378,7 +379,7 @@ public class ZookeeperAccessService {
 	 *
 	 * @return The map of all nodes together with their parent and lvl
 	 */
-	public Map<String, String> getTreeNodes(String userToken) {
+	public Map<String, String> getTreeNodes(String userToken) throws AuthenticationException {
 		setTokenAndGetConn(userToken);
 		Map<String, String> myNodeMap = new HashMap<>();
 		String parentNode = "BaseNode";
@@ -442,7 +443,7 @@ public class ZookeeperAccessService {
 	 * @param pathToData The path got on request from front-end or API user to get the dataReading from ZooKeeper node
 	 * @return
 	 */
-	public HashMap getServiceNodeInfoFromLinkForReplay(String pathToData, String userToken) {
+	public HashMap getServiceNodeInfoFromLinkForReplay(String pathToData, String userToken) throws AuthenticationException {
 		setTokenAndGetConn(userToken);
 		String responseLink, responseData, pathToNode, blocksToReplay;
 		HashMap dataMap = new HashMap();
@@ -499,7 +500,7 @@ public class ZookeeperAccessService {
 	 * @param pathToData The path got on request from front-end or API user to get the dataReading from ZooKeeper node
 	 * @return
 	 */
-	public HashMap getServiceNodeInfoFromLink(String pathToData, int logLineCount, String userToken) {
+	public HashMap getServiceNodeInfoFromLink(String pathToData, int logLineCount, String userToken) throws AuthenticationException {
 		setTokenAndGetConn(userToken);
 		String responseLink, responseData;
 		HashMap dataMap = new HashMap(), actionNodes, configMap, responseMap;
@@ -734,7 +735,7 @@ public class ZookeeperAccessService {
 		return neededNames;
 	}
 
-	private void setTokenAndGetConn(String token){
+	private void setTokenAndGetConn(String token) throws AuthenticationException {
 		zooManager.setConnectionToken(token);
 		client = zooManager.getClientConnection();
 	}

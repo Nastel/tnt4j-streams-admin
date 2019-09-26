@@ -274,7 +274,7 @@ public class UsersUtils {
      * @param pathsToNode path to clusters from which users should be removed
      * @param username the user to remove
      */
-    public void removeUser(List<String> pathsToNode, String username, boolean admin){
+    public void removeUser(List<String> pathsToNode, String username, boolean admin) throws AuthenticationException {
         LOG.info("Trying to remove a user: "+ username);
         CuratorFramework curatorFramework;
         if(admin) {
@@ -424,7 +424,7 @@ public class UsersUtils {
         return perm;
     }
 
-    public ACL  getAclListForUser(String clusterNode, String username){
+    public ACL  getAclListForUser(String clusterNode, String username) throws AuthenticationException {
         CuratorFramework curatorFramework = ZookeeperAccessService.getConnection();
         List<ACL> aclList;
         ACL returnValue = new ACL();
@@ -449,7 +449,7 @@ public class UsersUtils {
      * @param availableClusters list of clusters to get users from
      * @return
      */
-    public String getUserList(List<String> availableClusters){
+    public String getUserList(List<String> availableClusters) throws AuthenticationException {
         HashMap userList = new HashMap();
         String json = "";
         LOG.info("Trying to get the updated users list");
@@ -479,7 +479,7 @@ public class UsersUtils {
      * @param availableClusters list of clusters to get user info from
      * @return
      */
-    public String getUser(List<String> availableClusters, String username){
+    public String getUser(List<String> availableClusters, String username) throws AuthenticationException {
         HashMap userList = new HashMap();
         String json = "";
         LOG.info("Trying to get the updated users list");
@@ -559,7 +559,7 @@ public class UsersUtils {
         }
     }
 
-    public String trimFieldLegth(String input, int fieldCount){
+    public String trimFieldLength(String input, int fieldCount){
         if(input.length()>fieldCount){
             return input.substring(0,fieldCount);
         }else{

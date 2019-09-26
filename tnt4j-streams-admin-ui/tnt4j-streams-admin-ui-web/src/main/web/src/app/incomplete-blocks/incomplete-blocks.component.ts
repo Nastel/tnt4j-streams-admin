@@ -117,9 +117,9 @@ export class IncompleteBlocksComponent implements OnInit {
 
 /** Methods for No Receipt data ----------------------------------------------*/
   loadIncompleteBlocksDataNoReceipt(linkUrlAddress){
-    let re1 = new RegExp("jk_maxrows=100");
-    let queryToJkool = linkUrlAddress.replace(re1, "jk_maxrows=1000");
-    console.log(" <-----> JKool  Blocks No Receipt", linkUrlAddress);
+//    let re1 = new RegExp("jk_maxrows=100");
+//    let queryToJkool = linkUrlAddress.replace(re1, "jk_maxrows=1000");
+//    console.log(" <-----> JKool  Blocks No Receipt", linkUrlAddress);
     this.responseShow("");
 //    this.data.getLinkData(linkUrlAddress).subscribe(data => {
       try{
@@ -182,8 +182,8 @@ export class IncompleteBlocksComponent implements OnInit {
 /** Methods for wrong event count data ----------------------------------------------*/
   loadIncompleteBlocksData(linkUrlAddress){
       this.responseShow("");
-      let re1 = new RegExp("jk_maxrows=100");
-      let queryToJkool = linkUrlAddress.replace(re1, "jk_maxrows=1000");
+//      let re1 = new RegExp("jk_maxrows=100");
+//      let queryToJkool = linkUrlAddress.replace(re1, "jk_maxrows=1000");
 //      this.data.getLinkData(queryToJkool).subscribe(data => {
         try{
           this.fullBlocksDataFromJKool = this.zooKeeperData['rows']; //data['rows'];
@@ -265,7 +265,7 @@ export class IncompleteBlocksComponent implements OnInit {
         this.incompleteBlocksData = objTempRows;
         }
         else{
-         // this.loadIncompleteBlocksDataNoReceipt(this.result);
+//          this.loadIncompleteBlocksDataNoReceipt(this.result);
           this.incompleteBlocksNoReceiptFull = this.fullBlocksDataFromJKool;
            //console.log(" <-----> JKool  Blocks No Receipt",  this.fullBlocksDataFromJKool);
            this.getNeededDataFromBlockNoReceipt(this.incompleteBlocksNoReceiptFull );

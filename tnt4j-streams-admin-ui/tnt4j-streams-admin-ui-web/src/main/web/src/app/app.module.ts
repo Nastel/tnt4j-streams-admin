@@ -3,34 +3,24 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule, Compiler, COMPILER_OPTIONS, CompilerFactory, APP_INITIALIZER } from '@angular/core';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { JitCompilerFactory, platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { HighlightSearch } from './utils/highlight.search';
+import { BlockUIModule } from 'ng-block-ui';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   MatProgressSpinnerModule,
-  MatSidenavModule,
-  MatNativeDateModule,
   MatListModule,
   MatTreeModule,
-  MatRadioModule,
   MatTableModule,
   MatPaginatorModule,
-  MatFormFieldModule,
   MatInputModule,
   MatIconModule,
   MatSortModule,
   MatTooltipModule,
   MatDialogModule,
   MatButtonModule,
-  MatCheckboxModule,
-  MatSelectModule} from '@angular/material'
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
-
-import { JitCompilerFactory, platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
-import {CdkTreeModule} from '@angular/cdk/tree';
-import { HighlightSearch } from './utils/highlight.search';
-
-import { BlockUIModule } from 'ng-block-ui';
-
+  MatCheckboxModule} from '@angular/material'
 
   export function createCompiler(compilerFactory: CompilerFactory) {
     return compilerFactory.createCompiler();
@@ -63,13 +53,12 @@ import { BottomLogComponent } from './bottom-log/bottom-log.component';
 import { DownloadsComponent } from './downloads/downloads.component';
 import { ConfigurableComponentNodeComponent } from './configurable-component-node/configurable-component-node.component';
 import { LoginComponent } from './login/login.component';
-
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RequestInterceptor } from './utils/request-interceptor';
 import { LogoutComponent } from './logout/logout.component';
 import { UserControlComponent } from './users-control/users-control.component';
-
 import { RecaptchaModule } from 'ng-recaptcha';
+import { GoogleAnalyticsService } from './services/google-analytics.service';
 
 @NgModule({
   declarations: [
@@ -105,9 +94,6 @@ import { RecaptchaModule } from 'ng-recaptcha';
   ],
   imports: [
     RecaptchaModule,
-    CdkTreeModule,
-    MatSelectModule,
-    AngularMultiSelectModule,
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
@@ -118,42 +104,40 @@ import { RecaptchaModule } from 'ng-recaptcha';
     MatPaginatorModule,
     BrowserModule,
     MatDialogModule,
-    MatNativeDateModule,
     MatTooltipModule,
-    MatSidenavModule,
     MatCheckboxModule,
     AppRoutingModule,
     HttpClientModule,
-    MatProgressSpinnerModule, MatRadioModule,
+    MatProgressSpinnerModule,
     MatIconModule,
     BrowserAnimationsModule,
-    MatFormFieldModule,
     MatInputModule,
     BlockUIModule.forRoot()
   ],
   providers: [
+    GoogleAnalyticsService,
 
-  ConfigurationHandler,
-    { provide: APP_INITIALIZER,
-      useFactory: initializeApp,
-      deps: [ConfigurationHandler],
-      multi: true
-    },
-  AutoRouteGenerator,
-    { provide: APP_INITIALIZER,
-      useFactory: initializeLinks,
-      deps: [AutoRouteGenerator],
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: RequestInterceptor,
-      multi: true
-    },
-  { provide: COMPILER_OPTIONS, useValue: {}, multi: true },
-  { provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS] },
-  { provide: Compiler, useFactory: createCompiler, deps: [CompilerFactory] },
- {provide: LocationStrategy, useClass: HashLocationStrategy},
+    ConfigurationHandler,
+      { provide: APP_INITIALIZER,
+        useFactory: initializeApp,
+        deps: [ConfigurationHandler],
+        multi: true
+      },
+    AutoRouteGenerator,
+      { provide: APP_INITIALIZER,
+        useFactory: initializeLinks,
+        deps: [AutoRouteGenerator],
+        multi: true
+      },
+      {
+        provide: HTTP_INTERCEPTORS,
+        useClass: RequestInterceptor,
+        multi: true
+      },
+    { provide: COMPILER_OPTIONS, useValue: {}, multi: true },
+    { provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS] },
+    { provide: Compiler, useFactory: createCompiler, deps: [CompilerFactory] },
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
 
   ],
   bootstrap: [AppComponent]

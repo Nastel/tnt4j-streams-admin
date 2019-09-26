@@ -1,8 +1,7 @@
-import { Component, NgModule, OnInit} from '@angular/core';
-import { MatIconRegistry } from "@angular/material/icon";
-import { DomSanitizer } from "@angular/platform-browser";
-import { RouterModule, Routes} from '@angular/router';
-import {ActivatedRoute, Router} from '@angular/router';
+import { Component } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+
+declare let gtag : Function;
 
 @Component({
   selector: 'app-root',
@@ -10,9 +9,17 @@ import {ActivatedRoute, Router} from '@angular/router';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent{
-  constructor( private route:ActivatedRoute, private router:Router) {
-  }
 
-  ngOnInit(){
-  }
+  constructor(public router: Router){
+      this.router.events.subscribe(event => {
+         if(event instanceof NavigationEnd){
+             gtag('config', 'UA-148341685-1',
+                   {
+                     'page_path': event.urlAfterRedirects
+                   }
+                  );
+          }
+       });
+    }
+
 }

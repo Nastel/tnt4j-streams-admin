@@ -85,10 +85,10 @@ export class ServiceRepositoryStatusComponent implements OnInit {
 //      );
    }
 
-   getRepositoryData(linkUrlAddress){
+   getRepositoryData(repoData){
     this.responseShow("");
-    this.data.getLinkData(linkUrlAddress).subscribe(data => {
-           this.tempServiceRepo = data;
+//    this.data.getLinkData(linkUrlAddress).subscribe(data => {
+           this.tempServiceRepo = repoData;
            //console.log("REPOSITORY DATA", this.tempServiceRepo );
            this.getAllNeededInfoAboutRepos(this.tempServiceRepo, "ReposDataForAllPage");
            this.dataFromRepositories = this.tempServiceRepo;
@@ -96,12 +96,12 @@ export class ServiceRepositoryStatusComponent implements OnInit {
           setTimeout(() => this.dataSourceRepositoryData.paginator = this.paginatorRepoData);
           setTimeout(() => this.dataSourceRepositoryData.sort = this.sortRepositoryData);
           this.responseShow("good");
-         }, err =>{
-            this.responseShow("bad");
-            this.valueThatChangesForSpinnerOnResponse = false;
-            this.valueThatChangesOnDataLoad = false;
-            console.log("Problem on reading repository data: ", err);
-         } );;
+//         }, err =>{
+//            this.responseShow("bad");
+//            this.valueThatChangesForSpinnerOnResponse = false;
+//            this.valueThatChangesOnDataLoad = false;
+//            console.log("Problem on reading repository data: ", err);
+//         } );;
    }
 
     getAllNeededInfoAboutRepos(data, strRepoConfig){

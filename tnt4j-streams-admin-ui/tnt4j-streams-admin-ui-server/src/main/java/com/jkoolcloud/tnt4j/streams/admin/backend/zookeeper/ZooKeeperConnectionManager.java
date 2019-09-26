@@ -3,6 +3,8 @@ package com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import javax.naming.AuthenticationException;
+
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -45,7 +47,7 @@ public class ZooKeeperConnectionManager {
 
     public void removeClientConnection(){
         try {
-            LOG.info("REMOVE USER WIHT TOKEN");
+//            LOG.info("REMOVE USER WIHT TOKEN");
 //            connectionMap.remove(connectionToken);
             curatorClientMap.invalidate(connectionToken);
         } catch (Exception e) {
@@ -54,13 +56,12 @@ public class ZooKeeperConnectionManager {
         }
     }
 
-    public CuratorFramework getClientConnection(){
-        if(checkIfUserExistInCache()){
+    public CuratorFramework getClientConnection() throws AuthenticationException{
+        if (checkIfUserExistInCache()) {
             return curatorClientMap.getIfPresent(connectionToken);
-        }else{
-            return null;
+        } else {
+             throw new AuthenticationException();
         }
-//        return connectionMap.get(connectionToken);
     }
 
     public void setClientConnection(CuratorFramework client){
@@ -74,7 +75,7 @@ public class ZooKeeperConnectionManager {
     }
 
     public void setConnectionToken(String connectionToken) {
-        LOG.info("Set CONNECTION TOKEN "+connectionToken);
+//        LOG.info("Set CONNECTION TOKEN "+connectionToken);
         this.connectionToken = connectionToken;
     }
 
@@ -101,13 +102,12 @@ public class ZooKeeperConnectionManager {
      */
     public Boolean checkIfUserExistInCache() {
         CuratorFramework curator  = curatorClientMap.getIfPresent(connectionToken);
-        LOG.info("The curator client from cache exist: "+ curator);
         if(curator != null){
-            LOG.info("TRUE");
+//            LOG.info("The curator client from cache exist: "+ curator);
+            curatorClientMap.put(connectionToken, curator);
             return true;
         }
         else{
-            LOG.info("FALSE");
             return  false;
         }
     }
