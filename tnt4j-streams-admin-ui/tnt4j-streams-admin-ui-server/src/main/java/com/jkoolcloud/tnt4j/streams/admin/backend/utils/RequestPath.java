@@ -14,6 +14,7 @@ public class RequestPath {
 
 	/**
 	 * Returns request node path from full path
+	 * 
 	 * @param pathToData
 	 * @return
 	 */
@@ -25,14 +26,13 @@ public class RequestPath {
 			String[] nodeParts = pathToData.split("/");
 			for (String partOfPath : nodeParts) {
 				count++;
-				if (count < AGENT_DEPTH+1) {
+				if (count < AGENT_DEPTH + 1) {
 					requestNodePath = requestNodePath + partOfPath + "/";
 				} else {
 					break;
 				}
 			}
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 			LOG.error("Problem on getting cluster name");
 		}
 		requestNodePath = requestNodePath + "requests";
@@ -42,6 +42,7 @@ public class RequestPath {
 
 	/**
 	 * Returns response node path from full path
+	 * 
 	 * @param pathToData
 	 * @return
 	 */
@@ -53,14 +54,13 @@ public class RequestPath {
 			String[] nodeParts = pathToData.split("/");
 			for (String partOfPath : nodeParts) {
 				count++;
-				if (count < AGENT_DEPTH+1) {
+				if (count < AGENT_DEPTH + 1) {
 					responseNodePath = responseNodePath + partOfPath + "/";
 				} else {
 					break;
 				}
 			}
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 			LOG.error("Problem on getting cluster name");
 		}
 		responseNodePath = responseNodePath + "responses";
@@ -70,6 +70,7 @@ public class RequestPath {
 
 	/**
 	 * Returns cluster node from full path
+	 * 
 	 * @param pathToData
 	 * @return
 	 */
@@ -81,13 +82,12 @@ public class RequestPath {
 			String[] nodeParts = pathToData.split("/");
 			for (String partOfPath : nodeParts) {
 				count++;
-				if (count == AGENT_DEPTH-1) {
+				if (count == AGENT_DEPTH - 1) {
 					agentName = partOfPath;
 				}
 			}
 			LOG.info("Stream name: {}", agentName);
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 			LOG.error("Problem on getting cluster name");
 		}
 		return agentName;
@@ -95,6 +95,7 @@ public class RequestPath {
 
 	/**
 	 * Returns agent node from full path
+	 * 
 	 * @param pathToData
 	 * @return
 	 */
@@ -111,8 +112,7 @@ public class RequestPath {
 				}
 			}
 			LOG.info("Stream name: {}", agentName);
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 			LOG.error("Problem on getting agent name");
 		}
 		return agentName;
@@ -120,6 +120,7 @@ public class RequestPath {
 
 	/**
 	 * Returns stream node from full path
+	 * 
 	 * @param pathToData
 	 * @return
 	 */
@@ -131,13 +132,12 @@ public class RequestPath {
 			String[] nodeParts = pathToData.split("/");
 			for (String partOfPath : nodeParts) {
 				count++;
-				if (count == AGENT_DEPTH+1) {
+				if (count == AGENT_DEPTH + 1) {
 					streamName = partOfPath;
 				}
 			}
 			LOG.info("Stream name: {}", streamName);
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 			LOG.error("Problem on getting stream name");
 		}
 		return streamName;
@@ -145,6 +145,7 @@ public class RequestPath {
 
 	/**
 	 * Returns specified part of path by number node from full path
+	 * 
 	 * @param pathToData
 	 * @return
 	 */
@@ -164,6 +165,7 @@ public class RequestPath {
 
 	/**
 	 * Returns path of specified length
+	 * 
 	 * @param pathToData
 	 * @return
 	 */

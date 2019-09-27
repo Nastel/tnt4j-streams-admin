@@ -27,7 +27,6 @@ import javax.ws.rs.NotFoundException;
 
 import org.apache.log4j.Logger;
 
-
 /**
  * The type Http utils.
  */
@@ -49,7 +48,7 @@ public class HttpUtils {
 
 			result = readStreamAsString(conn.getInputStream(), "UTF-8");
 		} catch (Exception e) {
-			LOG.error("Error on accessing URL  via HTTP"+ urlString+"   "+ e);
+			LOG.error("Error on accessing URL  via HTTP" + urlString + "   " + e);
 		}
 		return result;
 	}
@@ -68,16 +67,16 @@ public class HttpUtils {
 		return baos;
 	}
 
-
 	/**
 	 * Read the data from provided URL address without address status information
+	 * 
 	 * @param serviceLink
-	 * 			The provided URL address, to read data from
+	 *            The provided URL address, to read data from
 	 * @return
 	 */
 	public static String readURLData(String serviceLink) {
 		String response = "";
-		LOG.info("Trying to read dataReading from "+ serviceLink);
+		LOG.info("Trying to read dataReading from " + serviceLink);
 		try {
 			URL url = new URL(serviceLink);
 			URLConnection con = url.openConnection();
@@ -89,20 +88,21 @@ public class HttpUtils {
 				String line;
 				if ((line = reader.readLine()) == null) {
 					reader.close();
-					break; }
+					break;
+				}
 				line = line.replaceFirst("^,", "");
 				response = response + line;
 				response = response + "\n";
 			}
 		} catch (SocketTimeoutException e) {
-			LOG.error("The provided endpoint: "+ serviceLink + " took to long to respond ( > 5s )");
+			LOG.error("The provided endpoint: " + serviceLink + " took to long to respond ( > 5s )");
 			return "The provided endpoint took to long to respond ( > 5s )";
 		} catch (MalformedURLException e) {
-			LOG.error("The provided endpoint: "+ serviceLink + " returned an empty string MalformedURLException");
+			LOG.error("The provided endpoint: " + serviceLink + " returned an empty string MalformedURLException");
 			return "MalformedURLException";
 		} catch (Exception e) {
 			LOG.error("The link provided " + serviceLink + " was wrong or can not be accessed at the moment");
-			throw new NotFoundException("client connection to " + serviceLink + " fail: no connection"+ e);
+			throw new NotFoundException("client connection to " + serviceLink + " fail: no connection" + e);
 		}
 
 		return response;
@@ -110,17 +110,18 @@ public class HttpUtils {
 
 	/**
 	 * Read the data from provided URL address without address status information
+	 * 
 	 * @param serviceLink
-	 * 			The provided URL address, to read data from
+	 *            The provided URL address, to read data from
 	 * @return
 	 */
 	public static String readURLDataWithToken(String serviceLink, String tempToken) {
 		String response = "";
-		LOG.info("Trying to read dataReading from "+ serviceLink);
+		LOG.info("Trying to read dataReading from " + serviceLink);
 		try {
 			URL url = new URL(serviceLink);
 			URLConnection con = url.openConnection();
-			//con.set
+			// con.set
 			con.setRequestProperty("Authorization", tempToken);
 			con.setConnectTimeout(5000);
 			con.setReadTimeout(5000);
@@ -130,51 +131,54 @@ public class HttpUtils {
 				String line;
 				if ((line = reader.readLine()) == null) {
 					reader.close();
-					break; }
+					break;
+				}
 				line = line.replaceFirst("^,", "");
 				response = response + line;
 				response = response + "\n";
 			}
 		} catch (SocketTimeoutException e) {
-			LOG.error("The provided endpoint: "+ serviceLink + " took to long to respond ( > 5s )");
+			LOG.error("The provided endpoint: " + serviceLink + " took to long to respond ( > 5s )");
 			return "The provided endpoint took to long to respond ( > 5s )";
 		} catch (MalformedURLException e) {
-			LOG.error("The provided endpoint: "+ serviceLink + " returned an empty string MalformedURLException");
+			LOG.error("The provided endpoint: " + serviceLink + " returned an empty string MalformedURLException");
 			return "MalformedURLException";
 		} catch (Exception e) {
 			LOG.error("The link provided " + serviceLink + " was wrong or can not be accessed at the moment");
-			throw new NotFoundException("client connection to " + serviceLink + " fail: no connection"+ e);
+			throw new NotFoundException("client connection to " + serviceLink + " fail: no connection" + e);
 		}
 
 		return response;
 	}
 
-
-//	public static InputStream readUrlAsInputStreamHttps(String httpsUrl, boolean ignoreHostnameVerifier, String tempToken) throws IOException {
-//		URL url = new URL(httpsUrl);
-//		LOG.info("TOKEN : {}", tempToken);
-//			HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-//			con.setRequestProperty("Authorization", tempToken);
-//			con.setConnectTimeout(5000);
-//			con.setReadTimeout(5000);
-//			if (ignoreHostnameVerifier) {
-//				con.setHostnameVerifier((s, sslSession) -> true);
-//			}
-//
-//
-//		return con.getInputStream();
-//	}
+	// public static InputStream readUrlAsInputStreamHttps(String httpsUrl, boolean ignoreHostnameVerifier, String
+	// tempToken) throws IOException {
+	// URL url = new URL(httpsUrl);
+	// LOG.info("TOKEN : {}", tempToken);
+	// HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+	// con.setRequestProperty("Authorization", tempToken);
+	// con.setConnectTimeout(5000);
+	// con.setReadTimeout(5000);
+	// if (ignoreHostnameVerifier) {
+	// con.setHostnameVerifier((s, sslSession) -> true);
+	// }
+	//
+	//
+	// return con.getInputStream();
+	// }
 
 	/**
 	 * Method to read data with token authorization and SSL authentication from ZooKeeper nodes REST
+	 * 
 	 * @param httpsUrl
 	 * @param ignoreHostnameVerifier
 	 * @param tempToken
 	 * @return
 	 * @throws IOException
 	 */
-	public static String readUrlAsStringWithToken(String httpsUrl, boolean ignoreHostnameVerifier, String tempToken) throws IOException {
-		URL url = new URL(null, httpsUrl, new sun.net.www.protocol.https.Handler());
+	public static String readUrlAsStringWithToken(String httpsUrl, boolean ignoreHostnameVerifier, String tempToken)
+			throws IOException {
+		URL url = new URL(httpsUrl);
 		StringBuilder responseBuf = new StringBuilder();
 		try {
 			HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
@@ -184,7 +188,7 @@ public class HttpUtils {
 			if (ignoreHostnameVerifier) {
 				con.setHostnameVerifier((s, sslSession) -> true);
 			}
-//			LOG.info("http URL "+ httpsUrl);
+			// LOG.info("http URL "+ httpsUrl);
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String line;
 			while ((line = bufferedReader.readLine()) != null) {
@@ -194,14 +198,14 @@ public class HttpUtils {
 			bufferedReader.close();
 
 		} catch (SocketTimeoutException e) {
-//			LOG.error("The provided endpoint: "+ httpsUrl + " took to long to respond ( > 5s )");
+			// LOG.error("The provided endpoint: "+ httpsUrl + " took to long to respond ( > 5s )");
 			return "The provided endpoint took to long to respond ( > 10s )";
 		} catch (MalformedURLException e) {
-			LOG.error("The provided endpoint: "+ httpsUrl + " returned an empty string MalformedURLException");
+			LOG.error("The provided endpoint: " + httpsUrl + " returned an empty string MalformedURLException");
 			return "MalformedURLException";
 		} catch (Exception e) {
 			LOG.error("The link provided " + httpsUrl + " was wrong or can not be accessed at the moment");
-			throw new NotFoundException("client connection to " + httpsUrl + " fail: no connection"+ e);
+			throw new NotFoundException("client connection to " + httpsUrl + " fail: no connection" + e);
 		}
 
 		return responseBuf.toString();

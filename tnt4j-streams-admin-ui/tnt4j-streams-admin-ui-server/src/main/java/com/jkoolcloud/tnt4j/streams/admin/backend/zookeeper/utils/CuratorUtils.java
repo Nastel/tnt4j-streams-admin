@@ -101,15 +101,16 @@ public class CuratorUtils {
 		}
 	}
 
-	public static Collection<String> nodeChildrenList(String path, CuratorFramework curator){
-		ServiceDiscovery<String> serviceDiscovery = ServiceDiscoveryBuilder.builder(String.class).client(curator).basePath(path).build();
+	public static Collection<String> nodeChildrenList(String path, CuratorFramework curator) {
+		ServiceDiscovery<String> serviceDiscovery = ServiceDiscoveryBuilder.builder(String.class).client(curator)
+				.basePath(path).build();
 		try {
 			serviceDiscovery.start();
 			Collection<String> serviceNames = serviceDiscovery.queryForNames();
-			return  serviceNames;
-		}catch (Exception e){
-			LOG.info("Problem on getting children nodes for: "+ path);
-		}finally {
+			return serviceNames;
+		} catch (Exception e) {
+			LOG.info("Problem on getting children nodes for: " + path);
+		} finally {
 			try {
 				Objects.requireNonNull(serviceDiscovery).close();
 			} catch (Exception ignored) {
@@ -268,79 +269,79 @@ public class CuratorUtils {
 		return new String(encoded, encoding);
 	}
 
-
-
 	/**
 	 * Check if user that has logged in has admin rights and can control other users
+	 * 
 	 * @param curator
 	 * @param nodePath
 	 * @param loginData
 	 * @return
 	 */
-	public static Boolean checkIfUserIsAdmin(CuratorFramework curator, String nodePath, String loginData){
+	public static Boolean checkIfUserIsAdmin(CuratorFramework curator, String nodePath, String loginData) {
 		try {
 			List<ACL> aclList = curator.getACL().forPath(nodePath);
 			String userId;
 			int permission;
 			for (ACL acl : aclList) {
 				userId = acl.getId().getId();
-				String credentials = userId.split(":")[0];//acl.getId().getScheme()+":"+userId;
+				String credentials = userId.split(":")[0];// acl.getId().getScheme()+":"+userId;
 				permission = acl.getPerms();
-//				LOG.info("USER IS ADMIN  ------>" + permission +" credentials: "+ loginData.split(":")[0] +" "+credentials);
+				// LOG.info("USER IS ADMIN ------>" + permission +" credentials: "+ loginData.split(":")[0] +"
+				// "+credentials);
 				if (credentials.equals(loginData.split(":")[0]) && permission >= 16) {
 					userMapForAdmin(curator, nodePath);
 					return true;
 				}
 			}
 			userMapForUser(curator, nodePath, loginData.split(":")[0]);
-		}catch(Exception e){
-			LOG.error("Problem while checking if User is admin on login: "+ loginData);
+		} catch (Exception e) {
+			LOG.error("Problem while checking if User is admin on login: " + loginData);
 		}
 		LOG.info("USER IS ADMIN FALSE ------>");
 		return false;
 	}
 
-	public static void userMapForAdmin(CuratorFramework curator, String nodePath){
+	public static void userMapForAdmin(CuratorFramework curator, String nodePath) {
 		LoginCache cache = new LoginCache();
 		UsersUtils utils = new UsersUtils();
 		int userCount = cache.getUserCount();
 		try {
 			List<ACL> aclList = curator.getACL().forPath(nodePath);
-			for (ACL acl : aclList){
-				LOG.info("USERS ACL data ------> "+acl);
+			for (ACL acl : aclList) {
+				LOG.info("USERS ACL data ------> " + acl);
 				HashMap usersData = new HashMap<String, String>();
 				userCount++;
 				String userId = acl.getId().getId().split(":")[0];
 				boolean userHasActionRights = checkIfUserHasActionRights(curator, nodePath, userId);
 				int permissions = acl.getPerms();
-                if(!utils.checkTheUserForExclude(userId)){
-                    usersData.put("username", userId);
-                    usersData.put("cluster", nodePath);
-                    usersData.put("rights", permissions);
-//                    LOG.info("DOES user has action rights: "+userHasActionRights);
-                    usersData.put("action", userHasActionRights);
-                    cache.setUserMap(userCount, usersData);
-                }
+				if (!utils.checkTheUserForExclude(userId)) {
+					usersData.put("username", userId);
+					usersData.put("cluster", nodePath);
+					usersData.put("rights", permissions);
+					// LOG.info("DOES user has action rights: "+userHasActionRights);
+					usersData.put("action", userHasActionRights);
+					cache.setUserMap(userCount, usersData);
+				}
 			}
 			cache.setUserCount(userCount);
-		}catch(Exception e){
-			LOG.error("Problem while trying to add user list to admin for cluster: "+ nodePath);
+		} catch (Exception e) {
+			LOG.error("Problem while trying to add user list to admin for cluster: " + nodePath);
 			LOG.error(e);
 		}
 	}
 
-	public static void userMapForUser(CuratorFramework curator, String nodePath, String username){
+	public static void userMapForUser(CuratorFramework curator, String nodePath, String username) {
 		LoginCache cache = new LoginCache();
 		UsersUtils utils = new UsersUtils();
 		int userCount = cache.getUserCount();
 		try {
 			ACL acl = utils.getAclListForUser(nodePath, username);
-			LOG.info("Simple users ACL: "+acl);
+			LOG.info("Simple users ACL: " + acl);
 			HashMap usersData = new HashMap<String, String>();
 			userCount++;
 			boolean userHasActionRights = checkIfUserHasActionRights(curator, nodePath, username);
 			int permissions = acl.getPerms();
-			if(!utils.checkTheUserForExclude(username)){
+			if (!utils.checkTheUserForExclude(username)) {
 				usersData.put("username", username);
 				usersData.put("cluster", nodePath);
 				usersData.put("rights", permissions);
@@ -348,24 +349,24 @@ public class CuratorUtils {
 				cache.setUserMap(userCount, usersData);
 			}
 			cache.setUserCount(userCount);
-		}catch(Exception e){
-			LOG.error("Problem while trying to add user list to admin for cluster: "+ nodePath);
+		} catch (Exception e) {
+			LOG.error("Problem while trying to add user list to admin for cluster: " + nodePath);
 			LOG.error(e);
 		}
 	}
 
-	public static Boolean checkIfUserHasActionRights(CuratorFramework curator, String nodePath, String loginData){
-		String actionNodePath= "";
+	public static Boolean checkIfUserHasActionRights(CuratorFramework curator, String nodePath, String loginData) {
+		String actionNodePath = "";
 		List<String> nodes = null;
 		ZookeeperAccessService zooAccess = new ZookeeperAccessService();
 		try {
 			actionNodePath = PropertyData.getProperty("authorizationTokenAction");
 			nodes = ZKUtil.listSubTreeBFS(curator.getZookeeperClient().getZooKeeper(), nodePath);
 			for (String node : nodes) {
-//				LOG.info("node path "+ node);
-//				LOG.info("node address ending "+ zooAccess.getAddressEnding(node));
-//				LOG.info("action node path "+ actionNodePath);
-				if(zooAccess.getAddressEnding(node).equals(actionNodePath)) {
+				// LOG.info("node path "+ node);
+				// LOG.info("node address ending "+ zooAccess.getAddressEnding(node));
+				// LOG.info("action node path "+ actionNodePath);
+				if (zooAccess.getAddressEnding(node).equals(actionNodePath)) {
 					try {
 						String userId;
 						List<ACL> aclList = curator.getACL().forPath(node);
@@ -373,18 +374,18 @@ public class CuratorUtils {
 							userId = acl.getId().getId();
 							String credentials = userId.split(":")[0];
 							if (credentials.equals(loginData.split(":")[0])) {
-							    LOG.info("THE USER REALLY HAS ADMIN RIGHTS"+ node+" : "+credentials);
+								LOG.info("THE USER REALLY HAS ADMIN RIGHTS" + node + " : " + credentials);
 								return true;
 							}
 						}
-					}catch (Exception e){
-//						LOG.error("No node access for the user return false");
+					} catch (Exception e) {
+						// LOG.error("No node access for the user return false");
 						return false;
 					}
 				}
 			}
-		}catch(Exception e){
-//			LOG.error("Problem while checking if user has action rights on login");
+		} catch (Exception e) {
+			// LOG.error("Problem while checking if user has action rights on login");
 			return false;
 		}
 		return false;

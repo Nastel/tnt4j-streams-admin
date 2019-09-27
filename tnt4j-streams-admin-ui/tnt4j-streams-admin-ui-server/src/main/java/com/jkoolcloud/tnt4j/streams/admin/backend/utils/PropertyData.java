@@ -96,19 +96,17 @@ public class PropertyData {
 		return property;
 	}
 
-
 	public static List<String> splitPropertiesList(String propertySet, String separator) {
 		List<String> propertyData = new LinkedList<>();
-		try{
+		try {
 			propertyData = Arrays.asList(propertySet.split(separator));
 
-		}catch(Throwable e){
+		} catch (Throwable e) {
 			LOG.error("Problem on separating properties list:  {}!", propertySet);
 			e.printStackTrace();
 		}
 		return propertyData;
 	}
-
 
 	public static String getPathToConf() throws IOException {
 		ResourceBundle rb = ResourceBundle.getBundle(ClsConstants.BUNDLE_CONFIG_FILE_NAME);
@@ -119,7 +117,7 @@ public class PropertyData {
 			// For local config file
 			if (System.getProperty(ClsConstants.TOMCAT_HOME_PROPERTY_PATH_NAME) == null) {
 				propFileName = ClsConstants.TOMCAT_HOME_PROPERTY_PATH_NAME + File.separator
-					+ ClsConstants.CONFIG_FILE_PATH + File.separator + ClsConstants.SSL_CONFIG_PATH;
+						+ ClsConstants.CONFIG_FILE_PATH + File.separator + ClsConstants.SSL_CONFIG_PATH;
 			}
 			// For Unit testing
 			else {
@@ -144,6 +142,5 @@ public class PropertyData {
 
 		return propFileName;
 	}
-
 
 }

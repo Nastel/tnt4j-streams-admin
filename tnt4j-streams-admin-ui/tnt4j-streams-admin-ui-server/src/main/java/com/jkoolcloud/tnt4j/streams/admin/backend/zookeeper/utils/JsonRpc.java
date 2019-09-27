@@ -63,7 +63,7 @@ public class JsonRpc {
 	 * @param jsonInString
 	 * @return
 	 */
-	public static boolean isJSONValid(String jsonInString ) {
+	public static boolean isJSONValid(String jsonInString) {
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
 			HashMap myMap = objectMapper.readValue(jsonInString, HashMap.class);
@@ -230,6 +230,5 @@ public class JsonRpc {
 		}
 
 	}
-
 
 }

@@ -16,20 +16,12 @@
 
 package com.jkoolcloud.tnt4j.streams.admin.backend.dataReading;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 
 import javax.inject.Singleton;
-import javax.ws.rs.NotFoundException;
 
-import com.jkoolcloud.tnt4j.streams.admin.backend.utils.HttpUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.jkoolcloud.tnt4j.streams.admin.backend.ServiceData;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
+import com.jkoolcloud.tnt4j.streams.admin.backend.utils.HttpUtils;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.PropertyData;
 
 /**
@@ -73,7 +65,7 @@ public class LogData {
 		return log;
 	}
 
-	private String checkResponse(String data){
+	private String checkResponse(String data) {
 		if (data.length() > 3) {
 			data = data.substring(1, data.length() - 3);
 		} else if (data.length() <= 3) {

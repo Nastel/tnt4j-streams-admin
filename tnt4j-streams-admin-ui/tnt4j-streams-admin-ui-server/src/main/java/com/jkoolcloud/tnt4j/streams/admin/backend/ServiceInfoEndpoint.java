@@ -31,7 +31,6 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.dataReading.JKoolData;
 import com.jkoolcloud.tnt4j.streams.admin.backend.dataReading.LogData;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
 
-
 /**
  * The type Service info endpoint.
  */

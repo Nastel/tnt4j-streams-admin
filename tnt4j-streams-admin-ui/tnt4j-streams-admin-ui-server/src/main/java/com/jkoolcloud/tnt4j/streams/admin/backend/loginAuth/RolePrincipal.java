@@ -9,34 +9,34 @@ import java.security.Principal;
  */
 public class RolePrincipal implements Principal {
 
-    private String name;
+	private String name;
 
-    /**
-     * Initializer
-     *
-     * @param name
-     */
-    public RolePrincipal(String name) {
-        super();
-        this.name = name;
-    }
+	/**
+	 * Initializer
+	 *
+	 * @param name
+	 */
+	public RolePrincipal(String name) {
+		super();
+		this.name = name;
+	}
 
-    /**
-     * Get the role name
-     *
-     * @return
-     */
-    @Override
-    public String getName() {
-        return name;
-    }
+	/**
+	 * Get the role name
+	 *
+	 * @return
+	 */
+	@Override
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * Set the role name
-     *
-     * @param name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * Set the role name
+	 *
+	 * @param name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 }

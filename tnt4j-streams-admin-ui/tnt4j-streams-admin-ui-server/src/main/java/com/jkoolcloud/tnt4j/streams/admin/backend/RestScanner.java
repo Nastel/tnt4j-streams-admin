@@ -35,5 +35,4 @@ public class RestScanner extends Application {
 	public RestScanner() {
 	}
 
-
 }

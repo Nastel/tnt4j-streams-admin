@@ -20,25 +20,26 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.loginAuth.UsersUtils;
 @PrepareForTest({ UsersUtils.class })
 public class TestLoginCache {
 
-    private static Logger LOG = LoggerFactory.getLogger(TestLoginCache.class);
-    @Test
-    public void whenCacheMiss_thenValueIsComputed() throws ExecutionException {
-        CacheLoader<String, String> loader;
-        loader = new CacheLoader<String, String>() {
-            @Override
-            public String load(String key) {
-                return key.toUpperCase();
-            }
-        };
+	private static Logger LOG = LoggerFactory.getLogger(TestLoginCache.class);
 
-        LoadingCache<String, String> cache;
-        cache = CacheBuilder.newBuilder().build(loader);
+	@Test
+	public void whenCacheMiss_thenValueIsComputed() throws ExecutionException {
+		CacheLoader<String, String> loader;
+		loader = new CacheLoader<String, String>() {
+			@Override
+			public String load(String key) {
+				return key.toUpperCase();
+			}
+		};
 
-        LOG.info("The cache set after first initialization: {}", cache.asMap());
-        assertEquals(0, cache.size());
-        assertEquals("HELLO", cache.getUnchecked("hello"));
-        assertEquals(1, cache.size());
-        cache.get("data");
-        LOG.info("The cache set after first initialization: {}", cache.asMap());
-    }
+		LoadingCache<String, String> cache;
+		cache = CacheBuilder.newBuilder().build(loader);
+
+		LOG.info("The cache set after first initialization: {}", cache.asMap());
+		assertEquals(0, cache.size());
+		assertEquals("HELLO", cache.getUnchecked("hello"));
+		assertEquals(1, cache.size());
+		cache.get("data");
+		LOG.info("The cache set after first initialization: {}", cache.asMap());
+	}
 }
