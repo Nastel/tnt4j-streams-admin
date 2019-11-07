@@ -8,7 +8,7 @@
         <artifactId>tnt4j-streams-admin-ui</artifactId>
         <version>1.0</version>
     </parent>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <artifactId>tnt4j-streams-admin-ui-server</artifactId>
     <description>TNT4J-Streams administration Web-UI server side module</description>
@@ -30,6 +30,7 @@
         <powermock.version>1.6.1</powermock.version>
         <zookeeper.version>3.5.5</zookeeper.version>
         <curator.version>4.2.0</curator.version>
+        <getdown.version>1.8.0</getdown.version>
     </properties>
     <build>
         <resources>
@@ -92,33 +93,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <encoding>${project.resources.encoding}</encoding>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/classes/resources/</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>
-                                        ${project.parent.basedir}/tnt4j-streams-admin-ui-web/src/main/web/dist/tnt4j-streams-admin-ui-web/
-                                    </directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.2.2</version>
                 <configuration>
@@ -149,21 +123,45 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>io.github.rockfireredmoon</groupId>
+                <artifactId>getdown-maven-plugin</artifactId>
+                <version>0.9.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>updates</goal>
+                            <goal>stub</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <path>target\tnt4j-streams-admin-ui-server-1.0.war</path>
+                                    <destination>\warFile</destination>
+                                </resource>
+                                <resource>
+                                    <path>src\main\resources</path>
+                                    <destination>\config</destination>
+                                </resource>
+                            </resources>
+                            <!-- This is the minimum required configuration, see below for more -->
+                            <appbase>http://localhost:8080/getdown</appbase>
+                            <mainClass>com.jkoolcloud.tnt4j.streams.admin.backend.loginAuth</mainClass>
+                            <ignoreMissingMain>true</ignoreMissingMain>
+                            <libPath>lib</libPath>
+                            <ui>
+                                <name>StreamsAdmin</name>
+                            </ui>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.web3j</groupId>
-            <artifactId>core</artifactId>
-            <version>${web3.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
         <dependency>
             <groupId>org.jboss.weld.servlet</groupId>
             <artifactId>weld-servlet</artifactId>
@@ -227,23 +225,7 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Quartz scheduler -->
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>${quartz.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-jobs</artifactId>
-            <version>${quartz.version}</version>
-        </dependency>
 
-        <dependency>
-            <groupId>org.skyscreamer</groupId>
-            <artifactId>jsonassert</artifactId>
-            <version>${jsonassert.version}</version>
-        </dependency>
 
         <!--  HTTP support -->
         <dependency>
@@ -284,19 +266,11 @@
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- Trying out emails with verification and sending through gmail, through testing fake smtp server and through a real local SMTp server setup-->
-        <!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
+        <!-- asserts fro testing -->
         <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>javax.mail-api</artifactId>
-            <version>1.6.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>1.6.0</version>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>${jsonassert.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.github.stefanbirkner/system-rules -->

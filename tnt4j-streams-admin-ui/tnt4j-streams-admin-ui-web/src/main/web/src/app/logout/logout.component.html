@@ -1,11 +1,11 @@
 <block-ui [delayStart]="500" [delayStop]="500">
 <div *ngIf="!utilsSvc.compareStrings(userActiveToken, 'null') && !utilsSvc.compareStrings(userActiveToken, 'undefined') && !utilsSvc.compareStrings(userActiveToken, '')">
-
+  <div  class="display-inlineFlex small-marginTop align-alignEnd">
+    <mat-icon class="serviceIcon small-marginRight"  svgIcon="usernameLogout"></mat-icon>
+    <span class="extraLarge-fontSize"> {{username}}</span>
+  </div>
   <div class="displayFlex">
-    <div  class="display-inlineFlex small-marginTop">
-      <mat-icon class="serviceIcon small-marginRight"  svgIcon="usernameLogout"></mat-icon>
-      <span class="extraLarge-fontSize"> {{username}}</span>
-    </div>
+
     <div class="align-alignEnd">
       <button (click)="redirectToUsersPage()" class="formSubmitButton">
         <div *ngIf="!returnBack; else backToMain">

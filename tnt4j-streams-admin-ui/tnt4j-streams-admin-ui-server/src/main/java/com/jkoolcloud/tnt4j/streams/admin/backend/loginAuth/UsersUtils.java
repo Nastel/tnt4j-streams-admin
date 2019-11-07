@@ -270,7 +270,7 @@ public class UsersUtils {
 		}
 		String loginResponse = "";
 		try {
-			JaasCalllbackHandler callBack = new JaasCalllbackHandler(username, password);
+			JaasCallbackHandler callBack = new JaasCallbackHandler(username, password);
 			LoginContext loginCont = new LoginContext("StreamsAdminLogin", callBack);
 			loginCont.login();
 		} catch (LoginException e) {

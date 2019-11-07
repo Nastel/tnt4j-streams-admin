@@ -4,12 +4,12 @@ import java.io.IOException;
 
 import javax.security.auth.callback.*;
 
-public class JaasCalllbackHandler implements CallbackHandler {
+public class JaasCallbackHandler implements CallbackHandler {
 
 	private String name;
 	private String password;
 
-	public JaasCalllbackHandler(String name, String password) {
+	public JaasCallbackHandler(String name, String password) {
 		this.name = name;
 		this.password = password;
 	}

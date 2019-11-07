@@ -310,6 +310,15 @@
                       style="padding-top:5px"><b>{{utilsSvc.getNodePathEnd(element[column])}}</b></span>
               </div>
             </div>
+            <div *ngSwitchCase="'Control'" routerLink="{{'/'+element[column]}}"
+                 class="mousePointer displayCenter">
+              <div class="displayCenter">
+                <span class="mobile-label small-marginRight">  {{column}} : </span>
+                <mat-icon svgIcon="{{'streamUpdate'}}" class="background-svgColorChange small-marginLeftRight"
+                          (click)="updateStream(element.Stream)"></mat-icon>
+                <mat-icon svgIcon="{{'rollBack'}}" class="background-svgColorChange " (click)="rollbackStream(element.Stream)"></mat-icon>
+              </div>
+            </div>
             <div *ngSwitchDefault class="display-inlineFlex">
               <span class="mobile-label small-marginRight">  {{column}} : </span>
               <span class="medium-fontSize">{{element[column]}}</span>

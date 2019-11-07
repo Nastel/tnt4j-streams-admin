@@ -98,6 +98,35 @@ export class ControlUtils
       );
   }
 
+    public updateStream(path : String){
+//       path = path + "/" + "_stop";
+//       this.blockUI.start("Stopping stream...");
+//       this.pathToData = this.router.url.substring(1);
+       path = this.configurationHandler.CONFIG["Rundeck"]["UpdateStream"];
+       console.log(path);
+       this.data.sendUpdateStreamRequest(path).subscribe( data => {
+            try{
+              let result = data;
+               this.responseResult = result;
+               console.log(this.responseResult);
+               if(!this.utilsSvc.compareStrings(this.responseResult["action"],"undefined")){
+                 this.openDialogWithHeader(this.responseResult["action"], "Success", this.pathToData);
+                 this.blockUI.stop();
+               }
+            }catch(err){
+              this.blockUI.stop();
+              console.log("Problem while trying to stop stream" , err);
+              this.openDialogWithHeader(this.responseResult["action"], "Failed", this.pathToData);
+            }
+          },
+           err =>{
+              this.blockUI.stop();
+              console.log("Problem while trying to stop stream" , err);
+              this.openDialogWithHeader(this.responseResult["action"], "Failed", this.pathToData);
+           }
+        );
+    }
+
   public replayBlock(path : String, blockNumber : number){
      path = path + "/" + blockNumber;
      this.blockUI.start("Replaying block...");

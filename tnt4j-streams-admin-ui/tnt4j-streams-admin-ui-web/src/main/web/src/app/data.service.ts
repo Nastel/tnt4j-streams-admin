@@ -69,6 +69,16 @@ export class DataService {
     return   this.http.get(serviceUrl, header);
   }
 
+
+  /**
+    send the request to replay block or blocks and wait for response if the operation was successful
+  */
+  sendUpdateStreamRequest(zooKeeperPath){
+    let token = this.configurationHandler.CONFIG["Rundeck"]["token"];
+    var header = this.returnHeaderWithTokenRundeck(token);
+    return   this.http.post(zooKeeperPath,{"argString":"-testing test"}, header);
+  }
+
   /**
     Call login request with credentials inside header and return the response or error message.
   */
@@ -117,6 +127,14 @@ export class DataService {
    // var header = { headers: new HttpHeaders({'Authorization':  JSON.stringify(input), 'Content-Type': 'text/plain; charset=utf-8'}) };
     return header;
   }
+
+    /**
+      A utils method to help with request authorization.
+    */
+    returnHeaderWithTokenRundeck(token: string){
+      var header = { headers: new HttpHeaders({'X-Rundeck-Auth-Token': token, 'Content-Type': 'application/json; charset=utf-8'}) };
+      return header;
+    }
 
   /**
     A utils method to help manage users by adding new users to the ZooKeeper with form data

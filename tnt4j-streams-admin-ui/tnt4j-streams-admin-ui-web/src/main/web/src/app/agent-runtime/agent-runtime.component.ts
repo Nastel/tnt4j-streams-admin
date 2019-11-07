@@ -413,6 +413,7 @@ export class AgentRuntimeComponent implements OnInit {
             //.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
             tempClustersInfo["AgentName"]=agentPath;
             this.columnsToDisplayClusters.indexOf("AgentName") === -1 ? this.columnsToDisplayClusters.push("AgentName"): "";
+            this.columnsToDisplayClusters.indexOf("Control") === -1 ? this.columnsToDisplayClusters.push("Control"): "";
             this.columnsToDisplayClusters.indexOf("ClusterName") === -1 ? this.columnsToDisplayClusters.push("ClusterName"): "";
             for(let data in agentsRuntimeData){
                 tempClustersInfo[data]= agentsRuntimeData[data];
@@ -574,6 +575,28 @@ export class AgentRuntimeComponent implements OnInit {
     }catch(e){
      console.log("Problem occurred in start/stop");
      console.log(e);
+    }
+  }
+
+  updateStream(streamName){
+    try{
+       console.log("Updating stream: ", streamName)
+       let path = this.pathToData  + "/" + streamName;
+       this.controlUtils.updateStream(path);
+    }catch(e){
+       console.log("Problem occurred in start/stop");
+       console.log(e);
+    }
+  }
+
+  rollbackStream(streamName){
+    try{
+       console.log("Updating stream: ", streamName)
+       let path = this.pathToData  + "/" + streamName;
+       this.controlUtils.updateStream(path);
+    }catch(e){
+       console.log("Problem occurred in start/stop");
+       console.log(e);
     }
   }
 

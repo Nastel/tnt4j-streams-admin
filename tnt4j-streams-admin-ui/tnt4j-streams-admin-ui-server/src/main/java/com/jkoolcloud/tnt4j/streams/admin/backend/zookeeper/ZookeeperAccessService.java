@@ -795,8 +795,55 @@ public class ZookeeperAccessService {
 		return neededNames;
 	}
 
+	/**
+	 * A method used to take the zooKeeper connection with rights depending on client.
+	 * @param token
+	 * @throws AuthenticationException
+	 */
 	private void setTokenAndGetConn(String token) throws AuthenticationException {
 		zooManager.setConnectionToken(token);
 		client = zooManager.getClientConnection();
+	}
+
+	//----------- Rundeck jobs ---------
+
+	/**
+	 * Method for executing jobs by calling Rundeck API
+	 * @param pathToData
+	 * @param userToken
+	 * @return
+	 * @throws AuthenticationException
+	 */
+	public HashMap executeRundeckJob(String pathToData, String userToken) throws AuthenticationException {
+		setTokenAndGetConn(userToken);  //Set the connection to the current connected client
+		HashMap dataMap = new HashMap(); // For response (Json)
+		String responseLink, responseData, pathToNode, blocksToReplay;
+
+		try {
+			String[] nodeParts = pathToData.split("/");
+			String requestToken = getTheTokenFromZooKeeper(pathToData, AUTH_NODE_PATH_ACTION_RIGHTS);
+			requestToken = TOKEN_TYPE + " " + requestToken;
+			if (nodeParts.length > AGENT_DEPTH) {
+				pathToNode = RequestPath.getPathOfSpecifiedLength(pathToData, AGENT_DEPTH + 1);
+			} else {
+				pathToNode = RequestPath.getPathOfSpecifiedLength(pathToData, AGENT_DEPTH + 1);
+			}
+			pathToNode = prepareReplayLink(pathToNode);// doChecksForSpecialNeedsNodes(pathToData);
+			blocksToReplay = getAddressEnding(pathToData);
+			responseLink = readNode(pathToNode) + blocksToReplay;
+			responseData = HttpUtils.readUrlAsStringWithToken(responseLink, true, requestToken);
+			// LOG.info("Response data "+ responseData);
+			dataMap = getResponseInJson(responseData);
+			dataMap.put("childrenNodes", getListOfChildNodes(pathToData));
+			dataMap.put("Response link", responseLink);
+
+		} catch (Exception e) {
+			LOG.error("Error on query for node information " + pathToData);
+			LOG.error("Error", e);
+		}
+		LOG.debug("Response map size: " + dataMap.size());
+		// LOG.debug("Response map Key set "+ dataMap.keySet());
+		// LOG.debug("Response map for debuging "+ dataMap);
+		return dataMap;
 	}
 }

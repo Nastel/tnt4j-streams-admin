@@ -63,7 +63,7 @@ export class AutoRouteGenerator
               if(!this.utilsSvc.compareStrings(this.zooKeeperTreeNodeList, "undefined")&&!this.utilsSvc.compareStrings(this.zooKeeperTreeNodeList, "null")){
                 this.getConfigurationsFromTree(this.zooKeeperTreeNodeList);
                 if(this.iconsDataLoaded){
-                  setTimeout(function(){ resolve("resolved"); });
+                  setTimeout(function(){ resolve("resolved"); }, 500);
                   console.log( "The data has been loaded resolve the response");
                 }
               }
