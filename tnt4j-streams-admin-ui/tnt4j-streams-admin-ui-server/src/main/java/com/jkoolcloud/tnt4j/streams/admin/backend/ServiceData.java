@@ -61,7 +61,7 @@ public class ServiceData {
 			String serviceName) {
 		Map<String, Object> serviceData = new HashMap<>();
 		try {
-			HashMap<String, Object> serviceDataFromJson1, serviceDataFromJson2, serviceDataFromJson3;
+			Map<String, Object> serviceDataFromJson1, serviceDataFromJson2, serviceDataFromJson3;
 			ObjectMapper objMapper = new ObjectMapper();
 			ObjectWriter writer = objMapper.writer();
 			String jsonInString, jsonInString1, jsonInString2;
@@ -325,7 +325,8 @@ public class ServiceData {
 	private Map<String, Object> parseJsonDataIntoSimpleFormat(Map<String, Object> serviceDataFromJson,
 			Map<String, Object> serviceData) throws IOException {
 
-		HashMap<String, Object> serviceDataFromJson1, serviceDataFromJson2;
+		Map<String, Object> serviceDataFromJson1;
+		Map<String, Object> serviceDataFromJson2;
 		ObjectMapper objMapper = new ObjectMapper();
 		ObjectWriter writer = objMapper.writer();
 		String jsonInString, jsonInString1;
