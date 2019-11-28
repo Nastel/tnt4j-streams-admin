@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -35,12 +36,12 @@ import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.ValidatorUtils;
 
 public class Init {
 
-	private static final Root root;
+	private static Root root;
 
-	private static final Zookeeper zookeeper;
-	private static final Jetty jetty;
-	private static final Paths paths;
-	private static final Variables variables;
+	private static Zookeeper zookeeper;
+	private static Jetty jetty;
+	private static Paths paths;
+	private static Variables variables;
 
 	private static final TokenAuth readToken = new TokenAuth();
 	private static final TokenAuth actionToken = new TokenAuth();
@@ -50,21 +51,7 @@ public class Init {
 
 	private static AtomicBoolean streamsAdminRunning = new AtomicBoolean(false);
 
-	static {
-		root = JsonUtils.jsonToObject(System.getProperty("streamsAdmin"), Root.class);
-
-		zookeeper = root.getZookeeper();
-		jetty = root.getJetty();
-		paths = root.getPaths();
-		variables = root.getVariables();
-
-		String connectString = zookeeper.getConnectString();
-		String zklogin = zookeeper.getZklogin();
-		String zkpass = zookeeper.getZkpass();
-
-		curatorWrapper = new CuratorWrapper(zklogin, zkpass, connectString);
-		curatorWrapper.start();
-	}
+	private ExecutorService streamAdminMainThread = Executors.newSingleThreadExecutor();
 
 	public static TokenAuth getReadToken() {
 		return readToken;
@@ -105,7 +92,6 @@ public class Init {
 		} else if (path.contains("_readToken")) {
 			curatorWrapper.setData(path, readToken.getIdentifier());
 		}
-
 	}
 
 	private void createBaseTree(List<AgentNode> agentNodeList) {
@@ -245,17 +231,65 @@ public class Init {
 		});
 	}
 
-	public Init() {
+	public void loadConfigAndStartCurator(String zkPath) {
+		root = JsonUtils.jsonToObject(zkPath, Root.class);
 
-		if (!streamsAdminRunning.get()) {
-			streamsAdminRunning.set(true);
-			createBaseTree(zookeeper.getAgentNodes());
-			createStreamNodes(zookeeper.getStreamNodes());
-			dirStreaming(paths.getMonitoredPath());
-			configureConnectors();
-			startJetty();
+		zookeeper = root.getZookeeper();
+		jetty = root.getJetty();
+		paths = root.getPaths();
+		variables = root.getVariables();
+
+		String connectString = zookeeper.getConnectString();
+		String zklogin = zookeeper.getZklogin();
+		String zkpass = zookeeper.getZkpass();
+
+		curatorWrapper = new CuratorWrapper(zklogin, zkpass, connectString);
+		curatorWrapper.start();
+	}
+
+	private void registerShutdownHook() {
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				closeStreamsAdmin();
+			}
+		});
+	}
+
+	private void closeStreamsAdmin() {
+		Init.curatorWrapper.close();
+		stopJetty();
+
+		try {
+			LoggerWrapper.closeLogger();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+
+		streamAdminMainThread.shutdown();
+	}
+
+	private void startStreamAdmin(String zkPath) {
+		registerShutdownHook();
+		loadConfigAndStartCurator(zkPath);
+		createBaseTree(zookeeper.getAgentNodes());
+		createStreamNodes(zookeeper.getStreamNodes());
+		dirStreaming(paths.getMonitoredPath());
+		configureConnectors();
+		startJetty();
+		LoggerWrapper.addMessage(OpLevel.INFO, "Stream admin has started successfully");
 
 	}
 
+	public Init(String zkPath) {
+		if (!streamsAdminRunning.get()) {
+			streamsAdminRunning.set(true);
+			streamAdminMainThread.submit(new Runnable() {
+				@Override
+				public void run() {
+					startStreamAdmin(zkPath);
+				}
+			});
+		}
+	}
 }

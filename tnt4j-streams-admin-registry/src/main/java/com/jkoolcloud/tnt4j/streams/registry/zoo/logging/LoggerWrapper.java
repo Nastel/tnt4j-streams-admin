@@ -16,6 +16,7 @@
 
 package com.jkoolcloud.tnt4j.streams.registry.zoo.logging;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -76,4 +77,7 @@ public class LoggerWrapper {
 		LoggerWrapper.addMessage(opLevel, getStatTrace(e));
 	}
 
+	public static void closeLogger() throws IOException {
+		streamsAdminLogger.close();
+	}
 }

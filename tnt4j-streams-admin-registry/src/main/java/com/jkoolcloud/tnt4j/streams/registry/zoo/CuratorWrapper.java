@@ -37,6 +37,14 @@ public class CuratorWrapper {
 		curatorFramework.close();
 	}
 
+	public boolean isConnected() {
+		CuratorFrameworkState curatorFrameworkState = curatorFramework.getState();
+		if (curatorFrameworkState == CuratorFrameworkState.STARTED) {
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Does node exist boolean.
 	 *
