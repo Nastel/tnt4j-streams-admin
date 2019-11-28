@@ -10,4 +10,8 @@ public class UpdateAgent {
 
 	}
 
+	public void shutdown() {
+		httpClientWrapper.shutdown();
+	}
+
 }
