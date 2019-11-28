@@ -138,9 +138,10 @@ export class ControlUtils
              this.responseResult = result;
              console.log(this.responseResult);
              console.log("Response of block replay",  this.responseResult);
-             if(!this.utilsSvc.compareStrings(this.responseResult["action"],"undefined")){
-                result = this.responseResult["dataReading"];
-                this.responseResult = result.toString();
+             if(this.utilsSvc.compareStrings(this.responseResult["action"],"undefined")){
+                console.log("No result defined");
+                result = this.responseResult["action"];
+                this.responseResult = result;
              }
             this.openDialogWithHeader("Block "+this.responseResult["action"]+" replay started", "Success", this.pathToData);
             this.blockUI.stop();
@@ -189,7 +190,6 @@ export class ControlUtils
   openDialogWithHeader(message :string, headerMessage :string, dataPathStart: string): void {
 
    let currentPath = this.router.url.substring(1);
-     console.log("WHAT", dataPathStart, currentPath )
     if(this.utilsSvc.compareStrings(currentPath, dataPathStart)){
       const dialogRef = this.dialog.open(popupMessage, {
         data: { response: message, header : headerMessage }

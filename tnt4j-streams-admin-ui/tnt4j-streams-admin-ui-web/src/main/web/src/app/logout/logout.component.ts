@@ -1,17 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DataService } from '../data.service';
 import { Router, RouterModule} from '@angular/router';
 import { ControlUtils } from "../utils/control.utils";
 import { ConfigurationHandler } from '../config/configuration-handler';
 import { UtilsService } from "../utils/utils.service";
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { MatMenuTrigger } from '@angular/material';
 
 @Component({
   selector: 'app-logout',
   templateUrl: './logout.component.html',
-  styleUrls: ['./logout.component.sass']
+  styleUrls: ['./logout.component.scss']
 })
 export class LogoutComponent implements OnInit {
+
+  @ViewChild('matMenu') ddTrigger: MatMenuTrigger;
 
   //Path to current node.
   pathToData: string;
@@ -26,6 +29,24 @@ export class LogoutComponent implements OnInit {
   userActiveToken : string;
   userAdmin = "false";
   @BlockUI() blockUI: NgBlockUI;
+
+  value: string;
+  selectedValue: string;
+
+  cancelClick(ev: MouseEvent) {
+    ev.stopPropagation();
+  }
+
+  onCancel() {
+    this.value = undefined;
+    this.ddTrigger.closeMenu();
+  }
+
+  onSave() {
+    this.selectedValue = this.value;
+    this.value = undefined;
+    this.ddTrigger.closeMenu();
+  }
 
   constructor(private data: DataService,
               private router: Router,

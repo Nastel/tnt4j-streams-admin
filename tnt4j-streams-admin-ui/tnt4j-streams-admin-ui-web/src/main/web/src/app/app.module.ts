@@ -20,6 +20,7 @@ import {
   MatTooltipModule,
   MatDialogModule,
   MatButtonModule,
+  MatMenuModule,
   MatCheckboxModule} from '@angular/material'
 
   export function createCompiler(compilerFactory: CompilerFactory) {
@@ -97,6 +98,7 @@ import { GoogleAnalyticsService } from './services/google-analytics.service';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
+    MatMenuModule,
     MatSortModule,
     MatTreeModule,
     MatListModule,

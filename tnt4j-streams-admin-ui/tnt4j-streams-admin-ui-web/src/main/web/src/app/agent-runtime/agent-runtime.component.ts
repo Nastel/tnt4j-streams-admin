@@ -288,8 +288,8 @@ export class AgentRuntimeComponent implements OnInit {
           else{
             for( let serviceName in result){
                this.serviceTableNeededData(result[serviceName], serviceName, "StreamsDataForAgentPage");
-               this.columnsToDisplay.push("control");
-               this.serviceTableLabels["control"]="Stream Control";
+//               this.columnsToDisplay.push("control");
+//               this.serviceTableLabels["control"]="Stream Control";
                this.dataSourceService = new MatTableDataSource(this.tempServiceData);
                if(Object.keys(result[serviceName]).length !== 0 && result[serviceName].constructor === Object){
                  this.healthyServices[serviceName] = true;
@@ -413,7 +413,7 @@ export class AgentRuntimeComponent implements OnInit {
             //.match(/[A-Z][a-z]+|[0-9]+/g).join(" ")
             tempClustersInfo["AgentName"]=agentPath;
             this.columnsToDisplayClusters.indexOf("AgentName") === -1 ? this.columnsToDisplayClusters.push("AgentName"): "";
-            this.columnsToDisplayClusters.indexOf("Control") === -1 ? this.columnsToDisplayClusters.push("Control"): "";
+//            this.columnsToDisplayClusters.indexOf("Control") === -1 ? this.columnsToDisplayClusters.push("Control"): "";
             this.columnsToDisplayClusters.indexOf("ClusterName") === -1 ? this.columnsToDisplayClusters.push("ClusterName"): "";
             for(let data in agentsRuntimeData){
                 tempClustersInfo[data]= agentsRuntimeData[data];
