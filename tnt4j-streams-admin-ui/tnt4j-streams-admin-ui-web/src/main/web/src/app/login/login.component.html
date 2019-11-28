@@ -1,0 +1,46 @@
+<block-ui [delayStart]="500" [delayStop]="500">
+<div  class="container-fluid mx-auto main">
+  <div class="display-inline">
+    <div class="text-alignCenter display-inline">
+      <div  class="loginBack large-padding small-marginTop displayCenter text-alignCenter">
+        <!--<p class=" small-padding" >login works!</p>-->
+
+
+        <form #f="ngForm" (ngSubmit)="f.form.valid && onSubmit()" name="form" novalidate>
+          <div class="form-group">
+
+              <div class="display-inlineFlex text-alignCenter small-paddingBottom  extraLarge-fontSize">
+                <span class="text-alignCenter extraLarge-fontSize extraSmall-marginTop">Login</span>
+                <mat-icon class="serviceIcon" style="height:4em; width: 4em;" svgIcon="loginImage"></mat-icon>
+              </div>
+
+              <div class="form-group small-paddingTop large-paddingLeft">
+                <label class="large-fontSize small-marginLeft">Username  <mat-icon class="serviceIcon" svgIcon="usernameField"></mat-icon></label>
+                <input #username="ngModel" [(ngModel)]="model.username" [ngClass]="{ 'is-invalid': f.submitted && username.invalid }" autocomplete="username" class="form-control  text-alignCenter" maxlength="50" name="username" required style="width: 20em;" type="text" />
+                <div *ngIf="f.submitted && username.invalid" class="invalid-feedback">
+                  <div *ngIf="username.errors.required">Username is required</div>
+                </div>
+              </div>
+              <div class="form-group small-paddingBottom large-paddingLeft">
+                <label class="large-fontSize small-marginLeft">Password <mat-icon class="serviceIcon" svgIcon="passwordField"></mat-icon></label>
+                <input #password="ngModel" [(ngModel)]="model.password"  [ngClass]="{ 'is-invalid': f.submitted && password.invalid }" autocomplete="current-password" class="form-control  text-alignCenter" maxlength="50" minlength="4" name="password" required style="width: 20em;" type="password" />
+                <div *ngIf="f.submitted && password.invalid" class="invalid-feedback">
+                  <div *ngIf="password.errors.required">Password is required</div>
+                  <div *ngIf="password.errors.minlength">Password must be at least 4 characters</div>
+                </div>
+              </div>
+
+            <re-captcha #reCaptcha (resolved)="resolved($event)" [siteKey]="reCaptchaKey"
+                        class="reCaptcha text-alignCenter"
+                        theme="light"></re-captcha>
+            <div class=" form-group align-alignEnd">
+              <button class="formSubmitButton"><mat-icon class="serviceIcon" style="height:2.5em; width: 2.5em;" svgIcon="loginButton"></mat-icon></button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</block-ui>

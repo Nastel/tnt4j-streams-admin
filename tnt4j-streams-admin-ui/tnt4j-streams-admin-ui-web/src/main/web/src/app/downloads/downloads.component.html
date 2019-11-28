@@ -1,0 +1,69 @@
+
+<div (click)="reloadData()" [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" class="text-center headerFont">
+  <div class="justify-content-center small-marginLeftRight">
+    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class="hoverUnderline large-fontSize" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+  </div>
+</div>
+
+<div *ngIf="valueThatChangesForSpinnerOnResponse" >
+  <div class="row justify-content-center large-paddingTop" >
+    <mat-progress-spinner mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>
+  </div>
+</div>
+<div *ngIf="!valueThatChangesForSpinnerOnResponse" >
+
+  <div class="row small-paddingBottom">
+    <div *ngFor="let item of navNamesArray" >
+      <div class="col-12 medium-marginLeftRight">
+        <div *ngIf="this.utilsSvc.compareStrings(item, navigationChoice); then selected; else notSelected"></div>
+        <ng-template #selected>
+          <div class="large-fontSize backgroundWhite text-AlignCenter backgroundUnderline extraSmall-paddingTopBottom small-paddingLeftRight extraSmall-marginTopBottom" (click)="downloadsChoice(item)" ><b>{{item}}</b></div>
+        </ng-template>
+        <ng-template #notSelected>
+          <div class="large-fontSize hoverWhite text-AlignCenter extraSmall-paddingTopBottom small-paddingLeftRight extraSmall-marginTopBottom" (click)="downloadsChoice(item)"><b>{{item}}</b></div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div class="medium-marginLeftRight">
+
+    <mat-form-field class="filterInputField" >
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+    </mat-form-field>
+
+    <mat-table mat-table [dataSource]="dataSource"  matSort #downloadsSorting="matSort" class="">
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"  class="agentRuntimeServiceInformationTableHeader"> Name </mat-header-cell>
+        <mat-cell *matCellDef="let element"> <h6 class="small-marginTop"><b>{{element.name}}</b></h6> </mat-cell>
+      </ng-container>
+
+      <!-- Value Column -->
+      <ng-container matColumnDef="value" >
+        <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"  class="agentRuntimeServiceInformationTableHeader" style="padding-left: 15px !important;"> Download </mat-header-cell>
+        <mat-cell *matCellDef="let element" class="fullWidth "  style="padding-left: 0px !important;">
+          <mat-icon  style="width:48px; height:48px;" svgIcon="{{'download'}}" class="small-paddingTop mousePointer"   (click)="download(element.name)"></mat-icon>
+        </mat-cell>
+      </ng-container>
+
+
+
+      <mat-header-row *matHeaderRowDef="displayedColumns" ></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+
+    <mat-paginator #downloadsPaging
+                   [pageSize]="10"
+                   [pageSizeOptions]="[5, 10, 20]" style="background-color: #E6E6E6;" class="agentRuntimeInformationPagginator">
+    </mat-paginator>
+
+  </div>
+</div>

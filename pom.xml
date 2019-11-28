@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.jkoolcloud.tnt4j.streams.admin</groupId>
+    <artifactId>tnt4j-streams-admin</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <name>tnt4j-streams-admin</name>
+    <url>https://github.com/Nastel/tnt4j-streams-admin</url>
+    <description>TNT4J Streams administration module</description>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+    <organization>
+        <name>jKool, LLC</name>
+        <url>https://www.jkoolcloud.com/</url>
+    </organization>
+    <developers>
+        <developer>
+            <name>jKool Team</name>
+            <email>support@jkoolcloud.com</email>
+            <organization>${project.organization.name}</organization>
+            <organizationUrl>${project.organization.url}</organizationUrl>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com/Nastel/tnt4j-streams-admin</connection>
+        <developerConnection>scm:git:git//github.com/Nastel/tnt4j-streams-admin</developerConnection>
+        <url>https://github.com/Nastel/tnt4j-streams-admin</url>
+    </scm>
+    <distributionManagement>
+        <repository>
+            <id>bintray-amavashev2-jkoolcloud</id>
+            <name>amavashev2-jkoolcloud</name>
+            <url>https://api.bintray.com/maven/amavashev2/jkoolcloud/tnt4j-streams-admin/;publish=1;override=1</url>
+        </repository>
+    </distributionManagement>
+
+    <properties>
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.resources.encoding>UTF-8</project.resources.encoding>
+        <product.vendor>${project.organization.name}</product.vendor>
+        <product.name>${project.name}</product.name>
+        <product.name.hr>TNT4J Streams</product.name.hr>
+        <product.copyright.html>
+            <![CDATA[<font size="-1">Copyright &#169; 2014-2018 ${project.organization.name}. All Rights Reserved.</font>]]></product.copyright.html>
+
+        <project.java.version>1.8</project.java.version>
+        <java.source.version>${project.java.version}</java.source.version>
+        <java.target.version>${project.java.version}</java.target.version>
+        <java.compiler.version>${project.java.version}</java.compiler.version>
+        <java.compiler.debuglevel>source,lines,vars</java.compiler.debuglevel>
+        <java.compiler.verbose>false</java.compiler.verbose>
+
+        <skip.source.pack>true</skip.source.pack>
+        <skip.javadoc.pack>true</skip.javadoc.pack>
+        <skip.assembly.pack>true</skip.assembly.pack>
+        <skip.tests>true</skip.tests>
+        <skip.gpg.sign>true</skip.gpg.sign>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>pack-bin</id>
+            <properties>
+                <skip.assembly.pack>false</skip.assembly.pack>
+            </properties>
+        </profile>
+        <profile>
+            <id>pack-all</id>
+            <properties>
+                <skip.source.pack>false</skip.source.pack>
+                <skip.javadoc.pack>false</skip.javadoc.pack>
+                <skip.assembly.pack>false</skip.assembly.pack>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <defaultGoal>clean install</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <verbose>${java.compiler.verbose}</verbose>
+                    <compilerVersion>${java.compiler.version}</compilerVersion>
+                    <source>${java.source.version}</source>
+                    <target>${java.target.version}</target>
+                    <debuglevel>${java.compiler.debuglevel}</debuglevel>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <encoding>${project.resources.encoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <doctitle>${product.name.hr}</doctitle>
+                    <windowtitle>${product.name.hr}</windowtitle>
+                    <header>Version ${project.version}</header>
+                    <bottom>${product.copyright.html}</bottom>
+                    <show>protected</show>
+                    <use>true</use>
+                    <notree>false</notree>
+                    <nonavbar>false</nonavbar>
+                    <noindex>false</noindex>
+                    <splitindex>true</splitindex>
+                    <author>true</author>
+                    <version>true</version>
+                    <nodeprecatedlist>false</nodeprecatedlist>
+                    <nodeprecated>false</nodeprecated>
+                    <failOnError>false</failOnError>
+                    <doclint>all</doclint>
+                    <skip>${skip.javadoc.pack}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>build-javadocs-module</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <inherited>true</inherited>
+                <configuration>
+                    <skipTests>${skip.tests}</skipTests>
+                    <systemProperties>
+                        <property>
+                            <name>tnt4j.config</name>
+                            <value>../config/tnt4j.properties</value>
+                        </property>
+                        <property>
+                            <name>log4j.configuration</name>
+                            <value>file:../config/log4j.properties</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+            <!-- to run integration tests -->
+            <!--plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <configuration>
+                    <skip>${skip.gpg.sign}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.27.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- may be used instead of mockito -->
+        <!--<dependency>-->
+        <!--<groupId>org.jmockit</groupId>-->
+        <!--<artifactId>jmockit</artifactId>-->
+        <!--<version>1.46</version>-->
+        <!--<scope>test</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--<groupId>org.jmockit</groupId>-->
+        <!--<artifactId>jmockit-coverage</artifactId>-->
+        <!--<version>1.23</version>-->
+        <!--<scope>test</scope>-->
+        <!--</dependency>-->
+    </dependencies>
+
+    <modules>
+        <module>tnt4j-streams-admin-registry</module>
+        <module>tnt4j-streams-admin-utils</module>
+        <module>tnt4j-streams-admin-ui</module>
+        <module>tnt4j-streams-admin-hc</module>
+        <module>tnt4j-streams-admin-cli</module>
+        <module>tnt4j-streams-admin--distribution</module>
+    </modules>
+
+</project>

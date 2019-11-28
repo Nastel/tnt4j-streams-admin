@@ -1,0 +1,342 @@
+<div (click)="reloadData()"
+     [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" class="text-center headerFont">
+  <div class="justify-content-center small-marginLeftRight">
+    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize">{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+  </div>
+</div>
+
+<div *ngIf="valueThatChangesForSpinnerOnResponse">
+  <div class="row justify-content-center large-paddingTop">
+    <mat-progress-spinner mode="indeterminate" strokeWidth="15" [diameter]="150"
+                          [ngStyle]="{ margin: auto }"></mat-progress-spinner>
+  </div>
+</div>
+<div *ngIf="valueThatChangesForSpinnerOnResponse || valueThatChangesOnDataLoad">
+
+  <!-----------Agent dataReading runtime information---------------------------------------------------------------------------------------------------------------->
+
+  <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'agentRuntime')" class="medium-marginLeftRight">
+
+    <div class=" rounded-cornersBottom">
+
+      <mat-form-field class="filterInputField small-paddingTop">
+        <input matInput (keyup)="applyFilterRuntime($event.target.value)" placeholder="Filter">
+      </mat-form-field>
+
+      <mat-table mat-table [dataSource]="dataSourceRuntime" matSort #matServiceAgentSort="matSort"
+                 (matSortChange)="sortData($event)" matSortActive="name" matSortDirection="asc">
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name" class="agentRuntimeTable">
+          <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }" class="agentRuntimeServiceInformationTableHeader text-alignCenter"> Name
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element" class="agentRuntimeServiceInformationTableHeader"><span
+            class="small-marginTop medium-fontSize"><b>{{element.name}}</b></span></mat-cell>
+        </ng-container>
+
+        <!-- Value Column -->
+        <ng-container matColumnDef="value">
+          <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }" class="agentRuntimeServiceInformationTableHeader text-alignCenter" style="padding-left: 15px !important;">
+            Value
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element" class="agentRuntimeTable display-inlineBlock fullWidth "
+                    style="padding-left: 0px !important;">
+            <h6 class="small-marginTop">
+              <div *ngFor="let item of element.value | keyvalue">
+                <div class="medium-fontSize noPadding">
+                  <div class="d-inline-block col-12 col-sm-4"><h6 align="left" class="medium-fontSize">
+                    <b>{{item.key}} </b></h6></div>
+                  <div class="d-inline-block col-12 col-sm-8"><h6 align="left" class="medium-fontSize">
+                    {{item.value}} </h6></div>
+                </div>
+
+              </div>
+            </h6>
+          </mat-cell>
+        </ng-container>
+
+
+        <mat-header-row *matHeaderRowDef="displayedColumns" style="color: #FFFFFF"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+
+      <mat-paginator #paginatorRuntime
+                     [pageSize]="5"
+                     [pageSizeOptions]="[5, 10, 20]" style="background-color: #E6E6E6;"
+                     class="agentRuntimeInformationPagginator">
+      </mat-paginator>
+    </div>
+  </div>
+
+  <!-----------Agent dataReading : services in agent list---------------------------------------------------------------------------------------------------------------->
+
+  <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'agent')" class="medium-marginLeftRight">
+
+    <div>
+
+      <mat-form-field class="filterInputField  small-paddingTop">
+        <input matInput (keyup)="applyFilterService($event.target.value)" placeholder="Filter">
+      </mat-form-field>
+
+      <mat-table [dataSource]="dataSourceService" matSort #matServiceSort="matSort" multiTemplateDataRows>
+
+        <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
+          <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }" class="agentRuntimeServiceInformationTableHeader text-alignCenter"> {{serviceTableLabels[column]}}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element" class="align-alignEnd">
+            <span class="mobile-label" style="margin-right: 1.4em;">  {{column}} :</span>
+
+
+            <div *ngIf="this.utilsSvc.compareStrings(column, 'Stream')" class="display-inlineFlex">
+              <div
+                *ngIf="!utilsSvc.compareStrings(expandedElement, 'undefined') && !utilsSvc.compareStrings(expandedElement, 'null'); then expandedField else collapsedField"
+                class="display-inlineFlex"></div>
+              <ng-template #expandedField>
+                <div
+                  *ngIf="utilsSvc.compareStrings(expandedElement['Stream'], element[column]); then serviceSet else serviceNull"
+                  class="display-inlineFlex"></div>
+                <ng-template #serviceSet>
+                  <mat-icon svgIcon="{{'expandUp'}}"
+                            class="mousePointer small-marginTop extraSmall-marginRight"></mat-icon>
+                </ng-template>
+                <ng-template #serviceNull>
+                  <mat-icon svgIcon="{{'expandDown'}}"
+                            class="mousePointer small-marginTop extraSmall-marginRight"></mat-icon>
+                </ng-template>
+              </ng-template>
+              <ng-template #collapsedField>
+                <mat-icon svgIcon="{{'expandDown'}}"
+                          class="mousePointer  small-marginTop extraSmall-marginRight"></mat-icon>
+              </ng-template>
+              <div class="row  align-items-center small-marginRight" class="display-content">
+                <div routerLink="{{element[column]}}">
+                  <span class=" display-inlineFlex routing">
+                    <div *ngIf="iconsRegistered.includes('/'+pathToData)" class="display-inline extraSmall-marginRight">
+                      <mat-icon svgIcon="{{'/'+pathToData+'/'+element[column]}}" class="serviceIcon"></mat-icon>
+                    </div>
+                    <span class="extraSmall-marginTop"><b>{{element[column]}}</b></span>
+                 </span>
+                </div>
+              </div>
+            </div>
+            <div
+              *ngIf="this.utilsSvc.compareStrings(column, 'control') && !this.utilsSvc.compareStrings(serviceControlList[element.Stream], 'undefined')"
+              class="small-marginTop">
+              <div class="row mx-auto justify-content-center small-marginLeftRight">
+                <div class="small-marginLeftRight rounded-corners display-content">
+                  <div *ngIf="serviceControlList[element.Stream].includes('replay')" class="display-inlineFlex">
+                    <mat-form-field (click)="onEvent($event)">
+                      <input matInput matTooltip="Input item id to replay" placeholder="Item id"
+                             [(ngModel)]="element.Stream_name" [name]="element.Stream"/>
+                    </mat-form-field>
+                    <mat-icon svgIcon="{{'replay'}}" class="background-svgColorChange" (click)="onEvent($event)"
+                              (click)="replayTheBlockFromInput(element.Stream, element.Stream_name)"></mat-icon>
+                  </div>
+                  <div *ngIf="serviceControlList[element.Stream].includes('stop')" class="display-inlineFlex">
+                    <mat-icon svgIcon="{{'stop'}}" class="background-svgColorChange" (click)="onEvent($event)"
+                              (click)="startStopStream('stop', element.Stream)"></mat-icon>
+                  </div>
+                  <div *ngIf="serviceControlList[element.Stream].includes('start')" class="display-inlineFlex">
+                    <mat-icon svgIcon="{{'start'}}" class="background-svgColorChange" (click)="onEvent($event)"
+                              (click)="startStopStream('start', element.Stream)"></mat-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              *ngIf="!this.utilsSvc.compareStrings(column, 'Stream') && !this.utilsSvc.compareStrings(column, 'control')">
+              <div>
+                <span> {{element[column]}}</span>
+              </div>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+        <ng-container matColumnDef="expandedDetail">
+          <mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length" class="element-detail"
+                    [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+            <div class="row">
+              <div class="col-12" class="display-content">
+                <div *ngFor="let item1 of element.description | keyvalue"
+                     class="small-marginLeftRight small-marginTop display-inlineFlex">
+                  <div><span align="left" class="medium-fontSize extraSmall-marginRight "><b>{{item1.key}}:</b> </span>
+                  </div>
+                  <div><span align="right" class="medium-fontSize">{{item1.value}}</span></div>
+                </div>
+              </div>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+
+        <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+        <mat-row *matRowDef="let element; columns: columnsToDisplay;"
+                 (click)="expandedElement = expandedElement === element ? null : element"
+                 [ngStyle]="{'background-color': this.utilsSvc.getColorAgentListService(healthyServices, element['Stream'])}"
+                 [class.expand-detail-row]="expandedElement === element">
+        </mat-row>
+        <mat-row *matRowDef="let row; columns: ['expandedDetail']" class="expand-detail-row"></mat-row>
+      </mat-table>
+      <mat-paginator #paginatorService
+                     [pageSize]="5"
+                     [pageSizeOptions]="[1, 3, 5, 10]" style="background-color: #E6E6E6;"
+                     class="agentRuntimeInformationPagginator">
+      </mat-paginator>
+    </div>
+  </div>
+
+
+  <!-----------Cluster dataReading : agents inside cluster list---------------------------------------------------------------------------------------------------------------->
+
+  <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'cluster')" class="medium-marginLeftRight">
+
+    <mat-form-field class="filterInputField small-paddingTop">
+      <input matInput (keyup)="applyFilterCluster($event.target.value)" placeholder="Filter">
+    </mat-form-field>
+
+    <mat-table mat-table [dataSource]="dataSourceCluster" matSort #sortCluster="matSort"
+               [ngStyle]="{'background-color': this.utilsSvc.getColorBackground()}">
+
+      <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplayCluster">
+        <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }" class="agentRuntimeServiceInformationTableHeader mat-Header text-alignCenter">
+          <div [ngSwitch]="column">
+            <div *ngSwitchCase="'AgentName'" class="small-paddingRight">{{column}}</div>
+            <div *ngSwitchCase="'StreamName'" class="small-paddingLeftRight">{{column}}</div>
+            <div *ngSwitchDefault>{{column}}</div>
+          </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom  mat-cell-Clusters align-alignEnd"
+                  style="font-size: 1em"
+                  [ngStyle]="{'background-color': this.utilsSvc.getColorFalseAgent((!healthyServices[element.AgentName+'/'+utilsSvc.getNodePathEnd(element.StreamName)] && utilsSvc.compareStrings('AgentName',column)))}">
+          <div [ngSwitch]="column">
+            <div *ngSwitchCase="'AgentName'" routerLink="{{element[column]}}"
+                 class="mousePointer display-inlineFlex small-paddingRight routing">
+              <span class="mobile-label small-marginRight">  {{column}} : </span>
+              <div *ngIf="iconsRegistered.includes('/'+pathToData+'/'+element[column])" class="small-paddingRight">
+                <mat-icon svgIcon="{{'/'+pathToData+'/'+element[column]}}" class="serviceIcon"></mat-icon>
+              </div>
+              <span class="medium-fontSize"><b>{{element[column]}}</b></span>
+            </div>
+            <div *ngSwitchCase="'StreamName'"
+                 routerLink="{{element.AgentName+'/'+utilsSvc.getNodePathEnd(element[column])}}"
+                 class="mousePointer small-paddingLeftRight routing">
+              <div class="display-inlineFlex">
+                <span class="mobile-label small-marginRight">  {{column}} : </span>
+                <span class="medium-fontSize"
+                      style="padding-top:5px"><b>{{utilsSvc.getNodePathEnd(element[column])}}</b></span>
+              </div>
+            </div>
+            <div *ngSwitchCase="'Status'" class="small-paddingRight">
+              <div *ngIf="element[column]; then serviceWorksBlock else serviceDoesNotWork"
+                   class="small-paddingTop"></div>
+              <ng-template #serviceWorksBlock>
+                <mat-icon svgIcon="{{'streamUp'}}"></mat-icon>
+              </ng-template>
+              <ng-template #serviceDoesNotWork>
+                <mat-icon svgIcon="{{'streamDown'}}"></mat-icon>
+              </ng-template>
+            </div>
+            <div *ngSwitchDefault class="display-inlineFlex">
+              <span class="mobile-label small-marginRight">  {{column}} : </span>
+              <span class="medium-fontSize">{{element[column]}}</span>
+            </div>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columnsToDisplayCluster"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnsToDisplayCluster;">
+        {{row.ClusterName}}
+      </mat-row>
+    </mat-table>
+    <mat-paginator #paginatorCluster
+                   [pageSize]="10"
+                   [pageSizeOptions]="[5, 10, 20]" style="background-color: #E6E6E6;"
+                   class="agentRuntimeInformationPagginator">
+    </mat-paginator>
+  </div>
+
+  <!-----------Clusters list---------------------------------------------------------------------------------------------------------------->
+
+  <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'clusters')" class="medium-marginLeftRight">
+    <mat-form-field class="filterInputField small-paddingTop">
+      <input matInput (keyup)="applyFilterClusters($event.target.value)" placeholder="Filter">
+    </mat-form-field>
+    <!-----------Clusters list cluster name - agent - dta1 dataReading 2---------------------------------------------------------------------------------------------------------------->
+    <mat-table mat-table [dataSource]="dataSourceClusters" matSort #sortClusters="matSort"
+               [ngStyle]="{'background-color': this.utilsSvc.getColorBackground()}">
+
+      <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplayClusters">
+        <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }" class="agentRuntimeServiceInformationTableHeader mat-Header text-alignCenter">
+          <div [ngSwitch]="column">
+            <div *ngSwitchCase="'ClusterName'" class="small-paddingLeftRight">{{column}}</div>
+            <div *ngSwitchCase="'AgentName'" class="small-paddingRight">{{column}}</div>
+            <div *ngSwitchDefault>{{column}}</div>
+          </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom  mat-cell-Clusters"
+                  style="font-size: 1em"
+                  [ngStyle]="{'background-color': this.utilsSvc.getColorFalseAgent((!healthyServices[element.ClusterName+'/'+utilsSvc.getNodePathEnd(element.AgentName)]&& utilsSvc.compareStrings('AgentName',column)))}">
+          <div [ngSwitch]="column">
+            <div *ngSwitchCase="'ClusterName'" routerLink="{{element[column]}}"
+                 class="mousePointer display-inlineFlex small-paddingLeftRight routing">
+              <span class="mobile-label small-marginRight">  {{column}} : </span>
+              <span class="medium-fontSize"><b>{{element[column]}}</b></span>
+            </div>
+            <div *ngSwitchCase="'AgentName'" routerLink="{{'/'+element[column]}}"
+                 class="mousePointer small-paddingRight routing">
+              <div class="display-inlineFlex">
+                <span class="mobile-label small-marginRight">  {{column}} : </span>
+                <div *ngIf="iconsRegistered.includes('/'+element[column])" class="small-paddingRight">
+                  <mat-icon svgIcon="{{'/'+element[column]}}" class="serviceIcon"></mat-icon>
+                </div>
+                <span class="medium-fontSize"
+                      style="padding-top:5px"><b>{{utilsSvc.getNodePathEnd(element[column])}}</b></span>
+              </div>
+            </div>
+            <!--<div *ngSwitchCase="'Control'" routerLink="{{'/'+element[column]}}"-->
+                 <!--class="mousePointer displayCenter">-->
+              <!--<div class="displayCenter">-->
+                <!--<span class="mobile-label small-marginRight">  {{column}} : </span>-->
+                <!--<mat-icon svgIcon="{{'streamUpdate'}}" class="background-svgColorChange small-marginLeftRight"-->
+                          <!--(click)="updateStream(element.Stream)"></mat-icon>-->
+                <!--<mat-icon svgIcon="{{'rollBack'}}" class="background-svgColorChange " (click)="rollbackStream(element.Stream)"></mat-icon>-->
+              <!--</div>-->
+            <!--</div>-->
+            <div *ngSwitchDefault class="display-inlineFlex">
+              <span class="mobile-label small-marginRight">  {{column}} : </span>
+              <span class="medium-fontSize">{{element[column]}}</span>
+            </div>
+          </div>
+        </mat-cell>
+
+
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columnsToDisplayClusters"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnsToDisplayClusters;">
+      </mat-row>
+    </mat-table>
+    <mat-paginator #paginatorClusters
+                   [pageSize]="10"
+                   [pageSizeOptions]="[5, 10 , 20]" style="background-color: #E6E6E6;"
+                   class="agentRuntimeInformationPagginator">
+    </mat-paginator>
+  </div>
+</div>

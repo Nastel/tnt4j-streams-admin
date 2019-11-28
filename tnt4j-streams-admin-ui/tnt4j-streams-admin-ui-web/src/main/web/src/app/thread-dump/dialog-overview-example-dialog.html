@@ -1,0 +1,19 @@
+<div class="sticky-top align-alignEnd">
+  <span class="small-margin headerFont" style="color:#000000"><b> Last update: {{threadsTimeStamp}}</b></span>
+  <mat-icon (click)="loadZooKeeperNodeData(pathToData)" matTooltip="Reload data" svgIcon="{{'update'}}"></mat-icon>
+  <mat-icon (click)="onNoClick()" class="small-marginLeftRight" matTooltip="Close" svgIcon="{{'closeModal'}}"></mat-icon>
+</div>
+<div>
+  <div #scrollMeLog id="scrollElementLog" class="medium-marginLeftRight hiddenOverflow full-height threads wordWrap">
+    <div  class="hoverWhite small-paddingTop">
+      <div class="d-inline-block col-12">
+        <PRE><h6 class="threads">{{threadData}}</h6></PRE>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="valueThatChangesForSpinnerOnResponse" >
+  <div class="row justify-content-center large-paddingTop " >
+    <mat-progress-spinner mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>
+  </div>
+</div>

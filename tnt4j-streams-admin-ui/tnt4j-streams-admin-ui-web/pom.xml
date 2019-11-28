@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jkoolcloud.tnt4j.streams.admin</groupId>
+        <artifactId>tnt4j-streams-admin-ui</artifactId>
+        <version>1.0</version>
+    </parent>
+    <packaging>war</packaging>
+
+    <artifactId>tnt4j-streams-admin-ui-web</artifactId>
+    <description>TNT4J-Streams administration Web-UI client module</description>
+
+    <properties>
+
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>clean_node_modules</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.basedir}/src/main/web/node_modules</directory>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.7.6</version>
+                <configuration>
+                    <nodeVersion>v11.9.0</nodeVersion>
+                    <npmVersion>6.3.0</npmVersion>
+                    <workingDirectory>src/main/web/</workingDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>prod</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run-script build -- --prod --aot=false --build-optimizer=false --source-map=false --base-href
+                            </arguments>
+                        </configuration>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.2</version>
+                <configuration>
+                    <packagingExcludes>WEB-INF</packagingExcludes>
+                    <packagingExcludes>META-INF</packagingExcludes>
+                    <webResources>
+                        <resource>
+                            <directory>src\main\web\dist\tnt4j-streams-admin-ui-web</directory>
+                            <targetPath>./</targetPath>
+                        </resource>
+                    </webResources>
+                    <archive>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,22 @@
+<div class="heightAndWidth">
+  <div class="sticky-top backgroundUnderline">
+    <div class="row">
+      <div class="col">
+      </div>
+      <div class="col-6">
+        <div class="text-alignCenter">
+          <span class="large-fontSize boldFont">  {{responseHeaderMessage}}</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="small-marginLeftRight align-alignEnd">
+          <mat-icon (click)="onNoClick()" matTooltip="Close" svgIcon="{{'closeModal'}}"></mat-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-alignCenter small-marginTop">
+    <pre class="large-fontSize wordWrap hiddenOverflowComponents small-paddingLeftRight">{{responseData}}</pre>
+  </div>
+</div>

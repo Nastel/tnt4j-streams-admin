@@ -1,0 +1,66 @@
+<div  class="container-fluid mx-auto main">
+  <div class="row display-flex ">
+
+    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 small-paddingTopBottom">
+      <div  class="fullBorder small-paddingBottom">
+        <app-navigation-tree></app-navigation-tree>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm -12 col-md-8 col-lg-8 col-xl-9 padding small-paddingTopBottom">
+      <div #viewComponent   class = "fullBorder" >
+
+
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'undefined')">
+          <div (click)="loadZooKeeperNodeData(pathToData)" [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" class="text-center headerFont">
+            <div class="justify-content-center small-marginLeftRight">
+              <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+             </div>
+          </div>
+          <div class="row justify-content-center large-paddingTop" >
+            <mat-progress-spinner *ngIf="true" [diameter]="150" [ngStyle]="{ margin: auto }"  mode="indeterminate" strokeWidth="15"></mat-progress-spinner>
+          </div>
+        </div>
+
+
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'thread')">
+          <app-thread-dump></app-thread-dump>
+        </div>
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'config')">
+          <app-server-configuration-file></app-server-configuration-file>
+        </div>
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'logs')">
+          <app-agent-logs></app-agent-logs>
+        </div>
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'agent') ||this.utilsSvc.compareStrings(streamDataShowChoice, 'agentRuntime') || this.utilsSvc.compareStrings(streamDataShowChoice, 'cluster') || this.utilsSvc.compareStrings(streamDataShowChoice, 'clusters')">
+          <app-agent-runtime></app-agent-runtime>
+        </div>
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'incomplete')">
+          <app-incomplete-blocks></app-incomplete-blocks>
+        </div>
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'service')">
+          <app-service-data></app-service-data>
+        </div>
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'metrics')">
+          <app-service-metrics></app-service-metrics>
+        </div>
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'repository')">
+          <app-service-repository-status></app-service-repository-status>
+        </div>
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'downloadables')">
+          <app-downloads></app-downloads>
+        </div>
+        <div *ngIf="this.utilsSvc.compareStrings(streamDataShowChoice, 'default')">
+          <app-configurable-component-node></app-configurable-component-node>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="row justify-content-center">
+      <div class="col-12 small-paddingTop">
+        <div *ngIf=" !this.utilsSvc.compareStrings(streamDataShowChoice, 'cluster') && !this.utilsSvc.compareStrings(streamDataShowChoice, 'clusters') && !this.utilsSvc.compareStrings(streamDataShowChoice, 'undefined')">
+          <app-bottom-log></app-bottom-log>
+        </div>
+      </div>
+    </div>
+</div>

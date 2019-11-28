@@ -1,0 +1,75 @@
+<div [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" (click)="reloadData()" class="text-center headerFont small-marginBottom">
+  <div class="justify-content-center small-marginLeftRight">
+    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+  </div>
+</div>
+
+<div *ngIf="valueThatChangesForSpinnerOnResponse" >
+  <div class="row justify-content-center large-paddingTop" >
+    <mat-progress-spinner mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>
+  </div>
+</div>
+<div *ngIf="!valueThatChangesForSpinnerOnResponse" >
+  <div class="medium-marginLeftRight">
+    <div *ngIf="serviceControlList.length > 0">
+      <div class="rounded-corners mat-elevation-z2 " style="border-radius:1.5em;">
+        <div [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"  class=" text-center headerFont" >
+          <div class="row justify-content-center">
+            <b>Service Control  </b> <mat-icon svgIcon="{{'/'+pathToData}}" class="serviceIcon"></mat-icon>
+          </div>
+        </div>
+        <div class="row mx-auto justify-content-center small-marginLeftRight  small-paddingTop">
+          <div class="small-marginLeftRight rounded-corners display-content">
+              <div *ngIf="serviceControlList.includes('replay')"  class="display-inlineFlex ">
+                <mat-form-field (click)="onEvent($event)">
+                  <input matInput   matTooltip="Input item id to replay" placeholder="Item id" [(ngModel)]="blockNumber" />
+                </mat-form-field>
+                <mat-icon  svgIcon="{{'replay'}}" class="background-svgColorChange" (click)="replayTheBlockFromInput(blockNumber)"></mat-icon>
+              </div>
+              <div *ngIf="serviceControlList.includes('stop')" class="display-inlineFlex">
+                <mat-icon  svgIcon="{{'stop'}}" class="background-svgColorChange" (click)="startStopStream('stop')"></mat-icon>
+              </div>
+              <div *ngIf="serviceControlList.includes('start')" class="display-inlineFlex">
+                <mat-icon  svgIcon="{{'start'}}" class="background-svgColorChange" (click)="startStopStream('start')"></mat-icon>
+              </div>
+          </div>
+        </div>
+      </div>
+
+        <mat-form-field class="filterInputField small-paddingTop" >
+          <input matInput (keyup)="applyFilterServiceData($event.target.value)" placeholder="Filter">
+        </mat-form-field>
+
+        <mat-table mat-table [dataSource]="dataSourceServiceBaseStats"  matSort #matServiceBaseSort="matSort">
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="name" class="agentRuntimeTable">
+            <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }" class="agentRuntimeServiceInformationTableHeader mat-Header"> Name </mat-header-cell>
+            <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom"> <h6 class="noMargin"><b>{{element.name}}</b></h6> </mat-cell>
+          </ng-container>
+
+          <!-- Value Column -->
+          <ng-container matColumnDef="value" >
+            <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"  class="agentRuntimeServiceInformationTableHeader mat-Header"> Value </mat-header-cell>
+            <mat-cell *matCellDef="let element" class="extraSmall-paddingTopBottom"> <h6 class="noMargin">{{element.value}}</h6> </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row >
+          <mat-row  *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+
+        <mat-paginator #paginatorServiceBaseStat
+                       [pageSize]="15"
+                       [pageSizeOptions]="[10, 15, 20]" style="background-color: #E6E6E6;" class="agentRuntimeInformationPagginator">
+        </mat-paginator>
+  </div>
+</div>

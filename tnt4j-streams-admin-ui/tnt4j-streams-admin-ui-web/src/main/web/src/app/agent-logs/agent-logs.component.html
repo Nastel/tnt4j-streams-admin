@@ -1,0 +1,61 @@
+
+<div (click)="reloadData()" [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" class="text-center headerFont">
+  <div class="justify-content-center small-marginLeftRight">
+    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+  </div>
+</div>
+
+<div *ngIf="valueThatChangesForSpinnerOnResponse" >
+  <div class="row justify-content-center large-paddingTop" >
+    <mat-progress-spinner mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>
+  </div>
+</div>
+<div *ngIf="!valueThatChangesForSpinnerOnResponse" >
+
+
+  <!-- -------Top navigation example-------------------------------------------------------------------------------------------------------------->
+  <div class="row">
+    <div *ngFor="let item of logArray" >
+      <div class="col-12  medium-marginLeftRight">
+        <div *ngIf="this.utilsSvc.compareStrings(item, logChoiceName); then selected; else notSelected"></div>
+        <ng-template #selected>
+          <div class="large-fontSize backgroundWhite text-AlignCenter backgroundUnderline extraSmall-paddingTopBottom small-paddingLeftRight extraSmall-marginTopBottom" (click)="logChoice(item)" ><b>{{item}}</b></div>
+        </ng-template>
+        <ng-template #notSelected>
+          <div class="large-fontSize hoverWhite text-AlignCenter extraSmall-paddingTopBottom small-paddingLeftRight extraSmall-marginTopBottom" (click)="logChoice(item)"><b>{{item}}</b></div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-12" >
+        <div class="row justify-content-between">
+          <div class="d-inline-block col-7 medium-marginLeftRight">
+            <div class="input-group border3" >
+              <input placeholder="Filter Data" [(ngModel)]="findValueLog" class="inputHighlight form-control" />
+              <mat-icon  svgIcon="{{'search'}}" (click)="filterLogs(findValueLog)"></mat-icon>
+              <mat-icon  svgIcon="{{'clearSearch'}}" (click)="filterLogs('')"></mat-icon>
+              <p class="logAmountShown"> show  {{logLinesLoaded}}/{{logLinesAvailable}} </p>
+            </div>
+          </div>
+          <div class="col-4 text-right">
+            <mat-icon  class="small-marginRight" style="width:18px; height:18px;" (click)="scrollToBottom()"  svgIcon="{{'scrollDown'}}"></mat-icon>
+            <mat-icon  class="small-marginRight" style="width:32px; height:32px;" (click)="loadMoreLogData()" svgIcon="{{'loadMore'}}"></mat-icon>
+          </div>
+        </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div #scrollMeLog id="scrollElementLog" [style.max-height.px]="dataHeight" class="small-margin hiddenOverflow">
+        <div  *ngFor="let item of logData" >
+          <div  class="hoverWhite small-paddingBottom">
+            <PRE class="wordWrap small-paddingLeftRight"><span class="threads">  <div [innerHTML]="item | highlight: findValueLog" ></div>  </span></PRE>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

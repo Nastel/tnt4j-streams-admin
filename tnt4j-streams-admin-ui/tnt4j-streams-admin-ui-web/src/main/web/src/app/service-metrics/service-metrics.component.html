@@ -1,0 +1,97 @@
+
+<div (click)="reloadData()" [ngStyle]="{'background-color': this.utilsSvc.getColor(valueThatChangesOnDataLoad)}" class="text-center headerFont small-marginBottom">
+  <div class="justify-content-center small-marginLeftRight">
+    <b [ngStyle]="{'color': this.utilsSvc.getColorForText()}" class=" hoverUnderline large-fontSize" >{{utilsSvc.breadcrumbTitle(pathToData)}}</b>
+  </div>
+</div>
+
+<div *ngIf="valueThatChangesForSpinnerOnResponse" >
+  <div class="row justify-content-center large-paddingTop" >
+    <mat-progress-spinner mode="indeterminate" strokeWidth="15"  [diameter]="150" [ngStyle]="{ margin: auto }"></mat-progress-spinner>
+  </div>
+</div>
+<div *ngIf="!valueThatChangesForSpinnerOnResponse" >
+  <!-- ---------------Meters line dataReading----------------------------------------------------------------------------------------------------->
+  <div class="medium-marginLeftRight small-marginTopBottom">
+
+      <mat-form-field class="filterInputField" >
+        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+      </mat-form-field>
+      <mat-table mat-table [dataSource]="dataSourceMetrics"  matSort >
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name" >
+          <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"   class="agentRuntimeServiceInformationTableHeader mat-Header"> Metrics </mat-header-cell>
+          <mat-cell *matCellDef="let element"> <span  class="agentRuntimeServiceInformationTableHeader mat-Header"><b>{{element.name}}</b></span> </mat-cell>
+        </ng-container>
+
+        <!-- Value Column -->
+        <ng-container matColumnDef="value">
+          <mat-header-cell *matHeaderCellDef [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"   class="agentRuntimeServiceInformationTableHeader mat-Header"> </mat-header-cell>
+          <mat-cell *matCellDef="let element" >
+            <div class="row mx-auto justify-content-start" style="display: inline-block;">
+            <div  *ngFor="let item2 of element.value | keyvalue">
+              <div *ngIf="!this.utilsSvc.isObject(item2.value)">
+                <div class="d-inline-block col-6" style="width: 12em;">
+                  <span><b> {{item2.key}}: </b> </span>
+                </div>
+                <div class="d-inline-block col-6" style="width: 12em;">
+                  <span class="align-alignEnd">{{item2.value}} </span>
+                </div>
+              </div>
+
+            </div>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name1" >
+          <mat-header-cell *matHeaderCellDef mat-sort-header [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"   class="agentRuntimeServiceInformationTableHeader mat-Header"> </mat-header-cell>
+          <mat-cell *matCellDef="let element"> <span  class="agentRuntimeServiceInformationTableHeader mat-Header"><b>{{element.name1}}</b></span> </mat-cell>
+        </ng-container>
+
+        <!-- Value Column -->
+        <ng-container matColumnDef="value1">
+          <mat-header-cell *matHeaderCellDef [ngStyle]="{
+          'background-color': this.utilsSvc.getColorInnerLabels(),
+          'color': this.utilsSvc.getColorTableLabels()
+          }"   class="agentRuntimeServiceInformationTableHeader mat-Header"> </mat-header-cell>
+          <mat-cell *matCellDef="let element" >
+            <div class="row mx-auto justify-content-start" style="display: inline-block;">
+              <div  *ngFor="let item2 of element.value1 | keyvalue">
+                <div *ngIf="!this.utilsSvc.isObject(item2.value)">
+                  <div class="d-inline-block col-6" style="width: 12em;">
+                    <span><b> {{item2.key}}: </b> </span>
+                  </div>
+                  <div class="d-inline-block col-6" style="width: 12em;">
+                    <span class="align-alignEnd">{{item2.value}} </span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+
+      <div class="row justify-content-center">
+        <mat-paginator #paginatorRuntime
+                       [pageSize]="3"
+                       [pageSizeOptions]="[2, 3, 5, 10]" style="background-color: #E6E6E6;" >
+        </mat-paginator>
+      </div>
+  </div>
+</div>

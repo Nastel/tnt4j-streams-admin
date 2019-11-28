@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jkoolcloud.tnt4j.streams.admin</groupId>
+        <artifactId>tnt4j-streams-admin-ui</artifactId>
+        <version>1.0</version>
+    </parent>
+    <packaging>jar</packaging>
+
+    <artifactId>tnt4j-streams-admin-ui-server</artifactId>
+    <description>TNT4J-Streams administration Web-UI server side module</description>
+
+    <properties>
+        <web3.version>4.3.1</web3.version>
+        <weld.version>2.4.7.Final</weld.version>
+        <servlet.api.version>3.0.1</servlet.api.version>
+        <logback.version>1.2.3</logback.version>
+        <jackson.version>2.10.1</jackson.version>
+        <jackson.jaxrs.version>2.9.9</jackson.jaxrs.version>
+        <jboss.resteasy.version>4.2.0.Final</jboss.resteasy.version>
+        <guava.version>27.0.1-jre</guava.version>
+        <jasypt.version>1.9.2</jasypt.version>
+        <quartz.version>2.3.1</quartz.version>
+        <jsonassert.version>1.5.0</jsonassert.version>
+        <httpcomp.version>4.5.6</httpcomp.version>
+        <swagger.version>2.0.0</swagger.version>
+        <powermock.version>1.6.1</powermock.version>
+        <zookeeper.version>3.5.5</zookeeper.version>
+        <curator.version>4.2.0</curator.version>
+        <getdown.version>1.8.0</getdown.version>
+    </properties>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>../../</directory>
+                <targetPath>META-INF</targetPath>
+                <includes>
+                    <include>LICENSE</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <archive>
+                        <!--<index>true</index>-->
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Vendor>${product.vendor}</Implementation-Vendor>
+                            <Implementation-Title>${product.name}</Implementation-Title>
+                            <Implementation-Version>${project.version}-${maven.build.timestamp}</Implementation-Version>
+                            <!--<Main-Class>com.jkoolcloud.tnt4j.streams.StreamsAgent</Main-Class>-->
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <skipSource>${skip.source.pack}</skipSource>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.2</version>
+                <configuration>
+                    <!--<archiveClasses>true</archiveClasses>-->
+                    <webResources>
+                        <!-- WAS module config resource -->
+                        <resource>
+                            <directory>../../</directory>
+                            <targetPath>META-INF</targetPath>
+                            <includes>
+                                <include>LICENSE</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                    <archive>
+                        <manifestEntries>
+                            <Implementation-Vendor>${product.vendor}</Implementation-Vendor>
+                            <Implementation-Title>${project.name}</Implementation-Title>
+                            <Implementation-Version>${project.version}-${maven.build.timestamp}</Implementation-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.github.rockfireredmoon</groupId>
+                <artifactId>getdown-maven-plugin</artifactId>
+                <version>0.9.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>updates</goal>
+                            <goal>stub</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <path>target\tnt4j-streams-admin-ui-server-1.0.war</path>
+                                    <destination>\warFile</destination>
+                                </resource>
+                                <resource>
+                                    <path>src\main\resources</path>
+                                    <destination>\config</destination>
+                                </resource>
+                            </resources>
+                            <!-- This is the minimum required configuration, see below for more -->
+                            <appbase>http://localhost:8080/getdown</appbase>
+                            <mainClass>com.jkoolcloud.tnt4j.streams.admin.backend.loginAuth</mainClass>
+                            <ignoreMissingMain>true</ignoreMissingMain>
+                            <libPath>lib</libPath>
+                            <ui>
+                                <name>StreamsAdmin</name>
+                            </ui>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet</artifactId>
+            <version>${weld.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${servlet.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>${jackson.jaxrs.version}</version>
+        </dependency>
+        <!-- Servlet pluggability support -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-servlet-initializer</artifactId>
+            <version>${jboss.resteasy.version}</version>
+        </dependency>
+        <!-- REST Client support -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>${jboss.resteasy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-cdi</artifactId>
+            <version>${jboss.resteasy.version}</version>
+        </dependency>
+        <!-- Guava cache -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>listenablefuture</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+            <version>${jasypt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jkoolcloud.tnt4j.streams.admin</groupId>
+            <artifactId>tnt4j-streams-admin-cli</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
+
+        <!--  HTTP support -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpcomp.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>${zookeeper.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-x-discovery</artifactId>
+            <version>${curator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-x-async</artifactId>
+            <version>${curator.version}</version>
+        </dependency>
+
+        <!-- powermock ependencies for testing-->
+        <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
+        <!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito -->
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- asserts fro testing -->
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>${jsonassert.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.github.stefanbirkner/system-rules -->
+        <dependency>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-rules</artifactId>
+            <version>1.18.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
