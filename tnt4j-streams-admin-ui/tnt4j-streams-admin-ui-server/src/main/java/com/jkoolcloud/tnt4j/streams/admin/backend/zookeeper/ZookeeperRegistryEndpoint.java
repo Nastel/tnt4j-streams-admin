@@ -99,7 +99,7 @@ public class ZookeeperRegistryEndpoint {
 				for (PathSegment node : nodePath) {
 					pathToNode.append("/").append(node);
 				}
-				HashMap tempMap = zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0, authHeader);
+				HashMap tempMap = zookeeperAccessService.getServiceNodeInfoFromLinkForReplay(pathToNode.toString(), authHeader);
 				String value = mapper.writeValueAsString(tempMap.get("data"));
 				if (value.equals("") || value.isEmpty()) {
 					return Response.status(200)

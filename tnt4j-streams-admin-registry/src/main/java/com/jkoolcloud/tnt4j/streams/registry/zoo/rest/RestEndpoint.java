@@ -162,7 +162,7 @@ public class RestEndpoint {
 	@GET
 	@Path("/ping")
 	@Produces(MediaType.APPLICATION_JSON)
-	@SecureRead
+	//@SecureRead
 	public Response ping() {
 		return Response.ok("pong", MediaType.TEXT_PLAIN).build();
 	}

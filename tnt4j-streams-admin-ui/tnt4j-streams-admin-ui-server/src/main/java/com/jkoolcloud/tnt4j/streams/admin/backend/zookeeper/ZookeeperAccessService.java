@@ -341,7 +341,7 @@ public class ZookeeperAccessService {
 			responseData = new String(nodeLinkBytes);
 			// LOG.info("Node data: "+ responseData);
 		} catch (Exception e) {
-			LOG.error("Error on query for node information " + nodePath);
+			LOG.error("Error on query for node information read node" + nodePath);
 			LOG.error("Error" + e);
 		}
 		return responseData;
@@ -461,22 +461,26 @@ public class ZookeeperAccessService {
 			String[] nodeParts = pathToData.split("/");
 			String requestToken = getTheTokenFromZooKeeper(pathToData, AUTH_NODE_PATH_ACTION_RIGHTS);
 			requestToken = TOKEN_TYPE + " " + requestToken;
-			if (nodeParts.length > AGENT_DEPTH) {
-				pathToNode = RequestPath.getPathOfSpecifiedLength(pathToData, AGENT_DEPTH + 1);
-			} else {
-				pathToNode = RequestPath.getPathOfSpecifiedLength(pathToData, AGENT_DEPTH + 1);
-			}
-			pathToNode = prepareReplayLink(pathToNode);// doChecksForSpecialNeedsNodes(pathToData);
+			pathToNode = RequestPath.getPathOfSpecifiedLength(pathToData, AGENT_DEPTH);
+			pathToNode = prepareReplayLink(pathToNode);
+//			LOG.info("pathToNode For replay "+ pathToNode);
 			blocksToReplay = getAddressEnding(pathToData);
-			responseLink = readNode(pathToNode) + blocksToReplay;
+//			LOG.info("blocksToReplay For replay "+ blocksToReplay);
+			String replayBlockNodeData = readNode(pathToNode);
+//			LOG.info("node data For replay "+ replayBlockNodeData);
+			HashMap urlAddressForReplay = getResponseInJson(replayBlockNodeData);
+//			LOG.info("urlAddressForReplay For replay "+ urlAddressForReplay);
+			responseLink = urlAddressForReplay.get("data") + blocksToReplay;
+			LOG.info("responseLink For replay "+ responseLink);
 			responseData = HttpUtils.readUrlAsStringWithToken(responseLink, true, requestToken);
+//			LOG.info("responseData For replay "+ responseData);
 			// LOG.info("Response data "+ responseData);
-			dataMap = getResponseInJson(responseData);
-			dataMap.put("childrenNodes", getListOfChildNodes(pathToData));
+			dataMap.put("data", responseData);
+			//dataMap.put("childrenNodes", getListOfChildNodes(pathToData));
 			dataMap.put("Response link", responseLink);
 
 		} catch (Exception e) {
-			LOG.error("Error on query for node information " + pathToData);
+			LOG.error("Error on query for node information for replay " + pathToData);
 			LOG.error("Error", e);
 		}
 		LOG.debug("Response map size: " + dataMap.size());
@@ -493,13 +497,13 @@ public class ZookeeperAccessService {
 	 */
 	private String prepareReplayLink(String data) {
 		String dataReplay = "";
-		String[] arrayUrl = data.split("/");
-		for (int i = 0; i < arrayUrl.length - 1; i++) {
-			if (!arrayUrl[i].equals("")) {
-				dataReplay = dataReplay + "/" + arrayUrl[i];
-			}
-		}
-		dataReplay = SERVICES_REGISTRY_START_PARENT + dataReplay + "/_replay";
+//		String[] arrayUrl = data.split("/");
+//		for (int i = 0; i < arrayUrl.length - 1; i++) {
+//			if (!arrayUrl[i].equals("")) {
+//				dataReplay = dataReplay + "/" + arrayUrl[i];
+//			}
+//		}
+		dataReplay = SERVICES_REGISTRY_START_PARENT + data + "_replay";
 		return dataReplay;
 	}
 
@@ -547,54 +551,6 @@ public class ZookeeperAccessService {
 						configMap.put("Response link", responseLink);
 					}
 				}
-				// responseData = "{\"data\":{\"Service error log\":[],\"Service log\":[\"2019-08-20 10:17:18,017|
-				// INFO\", \"|com.jkoolcloud.tnt4j.streams.inputs.RestStream| => Invoking RESTful service POST
-				// request:\", \" url=https://mainnet.infura.io/v3/5fc47c37ebd24bc68c4f203742da9752, reqData= |
-				// RUNTIME=24964@EC2AMAZ-8CBM9A6#SERVER=EC2AMAZ\",
-				// \"-8CBM9A6#NETADDR=172.31.45.251#DATACENTER=UNKNOWN#GEOADDR=UNKNOWNrn\"],\"config\":{\"componentLoad\":\"logs\",\"streamsIcon\":\"<svg
-				// height='2.5em' id='svg8' version='1.1' viewBox='2 2 9 9' xmlns='http://www.w3.org/2000/svg'
-				// xmlns:cc='http://creativecommons.org/ns#' xmlns:dc='http://purl.org/dc/elements/1.1/'
-				// xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:svg='http://www.w3.org/2000/svg'><defs
-				// id='defs2'/><g id='layer1' transform='translate(0,-284.29998)'><path d='m 4.9388885,287.12215
-				// 4.9388893,-2e-5 v 0.7056 H 4.9388885 Z' id='path4487'
-				// style='fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'/><path
-				// d='m 4.9388888,288.53327 4.9388892,-2e-5 v 0.7056 H 4.9388888 Z' id='path4507'
-				// style='fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'/><path
-				// d='m 4.9388888,289.94442 0.7055559,-5e-5 v 0.70557 l -0.7055559,8e-5 z' id='path4511'
-				// style='fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'/><path
-				// d='m 4.9388888,291.35554 h 0.7055559 v 0.70555 H 4.9388888 Z' id='path4513'
-				// style='fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'/><path
-				// d='m 4.9388888,292.76661 h 0.7055559 v 0.70557 H 4.9388888 Z' id='path4517'
-				// style='fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'/><path
-				// d='m 2.8222225,287.12213 h 1.4111108 v 0.70552 H 2.8222225 Z' id='rect4537'
-				// style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'/><path
-				// d='m 2.8222225,288.53325 h 1.4111108 v 0.70554 H 2.8222225 Z' id='path4540'
-				// style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'/><path
-				// d='m 2.8222225,289.94442 h 1.4111108 v 0.70552 H 2.8222225 Z' id='path4544'
-				// style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'/><path
-				// d='m 2.8222225,291.35554 h 1.4111108 v 0.70552 H 2.8222225 Z' id='path4546'
-				// style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'/><path
-				// d='m 2.8222225,292.76666 h 1.4111108 v 0.70552 H 2.8222225 Z' id='path4548'
-				// style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'/><path
-				// d='M 10.301112,293.89583 9.1722226,292.7669' id='path4562'
-				// style='fill:none;stroke:#000000;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'/><path
-				// d='m 8.1138888,289.94471 a 1.7638888,1.7638888 0 0 0 -1.7638887,1.76387 1.7638888,1.7638888 0 0 0
-				// 1.7638887,1.76389 1.7638888,1.7638888 0 0 0 1.7638892,-1.76389 1.7638888,1.7638888 0 0 0
-				// -1.7638892,-1.76387 z m 0,0.70552 a 1.0583334,1.0583334 0 0 1 1.0583336,1.05835 1.0583334,1.0583334 0
-				// 0 1 -1.0583336,1.05832 1.0583334,1.0583334 0 0 1 -1.0583332,-1.05832 1.0583334,1.0583334 0 0 1
-				// 1.0583332,-1.05835 z' id='path4564'
-				// style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'/><rect
-				// height='0.70555556' id='rect4599'
-				// style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:0.37647059;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'
-				// width='0.70555556' x='4.2333331' y='287.1221'/><rect height='0.70555556' id='rect4601'
-				// style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:0.37647059;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'
-				// width='0.70555556' x='4.2333331' y='288.53323'/><rect height='0.70555556' id='rect4605'
-				// style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:0.37647059;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'
-				// width='0.70555556' x='4.2333331' y='289.94437'/><rect height='0.70555556' id='rect4607'
-				// style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:0.37647059;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'
-				// width='0.70555556' x='4.2333331' y='291.3555'/><rect height='0.70555556' id='rect4609'
-				// style='opacity:1;vector-effect:none;fill:#000000;fill-opacity:0.37647059;stroke:none;stroke-width:0.70555556px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1'
-				// width='0.70555556' x='4.2333331' y='292.76663'/></g></svg>\"}}}\n" + "\t";
 				if (logLineCount != 0) {
 					dataMap = getLogLineNumberSpecified(responseData, logLineCount);
 				} else {
@@ -828,7 +784,7 @@ public class ZookeeperAccessService {
 			} else {
 				pathToNode = RequestPath.getPathOfSpecifiedLength(pathToData, AGENT_DEPTH + 1);
 			}
-			pathToNode = prepareReplayLink(pathToNode);// doChecksForSpecialNeedsNodes(pathToData);
+			pathToNode = prepareReplayLink(pathToNode);
 			blocksToReplay = getAddressEnding(pathToData);
 			responseLink = readNode(pathToNode) + blocksToReplay;
 			responseData = HttpUtils.readUrlAsStringWithToken(responseLink, true, requestToken);
@@ -838,7 +794,7 @@ public class ZookeeperAccessService {
 			dataMap.put("Response link", responseLink);
 
 		} catch (Exception e) {
-			LOG.error("Error on query for node information " + pathToData);
+			LOG.error("Error on query for node information for rundeck" + pathToData);
 			LOG.error("Error", e);
 		}
 		LOG.debug("Response map size: " + dataMap.size());
