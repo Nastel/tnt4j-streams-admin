@@ -85,10 +85,10 @@ public class PropertyData {
 		}
 		if (property == null) {
 			LOG.error(
-					"The property provided has wrong value or was not declared correctly in the streamsProperties.properties file: "
-							+ key);
+					"The property provided has wrong value or was not declared correctly in the streamsProperties.properties file: {}",
+					key);
 			throw new IllegalArgumentException(
-					MessageFormat.format("\"BAD REQUEST \"+ Missing value for key {0}!", key));
+					MessageFormat.format("\"BAD REQUEST \" Missing value for key {0}!", key));
 		}
 
 		return property;
@@ -100,7 +100,7 @@ public class PropertyData {
 			propertyData = Arrays.asList(propertySet.split(separator));
 
 		} catch (Throwable e) {
-			LOG.error("Problem on separating properties list:  {}!", propertySet);
+			LOG.error("Problem on separating properties list: {}!", propertySet);
 			e.printStackTrace();
 		}
 		return propertyData;

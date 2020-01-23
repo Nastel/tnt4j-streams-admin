@@ -325,7 +325,7 @@ public class CuratorUtils {
 			}
 			cache.setUserCount(userCount);
 		} catch (Exception e) {
-			LOG.error("Problem while trying to add user list to admin for cluster: {0}", nodePath, e);
+			LOG.error("Problem while trying to add user list to admin for cluster: {}", nodePath, e);
 		}
 	}
 
@@ -349,7 +349,7 @@ public class CuratorUtils {
 			}
 			cache.setUserCount(userCount);
 		} catch (Exception e) {
-			LOG.error("Problem while trying to add user list to admin for cluster: {0}", nodePath, e);
+			LOG.error("Problem while trying to add user list to admin for cluster: {}", nodePath, e);
 		}
 	}
 
