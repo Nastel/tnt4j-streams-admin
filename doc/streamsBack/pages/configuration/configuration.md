@@ -98,11 +98,11 @@ This is minimalist config that is valid, it's main purpose is to serve as an exa
     ]
   },
   "paths": {
-    "logsPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-ethereum/logs/replay",
-    "sampleCfgsPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-ethereum/samples/ethereum",
-    "mainConfigPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-ethereum/samples/ethereum/ethereumInfuraReplay.xml",
-    "replayTemplatePath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-ethereum/samples/templates/ethereumInfuraReplay.xml",
-    "monitoredPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-ethereum/samples/templates/userRequests"
+    "logsPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-k2/logs/replay",
+    "sampleCfgsPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-k2/samples/ethereum",
+    "mainConfigPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-k2/samples/ethereum/ethereumInfuraReplay.xml",
+    "replayTemplatePath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-k2/samples/templates/ethereumInfuraReplay.xml",
+    "monitoredPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-k2/samples/templates/userRequests"
   }
 }
 
@@ -388,11 +388,11 @@ e.g.
 ```json
 
 "paths": {
-    "logsPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-ethereum/logs/replay",
-    "sampleCfgsPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-ethereum/samples/ethereum",
-    "mainConfigPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-ethereum/samples/ethereum/ethereumInfuraReplay.xml",
-    "replayTemplatePath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-ethereum/samples/templates/ethereumInfuraReplay.xml",
-    "monitoredPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-ethereum/samples/templates/userRequests"
+    "logsPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-k2/logs/replay",
+    "sampleCfgsPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-k2/samples/ethereum",
+    "mainConfigPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-k2/samples/ethereum/ethereumInfuraReplay.xml",
+    "replayTemplatePath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-k2/samples/templates/ethereumInfuraReplay.xml",
+    "monitoredPath": "C:/development/tnt4j/k2/development/k2-index-search/tnt4j-streams-k2/samples/templates/userRequests"
 }
 
 ```

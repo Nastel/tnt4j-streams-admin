@@ -16,51 +16,14 @@
 
 package com.jkoolcloud.tnt4j.streams.admin.utils.log;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-
 /**
  * The type Error logs servlet.
  */
-// TODO: merge both log servlets
-public class ErrorLogsServlet extends HttpServlet {
-
-	private StringBufferAppender appender;
+public class ErrorLogsServlet extends AbstractLogServlet {
+	private static final long serialVersionUID = 8582266009885049369L;
 
 	@Override
-	public void init(ServletConfig config) throws ServletException {
-		Logger logger = Logger.getRootLogger();
-		appender = (StringBufferAppender) logger.getAppender("myErrorAppender");
-		// appender.start();
+	protected String getAppenderName() {
+		return "myErrorAppender";
 	}
-
-	@Override
-	public void destroy() {
-		// appender.stop() ;
-	}
-
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (appender == null) {
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Appender not initialized");
-		} else {
-			PrintWriter pw = resp.getWriter();
-			pw.print(appender.getLogs());
-			resp.flushBuffer();
-		}
-	}
-
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		doGet(req, resp);
-	}
-
 }

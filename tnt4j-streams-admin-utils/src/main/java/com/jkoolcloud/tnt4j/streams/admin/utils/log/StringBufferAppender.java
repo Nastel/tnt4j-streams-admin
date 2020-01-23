@@ -16,7 +16,6 @@
 
 package com.jkoolcloud.tnt4j.streams.admin.utils.log;
 
-import java.io.ByteArrayOutputStream;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,18 +31,15 @@ import org.apache.log4j.spi.LoggingEvent;
  * The type String buffer appender.
  */
 public class StringBufferAppender extends AppenderSkeleton {
-	// StringBuffer logs = new StringBuffer();
 
 	/**
 	 * The Logs.
 	 */
 	ArrayList<String> logs = new ArrayList<>();
-
 	/**
 	 * The Capture mode.
 	 */
 	AtomicBoolean captureMode = new AtomicBoolean(false);
-	private ByteArrayOutputStream outStream;
 	/**
 	 * The Out buf size.
 	 */
@@ -52,7 +48,6 @@ public class StringBufferAppender extends AppenderSkeleton {
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -63,19 +58,16 @@ public class StringBufferAppender extends AppenderSkeleton {
 
 	@Override
 	protected void append(LoggingEvent event) {
-
 		String date = formatDate(event.getTimeStamp());
 		String logLine = date + "| " + event.getLevel() + " |" + event.getLoggerName() + "| =>  " + event.getMessage()
 				+ "\r\n";
 
-		int newLogLength = logs.size();
 		if (OUT_BUF_SIZE > logs.size()) {
 			logs.add(logLine);
 		} else {
 			logs.remove(0);
 			logs.add(logLine);
 		}
-
 	}
 
 	private String formatDate(long dateEvent) {
@@ -83,6 +75,7 @@ public class StringBufferAppender extends AppenderSkeleton {
 		Date date = new Date(ts.getTime());
 		DateFormat f = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss,mmm");
 		f.setTimeZone(TimeZone.getTimeZone("UTC"));
+
 		return f.format(date);
 	}
 
@@ -90,7 +83,6 @@ public class StringBufferAppender extends AppenderSkeleton {
 	 * Start.
 	 */
 	public void start() {
-		StringBuilder logs = new StringBuilder();
 		captureMode.set(true);
 	}
 
@@ -103,6 +95,7 @@ public class StringBufferAppender extends AppenderSkeleton {
 		captureMode.set(false);
 		ArrayList<String> data = new ArrayList<>(logs);
 		logs = null;
+
 		return data;
 	}
 
