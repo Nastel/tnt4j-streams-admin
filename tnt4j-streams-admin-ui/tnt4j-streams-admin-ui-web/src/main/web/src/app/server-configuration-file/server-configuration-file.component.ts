@@ -46,7 +46,7 @@ export class ServerConfigurationFileComponent implements OnInit {
   ngOnInit() {
     this.dataHeight = parseInt(localStorage.getItem("dataComponentHeight"), 10);
     this.dataHeight = this.dataHeight - 150;
-    console.log("Logs component data height", this.dataHeight)
+//    console.log("Logs component data height", this.dataHeight)
     this.pathToData = this.router.url.substring(1);
     this.loadZooKeeperNodeData(this.pathToData);
   }

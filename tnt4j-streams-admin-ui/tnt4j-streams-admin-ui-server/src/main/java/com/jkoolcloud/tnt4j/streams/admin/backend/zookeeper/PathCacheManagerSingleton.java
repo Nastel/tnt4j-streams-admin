@@ -6,7 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PathCacheManagerSingleton {
-	private static final Logger LOG = LoggerFactory.getLogger(ZookeeperAccessService.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PathCacheManagerSingleton.class);
+
 	private static PathCacheManager pathCacheManager;
 
 	private PathCacheManagerSingleton() {

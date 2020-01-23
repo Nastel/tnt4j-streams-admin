@@ -228,20 +228,20 @@
               <div *ngIf="iconsRegistered.includes('/'+pathToData+'/'+element[column])" class="small-paddingRight">
                 <mat-icon svgIcon="{{'/'+pathToData+'/'+element[column]}}" class="serviceIcon"></mat-icon>
               </div>
-              <span class="medium-fontSize"><b>{{element[column]}}</b></span>
+              <span class="medium-fontSize justify-content-center"><b>{{element[column]}}</b></span>
             </div>
             <div *ngSwitchCase="'StreamName'"
                  routerLink="{{element.AgentName+'/'+utilsSvc.getNodePathEnd(element[column])}}"
                  class="mousePointer small-paddingLeftRight routing">
               <div class="display-inlineFlex">
                 <span class="mobile-label small-marginRight">  {{column}} : </span>
-                <span class="medium-fontSize"
+                <span class="medium-fontSize "
                       style="padding-top:5px"><b>{{utilsSvc.getNodePathEnd(element[column])}}</b></span>
               </div>
             </div>
             <div *ngSwitchCase="'Status'" class="small-paddingRight">
-              <div *ngIf="element[column]; then serviceWorksBlock else serviceDoesNotWork"
-                   class="small-paddingTop"></div>
+              <div *ngIf="element[column]; then serviceWorksBlock else serviceDoesNotWork" class="small-paddingTop">
+              </div>
               <ng-template #serviceWorksBlock>
                 <mat-icon svgIcon="{{'streamUp'}}"></mat-icon>
               </ng-template>
@@ -254,6 +254,26 @@
               <span class="medium-fontSize">{{element[column]}}</span>
             </div>
           </div>
+          <!-- EXTRA FIELDS FOR  CONTAINER CONTROL OF UNSTARTED STREAMS-->
+          <!--<div *ngIf="this.utilsSvc.compareStrings(column, 'Control')">-->
+            <!--&lt;!&ndash;<div *ngIf="!this.utilsSvc.compareStrings(serviceControlList[element.Stream], 'undefined');&ndash;&gt;-->
+            <!--<div *ngIf="this.utilsSvc.compareStrings(column, 'Control');-->
+                                  <!--then controlExist else noControl" class="small-paddingRight"></div>-->
+              <!--<ng-template #controlExist>-->
+              <!--&lt;!&ndash;<div *ngIf="serviceControlList[element.Stream].includes('stop')" class="display-inlineFlex">&ndash;&gt;-->
+                <!--<mat-icon svgIcon="{{'stop'}}" class="background-svgColorChange" (click)="onEvent($event)"-->
+                          <!--(click)="startStopStream('stop', utilsSvc.getNodePathEnd(element.StreamName))"></mat-icon>-->
+              <!--&lt;!&ndash;</div>&ndash;&gt;-->
+              <!--&lt;!&ndash;<div *ngIf="serviceControlList[element.Stream].includes('start')" class="display-inlineFlex">&ndash;&gt;-->
+                <!--<mat-icon svgIcon="{{'start'}}" class="background-svgColorChange" (click)="onEvent($event)"-->
+                          <!--(click)="startStopStream('start', utilsSvc.getNodePathEnd(element.StreamName))"></mat-icon>-->
+              <!--&lt;!&ndash;</div>&ndash;&gt;-->
+              <!--</ng-template>-->
+              <!--<ng-template #noControl class="small-paddingRight">-->
+                <!--<p>_</p>-->
+              <!--</ng-template>-->
+            <!--</div>-->
+          <!--      E N D      -->
         </mat-cell>
       </ng-container>
 

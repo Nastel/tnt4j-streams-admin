@@ -64,7 +64,6 @@ export class AutoRouteGenerator
                 this.getConfigurationsFromTree(this.zooKeeperTreeNodeList);
                 if(this.iconsDataLoaded){
                   setTimeout(function(){ resolve("resolved"); }, 500);
-                  console.log( "The data has been loaded resolve the response");
                 }
               }
             });
@@ -116,7 +115,6 @@ export class AutoRouteGenerator
       this.zooKeeperTreeNodeList = await  this.http.get(this.CONFIG["BaseAddress"]+ this.CONFIG["ZooKeeperTreeNodes"], headers).toPromise();
       for(let node in this.zooKeeperTreeNodeList){
         if(this.utilsSvc.compareStrings(this.utilsSvc.getNodePathEnd(node),"clusters")){
-            console.log(node);
             console.log(this.zooKeeperTreeNodeList[node]);
           }
       }

@@ -208,6 +208,7 @@
   "BasePathToUsersPage": "manageUser",
   "LogToShowAtBottom": "Service log",
   "activeStreamRegistryNode": "_streamsAndMetrics",
+  "allAvailableStreams": "_allStreams",
 
   "sessionTokenName": "authToken",
   "sessionUserName": "username",

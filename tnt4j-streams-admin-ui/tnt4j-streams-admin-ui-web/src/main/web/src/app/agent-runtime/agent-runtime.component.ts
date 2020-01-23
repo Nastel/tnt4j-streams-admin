@@ -78,11 +78,13 @@ export class AgentRuntimeComponent implements OnInit {
   /** ZooKeeper loaded data */
   zooKeeperData: Object;
   nodeConf : string;
+  allStreamsWithStatus : Object;
 
   /** Values for showing data loading properties */
   valueThatChangesOnDataLoad = false;
   valueThatChangesForSpinnerOnResponse = false;
   streamRegistryNode = this.configurationHandler.CONFIG["activeStreamRegistryNode"];
+  allAvailableStreams = this.configurationHandler.CONFIG["allAvailableStreams"];
   agentStatus = true;
 
   streamDataShowChoice: string;
@@ -114,20 +116,56 @@ export class AgentRuntimeComponent implements OnInit {
       setTimeout(() => this.dataSourceRuntime.sort = this.sortAgentRuntime);
   }
 
+  getAllAvailableStreamsWithStatus(){
+    let tempPath = "/"+this.allAvailableStreams;
+    this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
+      let result = data;
+      this.allStreamsWithStatus = result;
+      if(Object.keys(result).length === 0){
+        this.responseShow("bad");
+        this.healthyServices[result['healthy']] = false;
+      }
+      else{
+        for( let serviceName in result){
+            let pathToServiceNode = tempPath + "/" + serviceName;
+//        console.log(serviceName);
+          if(Object.keys(result[serviceName]).length !== 0 &&  !this.healthyServices[result['healthy']]){
+              this.healthyServices[result['healthy']] = true;
+//              this.prepareTableForClusterView(tempServiceDataValue, pathToServiceNode, parentName, false);
+//              this.prepareTableForClusterView("", pathToServiceNode, result['agentName'], true);
+//              console.log(this.healthyServices[result['healthy']]);
+          }else{
+              this.healthyServices[result['healthy']] = false;
+//              this.prepareTableForClusterView("", pathToServiceNode, result['agentName'], false);
+//              console.log(this.healthyServices[result['healthy']]);
+          }
+        }
+      }
+    },
+    err =>{
+         this.responseShow("bad");
+    });
+  }
+
   /** Load data from node that is currently selected */
    loadZooKeeperNodeData(pathToData){
      try{
+        this.getAllAvailableStreamsWithStatus();
         this.dataSourceClusters = new MatTableDataSource<any>();
         this.dataSourceCluster = new MatTableDataSource<any>();
         this.responseShow("");
         this.zooKeeperData = this.treeView.zooKeeperData;
 //        console.log("PARENT DATA", this.zooKeeperData);
+//        console.log("TREE VIEW", this.treeView);
         this.nodeConf = this.treeView.nodeConf;
         this.streamDataShowChoice = this.nodeConf["componentLoad"];
         this.prepareServiceDataTable(this.zooKeeperData["childrenNodes"] );
+//        console.log("NODECONF", this.nodeConf);
+//        console.log("PATH TO SERVICE DATA", this.pathToServiceData);
         for(let name in  this.pathToServiceData){
             this.neededServiceControls(this.nodeConf , name);
         }
+//        console.log("SERVICE CONTROL LIST", this.serviceControlList);
         this.agentRuntimeInfo = this.zooKeeperData["data"];
         this.prepareRuntimeData(this.agentRuntimeInfo);
      } catch (err){
@@ -147,11 +185,9 @@ export class AgentRuntimeComponent implements OnInit {
 
              console.log(result)
             // result = JSON.parse(result.toString());
-             console.log(result)
              let serviceData = result['data'];
              this.agentsRuntimeData[tempPath] = this.neededDataFromRunTimeClustersPage(serviceData);
              this.prepareTableForClustersView( this.agentsRuntimeData[tempPath],parentsInChildrenData, parentName, tempPath )
-             console.log(result);
              let tempKeysData = Object.keys(result['childrenNodes']);
              let tempCountTrueFalse = false;
              this.checkStreamStatus(tempPath, parentName)
@@ -173,13 +209,12 @@ export class AgentRuntimeComponent implements OnInit {
           }
           else{
             for( let serviceName in result){
-            console.log(serviceName);
               if(Object.keys(result[serviceName]).length !== 0 &&  !this.healthyServices[healthyPath]){
                   this.healthyServices[healthyPath] = true;
-                  console.log(this.healthyServices[healthyPath]);
+//                  console.log(this.healthyServices[healthyPath]);
               }else{
                   this.healthyServices[healthyPath] = false;
-                  console.log(this.healthyServices[healthyPath]);
+//                  console.log(this.healthyServices[healthyPath]);
               }
             }
           }
@@ -288,8 +323,8 @@ export class AgentRuntimeComponent implements OnInit {
           else{
             for( let serviceName in result){
                this.serviceTableNeededData(result[serviceName], serviceName, "StreamsDataForAgentPage");
-//               this.columnsToDisplay.push("control");
-//               this.serviceTableLabels["control"]="Stream Control";
+               this.columnsToDisplay.push("control");
+               this.serviceTableLabels["control"]="Stream Control";
                this.dataSourceService = new MatTableDataSource(this.tempServiceData);
                if(Object.keys(result[serviceName]).length !== 0 && result[serviceName].constructor === Object){
                  this.healthyServices[serviceName] = true;
@@ -361,9 +396,9 @@ export class AgentRuntimeComponent implements OnInit {
     let tempServiceInformation = [];
     tempServiceInformation["description"] = this.serviceTableExpandableData(serviceData, name, neededData);
     tempServiceInformation["Stream"] = this.utilsSvc.getNodePathEnd(name);
-    console.log(tempServiceInformation);
+//    console.log(tempServiceInformation);
     this.columnsToDisplay.push("Stream");
-        console.log( this.columnsToDisplay);
+//        console.log( this.columnsToDisplay);
     if(!this.utilsSvc.compareStrings(serviceData, "null")){
     this.serviceTableLabels["Stream"]="Stream";
       for(let keyConfig in neededData){
@@ -383,7 +418,7 @@ export class AgentRuntimeComponent implements OnInit {
       }
     }
     this.tempServiceData.push(tempServiceInformation);
-    console.log( this.tempServiceData)
+//    console.log( this.tempServiceData)
   }
 
   serviceTableExpandableData(serviceData, name, config){
@@ -446,12 +481,13 @@ export class AgentRuntimeComponent implements OnInit {
          else{
           tempClusterInfo["Status"]=false;
          }
-         this.columnsToDisplayCluster.indexOf("AgentName") === -1 ? this.columnsToDisplayCluster.push("AgentName"): "";
-         this.columnsToDisplayCluster.indexOf("StreamName") === -1 ? this.columnsToDisplayCluster.push("StreamName"): "";
-           for( let serviceDataName in serviceInformation){
+          this.columnsToDisplayCluster.indexOf("AgentName") === -1 ? this.columnsToDisplayCluster.push("AgentName"): "";
+          this.columnsToDisplayCluster.indexOf("StreamName") === -1 ? this.columnsToDisplayCluster.push("StreamName"): "";
+            for( let serviceDataName in serviceInformation){
              tempClusterInfo[serviceDataName]=serviceInformation[serviceDataName];
              this.columnsToDisplayCluster.indexOf(serviceDataName) === -1 ? this.columnsToDisplayCluster.push(serviceDataName): "";
-           }
+            }
+//         this.columnsToDisplayCluster.indexOf("Control") === -1 ? this.columnsToDisplayCluster.push("Control"): "";
          this.columnsToDisplayCluster.indexOf("Status") === -1 ? this.columnsToDisplayCluster.push("Status"): "";
          value.push(tempClusterInfo);
          if(this.utilsSvc.compareStrings(this.dataSourceCluster, 'undefined')){
@@ -535,6 +571,7 @@ export class AgentRuntimeComponent implements OnInit {
   sortData(){}
 
   public neededServiceControls(controls, name){
+//        console.log("Controls", controls);
       if(!this.utilsSvc.compareStrings(controls['capabilities'], 'undefined')){
       let tempData = controls['capabilities'];
         controls = tempData.toString().substring(1, tempData.length - 1 ).split(',');
@@ -553,6 +590,7 @@ export class AgentRuntimeComponent implements OnInit {
   startStopStream(streamState, streamName){
     try{
       let path = this.pathToData  + "/" + streamName;
+      console.log(path)
       if(this.utilsSvc.compareStrings(streamState,"stop")){
         console.log("Stopping ...");
          this.controlUtils.stopStream(path);

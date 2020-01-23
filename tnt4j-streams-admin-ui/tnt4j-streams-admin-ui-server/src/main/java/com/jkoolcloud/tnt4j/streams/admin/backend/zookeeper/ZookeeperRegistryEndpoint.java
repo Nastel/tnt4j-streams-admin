@@ -25,7 +25,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jkoolcloud.tnt4j.streams.admin.backend.loginAuth.LoginCache;
@@ -37,7 +38,8 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.loginAuth.UsersUtils;
 @ApplicationScoped
 @Path("/registry")
 public class ZookeeperRegistryEndpoint {
-	private static final Logger LOG = Logger.getLogger(ZookeeperRegistryEndpoint.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ZookeeperRegistryEndpoint.class);
+
 	LoginCache loginCache = new LoginCache();
 	@Inject
 	private ZookeeperAccessService zookeeperAccessService;
@@ -99,7 +101,8 @@ public class ZookeeperRegistryEndpoint {
 				for (PathSegment node : nodePath) {
 					pathToNode.append("/").append(node);
 				}
-				HashMap tempMap = zookeeperAccessService.getServiceNodeInfoFromLinkForReplay(pathToNode.toString(), authHeader);
+				HashMap tempMap = zookeeperAccessService.getServiceNodeInfoFromLinkForReplay(pathToNode.toString(),
+						authHeader);
 				String value = mapper.writeValueAsString(tempMap.get("data"));
 				if (value.equals("") || value.isEmpty()) {
 					return Response.status(200)
@@ -136,7 +139,8 @@ public class ZookeeperRegistryEndpoint {
 					pathToNode.append("/").append(node);
 				}
 				LOG.info("Path created from URL: " + pathToNode.toString());
-				HashMap tempMap = zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0, authHeader);
+				HashMap tempMap = zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0,
+						authHeader);
 				String value = mapper.writeValueAsString(tempMap.get("data"));
 				LOG.info(value);
 				if (value.equals("") || value.isEmpty()) {
@@ -173,7 +177,8 @@ public class ZookeeperRegistryEndpoint {
 				for (PathSegment node : nodePath) {
 					pathToNode.append("/").append(node);
 				}
-				HashMap tempMap = zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0, authHeader);
+				HashMap tempMap = zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), 0,
+						authHeader);
 				String value = mapper.writeValueAsString(tempMap.get("data"));
 				if (value.equals("") || value.isEmpty()) {
 					return Response.status(200)
@@ -239,8 +244,8 @@ public class ZookeeperRegistryEndpoint {
 					pathToNode.append("/").append(node);
 				}
 				pathToNode.append("/logs");
-				String value = mapper.writeValueAsString(
-						zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), logLineCount, authHeader));
+				String value = mapper.writeValueAsString(zookeeperAccessService
+						.getServiceNodeInfoFromLink(pathToNode.toString(), logLineCount, authHeader));
 				return Response.status(200).entity(value).build();
 			} catch (Exception e) {
 				LOG.error("Error on reading node from ZooKeeper", e);
@@ -280,6 +285,7 @@ public class ZookeeperRegistryEndpoint {
 
 	/**
 	 * Rundeck job call for update of stream agent version
+	 * 
 	 * @param nodePath
 	 * @param versionNum
 	 * @param authHeader
@@ -288,7 +294,7 @@ public class ZookeeperRegistryEndpoint {
 	@GET
 	@Path("{nodePath:.*}/update/task")
 	public Response updateStream(@PathParam("nodePath") List<PathSegment> nodePath,
-									   @QueryParam("version") String versionNum, @HeaderParam("Authorization") String authHeader) {
+			@QueryParam("version") String versionNum, @HeaderParam("Authorization") String authHeader) {
 		if (checkIfUserExistAndBypassLogin(authHeader)) {
 			ObjectMapper mapper = new ObjectMapper();
 			StringBuilder pathToNode = new StringBuilder();
@@ -296,9 +302,9 @@ public class ZookeeperRegistryEndpoint {
 				for (PathSegment node : nodePath) {
 					pathToNode.append("/").append(node);
 				}
-//				String value = mapper.writeValueAsString(
-//				String value = mapper.writeValueAsString(
-//						zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), authHeader));
+				// String value = mapper.writeValueAsString(
+				// String value = mapper.writeValueAsString(
+				// zookeeperAccessService.getServiceNodeInfoFromLink(pathToNode.toString(), authHeader));
 			} catch (Exception e) {
 				LOG.error("Error on reading node from ZooKeeper", e);
 				return Response.status(401).entity("Error on reading node: " + nodePath + " from ZooKeeper").build();
@@ -307,6 +313,6 @@ public class ZookeeperRegistryEndpoint {
 			LOG.info("Return a 401 inside node call");
 			return Response.status(401).entity("Tried to access protected resources").build();
 		}
-				return Response.status(200).entity("temp").build();
+		return Response.status(200).entity("temp").build();
 	}
 }

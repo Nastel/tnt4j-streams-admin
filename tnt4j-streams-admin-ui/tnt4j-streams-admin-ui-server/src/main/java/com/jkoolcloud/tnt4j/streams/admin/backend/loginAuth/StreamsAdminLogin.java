@@ -10,12 +10,13 @@ import javax.security.auth.callback.*;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StreamsAdminLogin implements LoginModule {
-
 	// Logger used to output debug information
-	private static final Logger LOG = Logger.getLogger(StreamsAdminLogin.class);
+	private static final Logger LOG = LoggerFactory.getLogger(StreamsAdminLogin.class);
+
 	LoginCache loginCache;
 	// Initializing parameters
 	private CallbackHandler handler;

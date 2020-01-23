@@ -69,39 +69,21 @@ export class ServiceRepositoryStatusComponent implements OnInit {
          this.responseShow("bad");
          console.log("Problem on default node while trying to prepare the showing of node data AGENT LOGS", err);
        }
-
-//      this.data.getZooKeeperNodeData(pathToData).subscribe( data => {
-//          this.zooKeeperData = data;
-//          let result =  JSON.parse(this.zooKeeperData.toString());
-//          console.log("REPOSITORY DATA", result );
-//          result = result['data'];
-//          this.getRepositoryData(result)
-//      },
-//       err =>{
-//         this.valueThatChangesForSpinnerOnResponse = false;
-//         this.valueThatChangesOnDataLoad = false;
-//         console.log("Problem on reading repository data: ", err);
-//       }
-//      );
    }
 
    getRepositoryData(repoData){
     this.responseShow("");
-//    this.data.getLinkData(linkUrlAddress).subscribe(data => {
-           this.tempServiceRepo = repoData;
-           //console.log("REPOSITORY DATA", this.tempServiceRepo );
-           this.getAllNeededInfoAboutRepos(this.tempServiceRepo, "ReposDataForAllPage");
-           this.dataFromRepositories = this.tempServiceRepo;
-           this.prepareRepositoryData( this.dataNeededFromRepositories);
-          setTimeout(() => this.dataSourceRepositoryData.paginator = this.paginatorRepoData);
-          setTimeout(() => this.dataSourceRepositoryData.sort = this.sortRepositoryData);
-          this.responseShow("good");
-//         }, err =>{
-//            this.responseShow("bad");
-//            this.valueThatChangesForSpinnerOnResponse = false;
-//            this.valueThatChangesOnDataLoad = false;
-//            console.log("Problem on reading repository data: ", err);
-//         } );;
+       this.tempServiceRepo = repoData;
+       if(repoData.rows.length==0){
+           this.responseShow("bad");
+       }else{
+         this.getAllNeededInfoAboutRepos(this.tempServiceRepo, "ReposDataForAllPage");
+         this.dataFromRepositories = this.tempServiceRepo;
+         this.prepareRepositoryData( this.dataNeededFromRepositories);
+         setTimeout(() => this.dataSourceRepositoryData.paginator = this.paginatorRepoData);
+         setTimeout(() => this.dataSourceRepositoryData.sort = this.sortRepositoryData);
+         this.responseShow("good");
+       }
    }
 
     getAllNeededInfoAboutRepos(data, strRepoConfig){
@@ -148,8 +130,7 @@ export class ServiceRepositoryStatusComponent implements OnInit {
                arrayTemp[key[0]] = this.utilsSvc.formatData(key[0], arrayTemp[key[0]]);
              }
              this.dataNeededFromRepositories=arrayTemp;
-             this.valueThatChangesOnDataLoad = true;
-             this.valueThatChangesForSpinnerOnResponse = false;
+             this.responseShow("good");
             }
             else{
               for(let confFirstLvlData in confDefaultData){
@@ -157,14 +138,12 @@ export class ServiceRepositoryStatusComponent implements OnInit {
                  arrayTemp[key[0]] = confDefaultData[confFirstLvlData][key[0]];
                }
                this.dataNeededFromRepositories=arrayTemp;
-               this.valueThatChangesOnDataLoad = true;
-               this.valueThatChangesForSpinnerOnResponse = false;
+               this.responseShow("good");
                console.log("No active repository streams");
             }
          }
          else{
-          this.valueThatChangesOnDataLoad = true;
-          this.valueThatChangesForSpinnerOnResponse = false;
+           this.responseShow("good");
            for(let confFirstLvlData in confDefaultData){
              let key = Object.keys(confDefaultData[confFirstLvlData]);
              arrayTemp[key[0]] = confDefaultData[confFirstLvlData][key[0]];
@@ -173,6 +152,7 @@ export class ServiceRepositoryStatusComponent implements OnInit {
            this.dataNeededFromRepositories=arrayTemp;
          }
       }catch(err){
+        this.responseShow("bad");
         console.log("Problem occurred while getting the needed data and formatting the data gotten from repository", err);
       }
     }

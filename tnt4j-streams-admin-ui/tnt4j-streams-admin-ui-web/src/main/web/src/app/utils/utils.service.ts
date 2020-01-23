@@ -46,7 +46,7 @@ export class UtilsService
     }else if(this.compareStrings(currentPath, "null") || this.compareStrings(currentPath, "undefined")){
        router.navigate([this.configurationHandler.CONFIG["BasePathHide"]+'/clusters']);
     }else{
-      console.log("Do not navigate");
+//      console.log("Do not navigate");
     }
   }
 

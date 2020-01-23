@@ -25,13 +25,14 @@ import java.net.URLConnection;
 import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.NotFoundException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The type Http utils.
  */
 public class HttpUtils {
-	private static final Logger LOG = Logger.getLogger(HttpUtils.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HttpUtils.class);
 
 	/**
 	 * Read url via http string.

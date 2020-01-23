@@ -75,12 +75,13 @@ export class ControlUtils
      this.pathToData = this.router.url.substring(1);
      this.data.sendControlsRequest(path, "start").subscribe( data => {
           try{
-            let result = data;
+             let result = data;
+             if(this.utilsSvc.compareStrings(null, result)){
+               this.openDialogWithHeader("No response was sent", "Failed", this.pathToData);
+             }
              this.responseResult = result;
              console.log(this.responseResult);
-             console.log("Response to stream start ",  this.responseResult);
              if(!this.utilsSvc.compareStrings(this.responseResult["action"],"undefined")){
-             console.log("Response to stream start ",  this.responseResult);
                  this.blockUI.stop();
                  this.openDialogWithHeader(this.responseResult["action"], "Success", this.pathToData);
              }
@@ -103,7 +104,7 @@ export class ControlUtils
 //       this.blockUI.start("Stopping stream...");
 //       this.pathToData = this.router.url.substring(1);
        path = this.configurationHandler.CONFIG["Rundeck"]["UpdateStream"];
-       console.log(path);
+//       console.log(path);
        this.data.sendUpdateStreamRequest(path).subscribe( data => {
             try{
               let result = data;
@@ -142,8 +143,12 @@ export class ControlUtils
                 console.log("No result defined");
                 result = this.responseResult["action"];
                 this.responseResult = result;
+             }else if(this.utilsSvc.compareStrings(this.responseResult["action"],"null")){
+                this.openDialogWithHeader("There was an error accessing the replay functionality, response returned: "+
+                +this.responseResult["action"]+". Please check TomCat logs for more details", "Error", this.pathToData);
+             }else{
+                this.openDialogWithHeader("Block "+this.responseResult["action"]+" replay started", "Success", this.pathToData);
              }
-            this.openDialogWithHeader("Block "+this.responseResult["action"]+" replay started", "Success", this.pathToData);
             this.blockUI.stop();
           }catch(err){
             this.blockUI.stop();
@@ -167,7 +172,7 @@ export class ControlUtils
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+//      console.log('The dialog was closed');
     });
   }
 
@@ -181,7 +186,7 @@ export class ControlUtils
       });
 
       dialogRef.afterClosed().subscribe(result => {
-        console.log('The dialog was closed');
+//        console.log('The dialog was closed');
       });
     }
   }
@@ -195,7 +200,7 @@ export class ControlUtils
         data: { response: message, header : headerMessage }
       });
       dialogRef.afterClosed().subscribe(result => {
-        console.log('The dialog was closed');
+//        console.log('The dialog was closed');
       });
     }
   }
@@ -203,13 +208,13 @@ export class ControlUtils
     /** A popup message that shows a string that is passed as variable "message" and has a header "headerMessage" */
     openDialogWithHeaderTokenExpiration(message :string, headerMessage :string, dataPathStart: string): void {
      let currentPath = this.router.url.substring(1);
-      console.log(currentPath, dataPathStart);
+//      console.log(currentPath, dataPathStart);
       if(this.utilsSvc.compareStrings(currentPath, dataPathStart)){
         const dialogRef = this.dialog.open(popupMessage, {
           data: { response: message, header : headerMessage }
         });
         dialogRef.afterClosed().subscribe(result => {
-          console.log(currentPath);
+//          console.log(currentPath);
           this.router.navigate(["/"+currentPath])
         });
       }
@@ -221,7 +226,7 @@ export class ControlUtils
       data: { response: message, header : headerMessage }
     });
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+//      console.log('The dialog was closed');
     });
   }
 

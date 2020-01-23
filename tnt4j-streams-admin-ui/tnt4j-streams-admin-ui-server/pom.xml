@@ -15,24 +15,26 @@
 
     <properties>
         <web3.version>4.3.1</web3.version>
-        <weld.version>2.4.7.Final</weld.version>
-        <servlet.api.version>3.0.1</servlet.api.version>
+        <weld.version>2.4.8.Final</weld.version>
+        <servlet.api.version>4.0.1</servlet.api.version>
         <logback.version>1.2.3</logback.version>
         <jackson.version>2.10.1</jackson.version>
-        <jackson.jaxrs.version>2.9.9</jackson.jaxrs.version>
-        <jboss.resteasy.version>4.2.0.Final</jboss.resteasy.version>
-        <guava.version>27.0.1-jre</guava.version>
-        <jasypt.version>1.9.2</jasypt.version>
+        <jboss.resteasy.version>4.4.2.Final</jboss.resteasy.version>
+        <guava.version>28.2-jre</guava.version>
+        <jasypt.version>1.9.3</jasypt.version>
         <quartz.version>2.3.1</quartz.version>
         <jsonassert.version>1.5.0</jsonassert.version>
-        <httpcomp.version>4.5.6</httpcomp.version>
+        <httpcomp.version>4.5.10</httpcomp.version>
         <swagger.version>2.0.0</swagger.version>
-        <powermock.version>1.6.1</powermock.version>
-        <zookeeper.version>3.5.5</zookeeper.version>
+        <powermock.version>1.6.6</powermock.version>
+        <zookeeper.version>3.5.6</zookeeper.version>
         <curator.version>4.2.0</curator.version>
         <getdown.version>1.8.0</getdown.version>
+        <slf4j.version>1.7.30</slf4j.version>
     </properties>
+
     <build>
+        <finalName>streamsadminservices</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -182,7 +184,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>${jackson.jaxrs.version}</version>
+            <version>${jackson.version}</version>
         </dependency>
         <!-- Servlet pluggability support -->
         <dependency>
@@ -225,8 +227,6 @@
             <version>${project.version}</version>
         </dependency>
 
-
-
         <!--  HTTP support -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -238,6 +238,20 @@
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
             <version>${zookeeper.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -249,9 +263,21 @@
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-x-async</artifactId>
             <version>${curator.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-        <!-- powermock ependencies for testing-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- powermock apendencies for testing-->
         <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
         <!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito -->
         <dependency>
@@ -266,18 +292,19 @@
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- asserts fro testing -->
+        <!-- asserts for testing -->
         <dependency>
             <groupId>org.skyscreamer</groupId>
             <artifactId>jsonassert</artifactId>
             <version>${jsonassert.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.github.stefanbirkner/system-rules -->
         <dependency>
             <groupId>com.github.stefanbirkner</groupId>
             <artifactId>system-rules</artifactId>
-            <version>1.18.0</version>
+            <version>1.19.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

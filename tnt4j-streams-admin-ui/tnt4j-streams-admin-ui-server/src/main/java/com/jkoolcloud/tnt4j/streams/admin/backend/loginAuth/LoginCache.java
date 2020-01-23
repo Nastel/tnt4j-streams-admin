@@ -6,26 +6,26 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import javax.naming.AuthenticationException;
-
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
 import com.jkoolcloud.tnt4j.streams.admin.backend.reCaptcha.CaptchaUtils;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.PropertyData;
 import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZooKeeperConnectionManager;
 import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZookeeperAccessService;
 
 public class LoginCache {
-	private static Logger LOG = Logger.getLogger(LoginCache.class);
+	private static final Logger LOG = LoggerFactory.getLogger(LoginCache.class);
+
 	private static LoadingCache<String, String> cache;
 	private static Boolean initCalled = false;
 	private static String loginStatus = "Not checked";
 	private static Boolean isUserAdmin;
-	private static HashMap userMap = new HashMap<String, HashMap>();
+	private static HashMap<String, HashMap> userMap = new HashMap<>();
 	private static int userCount = 0;
 	private static boolean bypassSecurity;
 	/** debug */
@@ -49,15 +49,16 @@ public class LoginCache {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		ZookeeperAccessService zooAccess = new ZookeeperAccessService();
 		ZooKeeperConnectionManager zooManager = new ZooKeeperConnectionManager();
-		zooAccess.init();
+		ZookeeperAccessService.init();
 		LoginCache login = new LoginCache();
 		String userToken = login.generateTokenForUser();
 		token = userToken;
 		zooManager.setConnectionToken(userToken);
 		login.checkIfUserExistInCache(userToken);
 		login.checkForSuccessfulLogin("admin:admin");
+
+//		String tempToken = zooManager.getConnectionToken();
 		// zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables", 0,
 		// userToken);
 		// zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/threadDump", 0,
@@ -82,9 +83,9 @@ public class LoginCache {
 		// zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/_streamsAndMetrics",
 		// 0, userToken);
 		// zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets", 0, userToken);
-		zooAccess.getServiceNodeInfoFromLink(
-				"/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/streamsAdmin_error.log", 0,
-				userToken);
+//		ZookeeperAccessService.getServiceNodeInfoFromLink(
+//				"/clusters/clusterBlockchainMainnets/streamsAgentEth/downloadables/streamsAdmin_error.log", 0,
+//				userToken);
 		// zooAccess.getServiceNodeInfoFromLink("/clusters/clusterBlockchainMainnets/streamsAgentEth/EthereumInfuraStream/_stop",
 		// 0, userToken);
 		// zooAccess.getServiceNodeInfoFromLink("/clusters", 0, userToken);
@@ -95,14 +96,13 @@ public class LoginCache {
 		// HashMap<String, List> clustersWithRights =
 		// objMapper.readValue("{\"/streams/v2/clusters/clusterBlockchainMainnets\" : [\"read\",\"admin\",\"action\"],"
 		// +
-		// "\"/streams/v2/clusters/clusterBlockchainTestnet\" : [\"read\",\"admin\",\"action\"]}", new
-		// TypeReference<Map<String, Object>>() {});
+		// "\"/streams/v2/clusters/clusterBlockchainTestnet\" : [\"read\",\"admin\",\"action\"]}", HashMap.class);
 		// users.addUser(clustersWithRights,"admin","admin", false, true);
 		/**
 		 * FOR UPDATING SIMPLE USER TEST HashMap<String, List> clustersWithRights =
 		 * objMapper.readValue("{\"/streams/v1/clusters/clusterBlockchainMainnets\" : [\"read\"]," +
-		 * "\"/streams/v1/clusters/clusterBlockchainTestnet\" : [\"read\"]}", new TypeReference<Map<String, Object>>()
-		 * {}); users.updateUser(clustersWithRights,"basic", "U2FsdGVkX183M6qOtbz6+GvAs9P+shsMiQjxODSWpEQ=", false);
+		 * "\"/streams/v1/clusters/clusterBlockchainTestnet\" : [\"read\"]}", HashMap.class);
+		 * users.updateUser(clustersWithRights,"basic", "U2FsdGVkX183M6qOtbz6+GvAs9P+shsMiQjxODSWpEQ=", false);
 		 */
 		/**
 		 * FOR UPDATING USER LIST FOR SIMPLE USER List clustersList = Arrays.asList(new
@@ -146,7 +146,7 @@ public class LoginCache {
 	}
 
 	public void setUserMap(int userCount, HashMap userData) {
-		userMap.put(userCount, userData);
+		userMap.put(String.valueOf(userCount), userData);
 	}
 
 	public void clearUserMap() {
@@ -266,6 +266,9 @@ public class LoginCache {
 		try {
 			initCalled = true;
 			LOG.info("The tokenCacheMap started");
+
+			RemovalListener<String, String> removalListener = removal -> LOG.trace("Remove token: "+ removal.getKey());
+
 			int tokenExpirationTime = Integer.parseInt(PropertyData.getProperty("tokenExpirationTimeGuava"));
 			CacheLoader<String, String> usersCache = new CacheLoader<String, String>() {
 				@Override
@@ -273,8 +276,11 @@ public class LoginCache {
 					return setUser(empId);
 				}
 			};
-			cache = CacheBuilder.newBuilder().expireAfterAccess(tokenExpirationTime, TimeUnit.MINUTES)
+			cache = CacheBuilder.newBuilder()
+					.expireAfterAccess(tokenExpirationTime, TimeUnit.MINUTES)
+					.removalListener(removalListener)
 					.build(usersCache);
+
 		} catch (IOException e) {
 			LOG.error("Problem on reading properties file information");
 			e.printStackTrace();
@@ -286,20 +292,17 @@ public class LoginCache {
 	}
 
 	public void disconnectFromZooKeeper(String token) {
-		try {
-			ZookeeperAccessService zooAccess = new ZookeeperAccessService();
+//			LOG.warn("disconnectFromZooKeeper " );
 			zooManager.setConnectionToken(token);
-			CuratorFramework connection = zooManager.getClientConnection();
+//			CuratorFramework connection = zooManager.getClientConnection();
 			zooManager.removeClientConnection();
-			ZookeeperAccessService.stopConnectionCurator(connection);
-		} catch (AuthenticationException e) {
-			LOG.info("Connection timeout: " + e);
-		}
+//			ZookeeperAccessService.stopConnectionCurator(connection);
+//			LOG.warn("ZookeeperAccessService.stopConnectionCurator(connection);" );
+
 	}
 
 	public boolean checkForSuccessfulLogin(String credentials) {
-		ZookeeperAccessService zooAccess = new ZookeeperAccessService();
-		zooAccess.connectToZooKeeper(credentials);
-		return zooAccess.checkIfConnected();
+		ZookeeperAccessService.connectToZooKeeper(credentials);
+		return ZookeeperAccessService.checkIfConnected();
 	}
 }

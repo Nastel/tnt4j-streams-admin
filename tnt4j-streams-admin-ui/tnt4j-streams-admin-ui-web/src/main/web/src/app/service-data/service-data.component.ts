@@ -193,11 +193,11 @@ export class ServiceDataComponent implements OnInit {
     startStopStream(streamState){
       try{
           if(this.utilsSvc.compareStrings(streamState,"stop")){
-             console.log("Stopping ...");
+//             console.log("Stopping ...");
              this.controlUtils.stopStream(this.pathToData);
           }
           else{
-             console.log("Starting ...");
+//             console.log("Starting ...");
              this.controlUtils.startStream(this.pathToData);
           }
       }catch(e){

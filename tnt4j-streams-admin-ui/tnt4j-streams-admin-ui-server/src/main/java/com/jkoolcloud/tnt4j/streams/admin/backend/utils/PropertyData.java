@@ -26,13 +26,11 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jkoolcloud.tnt4j.streams.admin.backend.ServiceData;
-
 /**
  * The type Property dataReading.
  */
 public class PropertyData {
-	private static final Logger LOG = LoggerFactory.getLogger(ServiceData.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PropertyData.class);
 
 	/**
 	 * Instantiates a new Property dataReading.

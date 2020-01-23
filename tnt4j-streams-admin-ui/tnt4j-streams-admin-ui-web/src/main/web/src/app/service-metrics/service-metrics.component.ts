@@ -214,7 +214,7 @@ export class ServiceMetricsComponent implements OnInit {
      let string = stringData;
      let expr = /Time/;
      if(string.match(expr)){
-         console.log("Check");
+//         console.log("Check");
        return true;
      }
      else{ return false;}
