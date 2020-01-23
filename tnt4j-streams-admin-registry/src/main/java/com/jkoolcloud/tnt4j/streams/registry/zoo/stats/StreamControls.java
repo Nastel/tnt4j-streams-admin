@@ -22,7 +22,6 @@ import com.jkoolcloud.tnt4j.streams.custom.dirStream.DirStreamingManager;
 import com.jkoolcloud.tnt4j.streams.custom.dirStream.StreamingJob;
 import com.jkoolcloud.tnt4j.streams.custom.dirStream.StreamingJobListener;
 import com.jkoolcloud.tnt4j.streams.custom.dirStream.StreamingJobLogger;
-import com.jkoolcloud.tnt4j.streams.fields.ActivityInfo;
 import com.jkoolcloud.tnt4j.streams.inputs.StreamingStatus;
 import com.jkoolcloud.tnt4j.streams.inputs.TNTInputStreamStatistics;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.Init;
@@ -109,9 +108,6 @@ public class StreamControls {
 			public void onStreamEvent(StreamingJob job, OpLevel level, String message, Object source) {
 			}
 
-			@Override
-			public void onSendEvent(StreamingJob job, ActivityInfo ai) {
-			}
 		});
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
