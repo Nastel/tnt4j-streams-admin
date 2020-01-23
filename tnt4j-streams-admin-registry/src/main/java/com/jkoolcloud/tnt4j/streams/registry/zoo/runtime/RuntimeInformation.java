@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jkoolcloud.tnt4j.streams.registry.zoo.utils;
+package com.jkoolcloud.tnt4j.streams.registry.zoo.runtime;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;

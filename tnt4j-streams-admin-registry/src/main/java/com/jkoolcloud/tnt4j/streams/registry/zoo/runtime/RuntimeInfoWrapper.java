@@ -1,4 +1,4 @@
-package com.jkoolcloud.tnt4j.streams.registry.zoo.utils;
+package com.jkoolcloud.tnt4j.streams.registry.zoo.runtime;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -8,6 +8,7 @@ import java.util.Map;
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.Init;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
 
 public class RuntimeInfoWrapper {
 

@@ -14,6 +14,7 @@ public class RestScanner extends Application {
 	@Override
 	public Set<Class<?>> getClasses() {
 		classes.add(RestEndpoint.class);
+		classes.add(StreamManagement.class);
 		return Collections.unmodifiableSet(classes);
 	}
 
