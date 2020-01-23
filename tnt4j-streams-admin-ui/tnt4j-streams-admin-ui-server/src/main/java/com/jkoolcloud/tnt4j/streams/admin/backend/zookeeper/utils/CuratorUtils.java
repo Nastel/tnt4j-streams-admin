@@ -25,10 +25,11 @@ import java.util.*;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.ZKUtil;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jkoolcloud.tnt4j.streams.admin.backend.loginAuth.LoginCache;
 import com.jkoolcloud.tnt4j.streams.admin.backend.loginAuth.UsersUtils;
@@ -39,8 +40,7 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZookeeperAccessServi
  * The type Curator utils.
  */
 public class CuratorUtils {
-
-	private static Logger LOG = Logger.getLogger(CuratorUtils.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CuratorUtils.class);
 
 	/**
 	 * Does node exist boolean.
@@ -297,7 +297,7 @@ public class CuratorUtils {
 		} catch (Exception e) {
 			LOG.error("Problem while checking if User is admin on login: " + loginData);
 		}
-		LOG.info("USER IS ADMIN FALSE ------>");
+		// LOG.info("USER IS ADMIN FALSE ------>");
 		return false;
 	}
 
@@ -308,7 +308,7 @@ public class CuratorUtils {
 		try {
 			List<ACL> aclList = curator.getACL().forPath(nodePath);
 			for (ACL acl : aclList) {
-				LOG.info("USERS ACL data ------> " + acl);
+				// LOG.info("USERS ACL data ------> " + acl);
 				HashMap usersData = new HashMap<String, String>();
 				userCount++;
 				String userId = acl.getId().getId().split(":")[0];
@@ -325,8 +325,7 @@ public class CuratorUtils {
 			}
 			cache.setUserCount(userCount);
 		} catch (Exception e) {
-			LOG.error("Problem while trying to add user list to admin for cluster: " + nodePath);
-			LOG.error(e);
+			LOG.error("Problem while trying to add user list to admin for cluster: {}", nodePath, e);
 		}
 	}
 
@@ -350,15 +349,13 @@ public class CuratorUtils {
 			}
 			cache.setUserCount(userCount);
 		} catch (Exception e) {
-			LOG.error("Problem while trying to add user list to admin for cluster: " + nodePath);
-			LOG.error(e);
+			LOG.error("Problem while trying to add user list to admin for cluster: {}", nodePath, e);
 		}
 	}
 
 	public static Boolean checkIfUserHasActionRights(CuratorFramework curator, String nodePath, String loginData) {
 		String actionNodePath = "";
 		List<String> nodes = null;
-		ZookeeperAccessService zooAccess = new ZookeeperAccessService();
 		try {
 			actionNodePath = PropertyData.getProperty("authorizationTokenAction");
 			nodes = ZKUtil.listSubTreeBFS(curator.getZookeeperClient().getZooKeeper(), nodePath);
@@ -366,7 +363,7 @@ public class CuratorUtils {
 				// LOG.info("node path "+ node);
 				// LOG.info("node address ending "+ zooAccess.getAddressEnding(node));
 				// LOG.info("action node path "+ actionNodePath);
-				if (zooAccess.getAddressEnding(node).equals(actionNodePath)) {
+				if (ZookeeperAccessService.getAddressEnding(node).equals(actionNodePath)) {
 					try {
 						String userId;
 						List<ACL> aclList = curator.getACL().forPath(node);
@@ -374,7 +371,7 @@ public class CuratorUtils {
 							userId = acl.getId().getId();
 							String credentials = userId.split(":")[0];
 							if (credentials.equals(loginData.split(":")[0])) {
-								LOG.info("THE USER REALLY HAS ADMIN RIGHTS" + node + " : " + credentials);
+								// LOG.info("THE USER REALLY HAS ADMIN RIGHTS" + node + " : " + credentials);
 								return true;
 							}
 						}

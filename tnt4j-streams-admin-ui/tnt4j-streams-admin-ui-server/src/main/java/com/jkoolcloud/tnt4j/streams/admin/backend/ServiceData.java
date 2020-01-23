@@ -28,7 +28,6 @@ import javax.ws.rs.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
@@ -69,21 +68,16 @@ public class ServiceData {
 				if (entry.getValue() instanceof Map && !entry.getKey().equals("config")) {
 					jsonInString = writer.writeValueAsString(entry.getValue());
 					jsonInString = jsonInString.replace(serviceName + " ", "");
-					serviceDataFromJson1 = objMapper.readValue(jsonInString, new TypeReference<Map<String, Object>>() {
-					});
+					serviceDataFromJson1 = objMapper.readValue(jsonInString, HashMap.class);
 					// Getting the 14 values
 					for (HashMap.Entry<String, Object> entry1 : serviceDataFromJson1.entrySet()) {
 						jsonInString1 = writer.writeValueAsString(entry1.getValue());
-						serviceDataFromJson2 = objMapper.readValue(jsonInString1,
-								new TypeReference<Map<String, Object>>() {
-								});
+						serviceDataFromJson2 = objMapper.readValue(jsonInString1, HashMap.class);
 						if (entry1.getValue() instanceof Map) {
 							for (HashMap.Entry<String, Object> entry2 : serviceDataFromJson2.entrySet()) {
 								if (entry2.getValue() instanceof Map) {
 									jsonInString2 = writer.writeValueAsString(entry2.getValue());
-									serviceDataFromJson3 = objMapper.readValue(jsonInString2,
-											new TypeReference<Map<String, Object>>() {
-											});
+									serviceDataFromJson3 = objMapper.readValue(jsonInString2, HashMap.class);
 									for (HashMap.Entry<String, Object> entry3 : serviceDataFromJson3.entrySet()) {
 										if (!(entry3.getValue() instanceof Map)) {
 											serviceData.put(entry2.getKey() + " " + entry1.getKey(), entry2.getValue());
@@ -149,9 +143,7 @@ public class ServiceData {
 				LOG.info("Service dataReading start_________________" + serviceInfoData);
 				atLeastOneResponds = true;
 				if (serviceInfoData.charAt(1) == '{' || serviceInfoData.charAt(0) == '{') {
-					serviceDataFromJson = objMapper.readValue(serviceInfoData,
-							new TypeReference<Map<String, Object>>() {
-							});
+					serviceDataFromJson = objMapper.readValue(serviceInfoData, HashMap.class);
 					// serviceData.putAll(parseJsonDataIntoSimpleFormatZooKeeper(serviceDataFromJson)); //
 					// parseJsonDataIntoSimpleFormat(serviceDataFromJson,
 					// serviceData);
@@ -208,9 +200,7 @@ public class ServiceData {
 				LOG.info("Service dataReading from ALl ZooKeeper" + entry.getKey() + "  " + entry.getValue());
 				atLeastOneResponds = true;
 				if (entry.getValue().toString().charAt(0) == '{') {
-					serviceDataFromJson = objMapper.readValue(entry.getValue().toString(),
-							new TypeReference<Map<String, Object>>() {
-							});
+					serviceDataFromJson = objMapper.readValue(entry.getValue().toString(), HashMap.class);
 					// tempMapAll.putAll(parseJsonDataIntoSimpleFormatZooKeeper(serviceDataFromJson)); //
 					// parseJsonDataIntoSimpleFormat(serviceDataFromJson,
 					// serviceData);
@@ -260,8 +250,7 @@ public class ServiceData {
 		// for (String serviceLink : serviceLinks) {
 		serviceInfoData = HttpUtils.readURLData(serviceLink);
 		Map<String, Object> tempMapMetrics = new HashMap<>();
-		tempMapMetrics = objMapper.readValue(serviceInfoData, new TypeReference<Map<String, Object>>() {
-		});
+		tempMapMetrics = objMapper.readValue(serviceInfoData, HashMap.class);
 
 		// serviceDataName = checkServiceDataType(serviceLink, serviceDataNames);
 		if (serviceInfoData != null && !serviceInfoData.isEmpty()
@@ -271,9 +260,7 @@ public class ServiceData {
 				LOG.info("Service dataReading start_________________" + serviceInfoData);
 				atLeastOneResponds = true;
 				if (entry.getValue().toString().charAt(1) == '{' || entry.getValue().toString().charAt(0) == '{') {
-					serviceDataFromJson = objMapper.readValue(serviceInfoData,
-							new TypeReference<Map<String, Object>>() {
-							});
+					serviceDataFromJson = objMapper.readValue(serviceInfoData, HashMap.class);
 					// serviceData.putAll(parseJsonDataIntoSimpleFormatZooKeeper(serviceDataFromJson)); //
 					// parseJsonDataIntoSimpleFormat(serviceDataFromJson,
 					// serviceData);
@@ -315,8 +302,7 @@ public class ServiceData {
 
 		for (String service : serviceName) {
 			serviceDataFromJson = objMapper.readValue(serviceInfoParseToJSON(service.replaceAll("\\s", ""), true),
-					new TypeReference<Map<String, Object>>() {
-					});
+					HashMap.class);
 			serviceData.put(service.replaceAll("\\s", ""), serviceDataFromJson);
 		}
 		return writer.writeValueAsString(serviceData);
@@ -333,17 +319,14 @@ public class ServiceData {
 		for (HashMap.Entry<String, Object> entry : serviceDataFromJson.entrySet()) {
 			if (entry.getValue() instanceof Map) {
 				jsonInString = writer.writeValueAsString(entry.getValue());
-				serviceDataFromJson1 = objMapper.readValue(jsonInString, new TypeReference<Map<String, Object>>() {
-				});
+				serviceDataFromJson1 = objMapper.readValue(jsonInString, HashMap.class);
 				for (HashMap.Entry<String, Object> entry1 : serviceDataFromJson1.entrySet()) {
 					if (((Map) entry.getValue()).size() == 1) {
 						serviceData.put(entry.getKey().replaceAll("\\s", ""), entry1.getValue());
 					} else {
 						if (entry1.getValue() instanceof Map) {
 							jsonInString1 = writer.writeValueAsString(entry1.getValue());
-							serviceDataFromJson2 = objMapper.readValue(jsonInString1,
-									new TypeReference<Map<String, Object>>() {
-									});
+							serviceDataFromJson2 = objMapper.readValue(jsonInString1, HashMap.class);
 							for (HashMap.Entry<String, Object> entry2 : serviceDataFromJson2.entrySet()) {
 								if (((Map) entry1.getValue()).size() == 1) {
 									serviceData.put(entry1.getKey().replaceAll("\\s", ""), entry2.getValue());

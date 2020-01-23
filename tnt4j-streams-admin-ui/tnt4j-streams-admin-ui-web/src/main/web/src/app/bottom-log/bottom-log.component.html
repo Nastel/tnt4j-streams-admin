@@ -3,7 +3,7 @@
 <div class=" text-center headerFont">
   <b> Service logs </b>
   <div *ngIf="iconsRegistered.includes('/'+pathToData)" class="display-inline">
-    <mat-icon svgIcon="{{'/'+pathToData}}" class="serviceIcon"></mat-icon>
+    <mat-icon class="serviceIcon" svgIcon="{{'/'+pathToData}}"></mat-icon>
   </div>
 </div>
 <div class="input-group border3 small-marginBottom">
@@ -26,7 +26,7 @@
 <!--<div *ngIf="logDataBottomHasData">-->
 <div #scrollMe class="logBorderBottom hiddenOverflow">
 
-  <div *ngIf="!utilsSvc.compareStrings(logDataBottom, 'undefined')">
+  <div *ngIf="!utilsSvc.compareStrings(logDataBottom, 'undefined') && !utilsSvc.compareStrings(logDataBottom, '')">
     <div *ngFor="let item of logDataBottom">
       <div class="hoverWhite small-paddingBottom">
         <div class="d-inline-block col-12">

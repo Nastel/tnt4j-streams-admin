@@ -15,6 +15,7 @@ import { MatMenuTrigger } from '@angular/material';
 export class LogoutComponent implements OnInit {
 
   @ViewChild('matMenu') ddTrigger: MatMenuTrigger;
+
   //Path to current node.
   pathToData: string;
 

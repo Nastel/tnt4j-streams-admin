@@ -138,15 +138,12 @@ export class DownloadsComponent implements OnInit {
 
   download(fileName){
     let tempPath = this.pathToData + '/' + fileName;
-    console.log("Sending request to :", tempPath);
       this.data.getZooKeeperNodeData(tempPath).subscribe( data => {
         try{
-        console.log(data)
           let fileName;
           let encodedFile;
           let result = data;
           this.fileZipData = result; //JSON.parse(result.toString());
-          console.log(this.fileZipData )
           if(!this.utilsSvc.compareStrings(this.fileZipData, "undefined")){
             if(this.utilsSvc.compareStrings(this.fileZipData['data'], "undefined")){
               this.controlUtils.openDialog("Error: File download failed - File size to big", this.pathToData);
@@ -160,10 +157,8 @@ export class DownloadsComponent implements OnInit {
               var blob=new Blob([bytes], {type: "application/stream"});
               var link=document.createElement('a');
               link.href=window.URL.createObjectURL(blob);
-              console.log( link.href);
               document.body.appendChild(link);
               link.download=this.fileZipData["filename"]+".zip";
-                 console.log(  link.download)
               link.click();
             }
           }

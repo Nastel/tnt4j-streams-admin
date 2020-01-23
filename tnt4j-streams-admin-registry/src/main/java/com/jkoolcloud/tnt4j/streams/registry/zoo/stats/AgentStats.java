@@ -19,19 +19,22 @@ import com.jkoolcloud.tnt4j.streams.inputs.TNTInputStreamStatistics;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.Init;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.dto.RuntimeInfo;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.*;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.runtime.RuntimeInfoWrapper;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.runtime.RuntimeInformation;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.ThreadUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.TimeUtils;
 
 public class AgentStats {
 
 	public static String getConfigs() {
-
 		List<Map<String, Object>> configs = FileUtils.getConfigFilesSystemProp();
 
 		return JsonUtils.objectToString(configs);
 	}
 
 	private static String getFile(String file, String path) {
-
 		String filePath = FileUtils.findFile(path, file);
 		String content = null;
 
@@ -55,7 +58,6 @@ public class AgentStats {
 		response.put("data", new String(base64EncodedBytes));
 
 		return JsonUtils.objectToString(response);
-
 	}
 
 	public static String getFile(String fileName) {
@@ -63,35 +65,22 @@ public class AgentStats {
 	}
 
 	public static String getDownloadables() {
-
 		List<String> logs = FileUtils.getAvailableFiles(Init.getPaths().getLogsPath());
-
 		Map<String, Object> downloadablesMap = new HashMap<>();
-
 		downloadablesMap.put("logs", logs);
 
 		return JsonUtils.objectToString(downloadablesMap);
 	}
 
 	public static String getLogs() {
-
-		StringBufferAppender stringBufferAppenderNormal = null;
-		StringBufferAppender stringBufferAppenderError = null;
-
 		Logger logger = Logger.getRootLogger();
 
-		stringBufferAppenderNormal = (StringBufferAppender) logger.getAppender("myAppender");
-		stringBufferAppenderError = (StringBufferAppender) logger.getAppender("myErrorAppender");
+		StringBufferAppender stringBufferAppenderNormal = (StringBufferAppender) logger.getAppender("myAppender");
+		StringBufferAppender stringBufferAppenderError = (StringBufferAppender) logger.getAppender("myErrorAppender");
 
 		Map<String, Object> logs = new HashMap<>();
-
-		if (stringBufferAppenderNormal == null && stringBufferAppenderError == null) {
-			logs.put("Service log", "");
-			logs.put("Service error log", "");
-		} else {
-			logs.put("Service log", stringBufferAppenderNormal.getLogs());
-			logs.put("Service error log", stringBufferAppenderError.getLogs());
-		}
+		logs.put("Service log", stringBufferAppenderNormal == null ? "" : stringBufferAppenderNormal.getLogs());
+		logs.put("Service error log", stringBufferAppenderError == null ? "" : stringBufferAppenderError.getLogs());
 
 		return JsonUtils.objectToString(logs);
 	}
@@ -101,14 +90,11 @@ public class AgentStats {
 	}
 
 	public static String runtimeInformation() {
-
 		return JsonUtils.objectToString(AgentStats.getRuntime());
 	}
 
 	public static String getSamples() {
-
 		String streamConfigsPath = Init.getPaths().getSampleCfgsPath();
-
 		String mainConfigPath = Init.getPaths().getMainConfigPath();
 
 		List<String> parsersUriList = null;
@@ -122,7 +108,6 @@ public class AgentStats {
 
 		for (String parserUri : parsersUriList) {
 			String pathToParser = streamConfigsPath + "/" + parserUri;
-
 			File file = new File(pathToParser);
 
 			cfgNameToContent.add(FileUtils.FileNameAndContentToMap(file, "name", "config"));
@@ -133,13 +118,10 @@ public class AgentStats {
 	}
 
 	public static String getThreadDump() {
-
 		String currentTime = TimeUtils.getCurrentTimeStr();
-
 		String threadDump = RuntimeInformation.getThreadDump();
 
 		Map<String, Object> data = new HashMap<>();
-
 		data.put("threadDump", threadDump);
 		data.put("timestamp", currentTime);
 
@@ -147,9 +129,7 @@ public class AgentStats {
 	}
 
 	public static String getAllStreamsAndMetricsJson() {
-
 		String mainCfgPath = Init.getPaths().getMainConfigPath();
-
 		Map<String, Object> streamToClassMap = null;
 
 		try {
@@ -170,7 +150,6 @@ public class AgentStats {
 	}
 
 	private static Map<String, Map<String, Metric>> getAllStreamsAndMetrics() {
-
 		ThreadGroup threadGroup = ThreadUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
 
 		if (threadGroup == null) {
@@ -188,7 +167,6 @@ public class AgentStats {
 	}
 
 	private static RuntimeInfo getRuntime() {
-
 		Map<String, Object> osMap = RuntimeInfoWrapper.getOsProperties();
 		Map<String, Object> network = RuntimeInfoWrapper.getNetworkProperties();
 		Map<String, Object> cpu = RuntimeInfoWrapper.getCpuProperties();
@@ -201,7 +179,6 @@ public class AgentStats {
 		Map<String, Object> service = RuntimeInfoWrapper.getServiceProperties();
 
 		RuntimeInfo runtimeInfo = new RuntimeInfo();
-
 		runtimeInfo.setOs(osMap);
 		runtimeInfo.setNetwork(network);
 		runtimeInfo.setCpu(cpu);

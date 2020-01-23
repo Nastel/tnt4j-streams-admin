@@ -125,7 +125,7 @@ export class IncompleteBlocksComponent implements OnInit {
       try{
         setTimeout(() => this.dataSource.paginator = this.paginator);
         this.incompleteBlocksNoReceiptFull =  this.zooKeeperData['rows'];
-        console.log(" <-----> JKool  Blocks No Receipt", this.zooKeeperData);
+        console.log("JKool  Blocks No Receipt", this.zooKeeperData);
           this.getNeededDataFromBlockNoReceipt(this.incompleteBlocksNoReceiptFull );
           this.formatData( this.incompleteBlocksDataNoReceipt, "incompleteNoReceipt");
           this.createTableWhenDataLoaded();
@@ -187,7 +187,7 @@ export class IncompleteBlocksComponent implements OnInit {
 //      this.data.getLinkData(queryToJkool).subscribe(data => {
         try{
           this.fullBlocksDataFromJKool = this.zooKeeperData['rows']; //data['rows'];
-          console.log(" <-----> JKool  Blocks Transaction count mismatch", this.zooKeeperData);
+          console.log("JKool  Blocks Transaction count mismatch", this.zooKeeperData);
             setTimeout(() => this.dataSource.paginator = this.paginator);
             this.getNeededDataFromBlockRows(this.fullBlocksDataFromJKool);
             let tempData = this.incompleteBlocksData;
@@ -210,12 +210,10 @@ export class IncompleteBlocksComponent implements OnInit {
 *
 */
   public neededServiceControls(controls){
-  console.log(controls)
     if(!this.utilsSvc.compareStrings(controls['capabilities'], 'undefined')){
       controls = controls['capabilities'].substring(1,controls['capabilities'].length - 1 ).split(',');
       let tempArray = [];
         for( let data of controls){
-              console.log(controls)
           tempArray.push(data);
         }
         this.serviceControlList = tempArray;

@@ -114,6 +114,7 @@ public class RestEndpoint {
 	 * @SecureRead public String repository(@PathParam("streamName") String streamName) { // return
 	 * StreamStats.getRepositoryStatus(streamName); return "k"; }
 	 */
+
 	@GET
 	@Path("/streamsAgent/{streamName}/metrics")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -162,8 +163,9 @@ public class RestEndpoint {
 	@GET
 	@Path("/ping")
 	@Produces(MediaType.APPLICATION_JSON)
-	@SecureRead
+	// @SecureRead
 	public Response ping() {
 		return Response.ok("pong", MediaType.TEXT_PLAIN).build();
 	}
+
 }

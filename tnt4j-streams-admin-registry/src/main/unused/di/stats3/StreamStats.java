@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.jkoolcloud.tnt4j.streams.inputs.StreamThread;
 import com.jkoolcloud.tnt4j.streams.inputs.TNTInputStreamStatistics;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.MetadataProvider;
@@ -50,9 +49,7 @@ public class StreamStats {
 	}
 
 	public static String getMetricsForNode(String streamName) {
-		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getMetricsUiMetadata(),
-				new TypeReference<HashMap<String, Object>>() {
-				});
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getMetricsUiMetadata(), HashMap.class);
 
 		Map<String, Metric> metricRegistry = StreamStats.getMetrics(streamName);
 
@@ -65,9 +62,7 @@ public class StreamStats {
 	}
 
 	public static String getMetricsForStreamNode(String streamName) {
-		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getStreamUiMetadata(),
-				new TypeReference<HashMap<String, Object>>() {
-				});
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getStreamUiMetadata(), HashMap.class);
 
 		Map<String, Metric> metricRegistry = StreamStats.getMetrics(streamName);
 
@@ -78,5 +73,4 @@ public class StreamStats {
 
 		return JsonUtils.objectToString(box);
 	}
-
 }

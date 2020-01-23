@@ -58,7 +58,7 @@ export class TreeViewComponent implements OnInit {
         let result = data;
        // result =  JSON.parse(result.toString());
         this.zooKeeperData = result;
-        console.log( this.zooKeeperData )
+//        console.log( this.zooKeeperData )
         this.nodeConf = result["config"];
         this.choiceMaker( this.nodeConf);
         this.responseShow("good");
@@ -83,10 +83,10 @@ export class TreeViewComponent implements OnInit {
     }
     catch(err) {
       this.streamDataShowChoice = 'default';
-      console.log(this.zooKeeperData["dataReading"])
+//      console.log(this.zooKeeperData["dataReading"])
       if(this.utilsSvc.compareStrings(this.zooKeeperData["dataReading"], "undefined") || this.utilsSvc.compareStrings(this.zooKeeperData["dataReading"], "") ){}
       else{
-        console.log(this.zooKeeperData["Response link"])
+//        console.log(this.zooKeeperData["Response link"])
         this.controlUtils.openDialogWithHeader(this.zooKeeperData["Response link"], this.zooKeeperData["dataReading"], this.pathToData);
       }
        console.log("Node data not loaded correctly:", err);

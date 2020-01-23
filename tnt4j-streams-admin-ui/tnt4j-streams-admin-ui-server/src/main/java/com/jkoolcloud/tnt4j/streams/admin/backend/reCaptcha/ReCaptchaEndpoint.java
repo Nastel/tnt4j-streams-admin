@@ -8,7 +8,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +19,7 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.utils.ClsConstants;
 
 @Path("/reCaptcha")
 public class ReCaptchaEndpoint {
-	private static Logger LOG = Logger.getLogger(ReCaptchaEndpoint.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ReCaptchaEndpoint.class);
 
 	@POST
 	@Produces(ClsConstants.MIME_TYPE_JSON)

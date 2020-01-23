@@ -25,7 +25,8 @@ import javax.naming.AuthenticationException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,7 +39,7 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZooKeeperConnectionM
 @ApplicationScoped
 @Path("/authenticate")
 public class UsersEndpoint {
-	private static Logger LOG = Logger.getLogger(UsersEndpoint.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UsersEndpoint.class);
 
 	ZooKeeperConnectionManager zooManager = new ZooKeeperConnectionManager();
 
@@ -78,7 +79,7 @@ public class UsersEndpoint {
 			}
 			token = cache.getGeneratedToken();
 			loginFailMessage = cache.getLoginStatus();
-			LOG.info(token);
+//			LOG.info(token);
 			loginFailMessage = "{ \"Login\" : \"" + loginFailMessage + "\" }";
 			if (token.isEmpty()) {
 				LOG.info("Failed login: " + loginFailMessage);
@@ -125,7 +126,10 @@ public class UsersEndpoint {
 		try {
 			cache.removeTheTokenFromCache(header);
 			userStillExist = cache.checkIfUserExistInCache(header);
+//			LOG.warn("Failed logout: " + userStillExist);
+
 			if (!userStillExist) {
+//				LOG.warn("HERE in if " );
 				cache.disconnectFromZooKeeper(header);
 				cache.setBypassSecurity(false);
 				cache.setUserCount(0);

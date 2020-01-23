@@ -15,8 +15,8 @@
     <description>TNT4J-Streams administration health-check module</description>
 
     <properties>
-        <jetty.version>9.4.18.v20190429</jetty.version>
-        <dropwizard.metrics.version>3.2.6</dropwizard.metrics.version>
+        <jetty.version>9.4.25.v20191220</jetty.version>
+        <dropwizard.metrics.version>4.1.2</dropwizard.metrics.version>
     </properties>
 
     <build>
@@ -88,11 +88,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>

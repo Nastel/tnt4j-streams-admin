@@ -65,7 +65,7 @@ export class DataService {
     else{
       console.log("No path call defined");
     }
-   // console.log(serviceUrl)
+    console.log(serviceUrl)
     return   this.http.get(serviceUrl, header);
   }
 
@@ -85,7 +85,6 @@ export class DataService {
   getBackEndLoginResponse(pathToEndpoint: string, password :string, username: string, reCaptcha :string){
     try{
     let input = "{ \"password\" : \""+password+"\", \"username\" : \""+username+"\" , \"responseCaptcha\" : \""+reCaptcha+"\" } ";
-    console.log(input)
       var header = { headers: new HttpHeaders().set('Authorization',  input)}
       let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
       let serviceUrl = urlBuild + "/"+ pathToEndpoint;
@@ -140,10 +139,10 @@ export class DataService {
     A utils method to help manage users by adding new users to the ZooKeeper with form data
   */
   addNewUser(pathToPost: string, username: string, password: string, clustersWithRights){
-  console.log(clustersWithRights);
+//  console.log(clustersWithRights);
     let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
     let serviceUrl = urlBuild + "/"+ pathToPost;
-    console.log(serviceUrl);
+//    console.log(serviceUrl);
     var header = this.returnHeaderWithToken();
               console.log("header", header);
     return this.http.post(serviceUrl,{
@@ -159,7 +158,7 @@ export class DataService {
   removeUser(addressPath: string, username: string, clusterNames: string[]){
     let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
     let serviceUrl = urlBuild + "/"+ addressPath;
-    console.log(serviceUrl);
+//    console.log(serviceUrl);
     var header = this.returnHeaderWithToken();
               console.log("header", header);
     return this.http.post(serviceUrl,{
@@ -174,9 +173,9 @@ export class DataService {
   loadUsersList(addressPath: string, clusters :string){
     let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
     let serviceUrl = urlBuild + "/"+ addressPath;
-    console.log(serviceUrl);
+//    console.log(serviceUrl);
     let clusterList = clusters.split(';');
-    console.log(clusterList)
+//    console.log(clusterList)
     var header = this.returnHeaderWithToken();
               console.log("header", header);
     return this.http.post(serviceUrl, {"clusters" :clusterList}, header);
@@ -187,9 +186,9 @@ export class DataService {
   loadUserData(addressPath: string, clusters :string, username : string){
     let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
     let serviceUrl = urlBuild + "/"+ addressPath;
-    console.log(serviceUrl);
+//    console.log(serviceUrl);
     let clusterList = clusters.split(';');
-    console.log(clusterList)
+//    console.log(clusterList)
     var header = this.returnHeaderWithToken();
               console.log("header", header);
     return this.http.post(serviceUrl, {"clusters" :clusterList, "username" : username}, header);
@@ -200,7 +199,7 @@ export class DataService {
   editUser(addressPath: string, username: string, password: string, clustersWithRights){
     let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
     let serviceUrl = urlBuild + "/"+ addressPath;
-    console.log(serviceUrl);
+//    console.log(serviceUrl);
     var header = this.returnHeaderWithToken();
               console.log("header", header);
     return this.http.post(serviceUrl,{
@@ -217,7 +216,7 @@ export class DataService {
   editUserNonAdmin(addressPath: string, username: string, password: string, clustersWithRights){
     let urlBuild = this.configurationHandler.CONFIG["BaseAddress"]+this.configurationHandler.CONFIG["LoginRequestPath"];
     let serviceUrl = urlBuild + "/"+ addressPath;
-    console.log(serviceUrl);
+//    console.log(serviceUrl);
     var header = this.returnHeaderWithToken();
               console.log("header", header);
     return this.http.post(serviceUrl,{
@@ -232,7 +231,7 @@ export class DataService {
   */
   captchaCheck(responseToken : string){
     let serviceUrl =this.configurationHandler.CONFIG["BaseAddress"]+ this.configurationHandler.CONFIG["reCaptchaRequest"];
-    console.log(serviceUrl);
+//    console.log(serviceUrl);
     var header = this.returnHeaderWithToken();
     console.log("header", header);
     return this.http.post(serviceUrl,{  "responseCaptcha" : responseToken }, header);
@@ -244,7 +243,7 @@ export class DataService {
     captchaCheckUnauthorized(urlEnd: string, responseToken : string){
       let serviceUrl =this.configurationHandler.CONFIG["BaseAddress"]+ this.configurationHandler.CONFIG["reCaptchaRequest"];
       serviceUrl = serviceUrl +"/"+urlEnd;
-      console.log(serviceUrl);
+//      console.log(serviceUrl);
       return this.http.post(serviceUrl,{  "responseCaptcha" : responseToken });
     }
 }

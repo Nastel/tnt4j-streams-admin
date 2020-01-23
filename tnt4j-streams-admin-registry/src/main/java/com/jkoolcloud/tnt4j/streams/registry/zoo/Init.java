@@ -5,10 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -27,8 +24,8 @@ import org.xml.sax.SAXException;
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.authentication.TokenAuth;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.*;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.CustomJettyLogger;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.customJettyLogger;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.StreamControls;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
@@ -181,7 +178,7 @@ public class Init {
 		server.setHandler(handlers);
 		server.setConnectors(new Connector[] { setupSsl(server) });
 
-		server.setRequestLog(new customJettyLogger());
+		server.setRequestLog(new CustomJettyLogger());
 	}
 
 	private void startJetty() {
@@ -193,10 +190,14 @@ public class Init {
 	}
 
 	private void stopJetty() {
-		try {
-			server.stop();
-		} catch (Exception e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+		if (server != null) {
+			try {
+				server.stop();
+			} catch (Exception e) {
+				LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			} finally {
+				server.destroy();
+			}
 		}
 	}
 
@@ -257,7 +258,9 @@ public class Init {
 	}
 
 	private void closeStreamsAdmin() {
-		Init.curatorWrapper.close();
+		if (curatorWrapper != null) {
+			curatorWrapper.close();
+		}
 		stopJetty();
 
 		try {
@@ -266,7 +269,14 @@ public class Init {
 			e.printStackTrace();
 		}
 
-		streamAdminMainThread.shutdown();
+		try {
+			streamAdminMainThread.shutdown();
+			streamAdminMainThread.awaitTermination(10, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		} finally {
+			streamAdminMainThread.shutdownNow();
+		}
 	}
 
 	private void startStreamAdmin(String zkPath) {

@@ -26,13 +26,11 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jkoolcloud.tnt4j.streams.admin.backend.ServiceData;
-
 /**
  * The type Property dataReading.
  */
 public class PropertyData {
-	private static final Logger LOG = LoggerFactory.getLogger(ServiceData.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PropertyData.class);
 
 	/**
 	 * Instantiates a new Property dataReading.
@@ -87,10 +85,10 @@ public class PropertyData {
 		}
 		if (property == null) {
 			LOG.error(
-					"The property provided has wrong value or was not declared correctly in the streamsProperties.properties file: "
-							+ key);
+					"The property provided has wrong value or was not declared correctly in the streamsProperties.properties file: {}",
+					key);
 			throw new IllegalArgumentException(
-					MessageFormat.format("\"BAD REQUEST \"+ Missing value for key {0}!", key));
+					MessageFormat.format("\"BAD REQUEST \" Missing value for key {0}!", key));
 		}
 
 		return property;
@@ -102,7 +100,7 @@ public class PropertyData {
 			propertyData = Arrays.asList(propertySet.split(separator));
 
 		} catch (Throwable e) {
-			LOG.error("Problem on separating properties list:  {}!", propertySet);
+			LOG.error("Problem on separating properties list: {}!", propertySet);
 			e.printStackTrace();
 		}
 		return propertyData;

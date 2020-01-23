@@ -30,8 +30,9 @@ import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +50,8 @@ import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.utils.JsonRpc;
  */
 @Singleton
 public class ZookeeperAccessService {
-	private static Logger LOG = Logger.getLogger(ZookeeperAccessService.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ZookeeperAccessService.class);
+
 	private static String AUTH_NODE_PATH_ACTION_RIGHTS, AUTH_NODE_PATH_READ_RIGHTS, SERVICES_REGISTRY_START_NODE,
 			SERVICES_REGISTRY_START_PARENT, ACTIVE_STREAMS_REGISTRY_NODE, credentials, TOKEN_TYPE;
 
@@ -73,13 +75,13 @@ public class ZookeeperAccessService {
 			TOKEN_TYPE = PropertyData.getProperty("tokenType");
 			String sslConfigFilePath = PropertyData.getProperty("SslConfigFilePath");
 			String sslPass = PropertyData.getProperty("SslPass");
-			if (!sslConfigFilePath.equals("") && !sslPass.equals("")) {
+			if (!sslConfigFilePath.isEmpty() && !sslPass.isEmpty()) {
 				System.setProperty("javax.net.ssl.trustStore", sslConfigFilePath);
 				System.setProperty("javax.net.ssl.trustStorePassword", sslPass);
 			}
 			// if (credentials == null || credentials.isEmpty()) {
 			// destroy();
-			// LOG.info("No credentials no connection to ZooKeeper " + " ZOOKEEPER_URL");
+			// LOG.info("No credentials no connection to ZooKeeper ZOOKEEPER_URL");
 			// }
 			if (!client.getState().toString().equals("STARTED")) {
 				LOG.info("CLIENT NOT YET STARTED: ");
@@ -88,7 +90,7 @@ public class ZookeeperAccessService {
 				LOG.info("CLIENT STARTED: ");
 			}
 		} catch (Exception e) {
-			LOG.error("Error on Zookeeper connection start" + e);
+			LOG.error("Error on Zookeeper connection start", e);
 		}
 	}
 
@@ -97,13 +99,13 @@ public class ZookeeperAccessService {
 	}
 
 	public static CuratorFramework getConnectionAdmin() {
-		String ZOOKEEPER_URL = null;
+		String ZOOKEEPER_URL;
 		CuratorFramework admin = null;
 		try {
 			String credentialsAdmin = PropertyData.getProperty("UserManagerUsername") + ":"
 					+ PropertyData.getProperty("UserManagerPassword");
 			ZOOKEEPER_URL = PropertyData.getProperty("ZooKeeperAddress");
-			LOG.info("Credentials for admin connection: " + credentials);
+			LOG.info("Credentials for admin connection: {}", credentials);
 
 			CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder().connectString(ZOOKEEPER_URL)
 					.retryPolicy(new ExponentialBackoffRetry(1000, 3))
@@ -120,6 +122,7 @@ public class ZookeeperAccessService {
 	}
 
 	public static void stopConnectionCurator(CuratorFramework adminConn) {
+		LOG.error("stopConnectionCurator called for: {}", adminConn.getData());
 		if (adminConn != null) {
 			try {
 				adminConn.close();
@@ -139,8 +142,8 @@ public class ZookeeperAccessService {
 	 * @param data
 	 * @return
 	 */
-	public static HashMap getResponseInJson(String data) {
-		HashMap dataMap = new HashMap<>();
+	public static HashMap<String, Object> getResponseInJson(String data) {
+		HashMap<String, Object> dataMap = new HashMap<>();
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
 			if (data.charAt(0) == '[') {
@@ -151,8 +154,7 @@ public class ZookeeperAccessService {
 				dataMap.put("dataReading", data);
 			}
 		} catch (Exception e) {
-			LOG.error("Error on putting data into a map object");
-			LOG.error("Error" + e);
+			LOG.error("Error on putting data into a map object", e);
 		}
 		return dataMap;
 	}
@@ -164,9 +166,9 @@ public class ZookeeperAccessService {
 	 *            The dataReading from ZooKeeper node inside Map
 	 * @return
 	 */
-	private static Map getMetricsWithFormattingStreams(Object dataMap, String serviceName) {
-		Map tempMap = null;
-		HashMap tempData = new HashMap();
+	private static Map<String, Object> getMetricsWithFormattingStreams(Object dataMap, String serviceName) {
+		Map<String, Object> tempMap = null;
+		HashMap<String, Object> tempData = new HashMap<>();
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			String json = objectMapper.writeValueAsString(dataMap);
@@ -174,7 +176,7 @@ public class ZookeeperAccessService {
 			tempData.put(serviceName, dataMap);
 			tempMap = ServiceData.parseJsonDataIntoSimpleFormatZooKeeper(tempData, serviceName);
 		} catch (Exception e) {
-			LOG.error("Problem while trying to parse metrics dataReading" + e);
+			LOG.error("Problem while trying to parse metrics dataReading", e);
 		}
 		return tempMap;
 	}
@@ -186,14 +188,14 @@ public class ZookeeperAccessService {
 	 *            The dataReading from ZooKeeper node inside Map
 	 * @return
 	 */
-	private static Map getMetricsWithFormatting(HashMap dataMap, String serviceName) {
-		Map tempMap = null;
+	private static Map<String, Object> getMetricsWithFormatting(HashMap<String, Object> dataMap, String serviceName) {
+		Map<String, Object> tempMap = null;
 		try {
 			tempMap = ServiceData.parseJsonDataIntoSimpleFormatZooKeeper(dataMap, serviceName);
-			// LOG.info("Formatted metrics dataReading "+ tempMap);
+			// LOG.info("Formatted metrics dataReading {}", tempMap);
 
 		} catch (Exception e) {
-			LOG.error("Problem while trying to parse metrics dataReading" + e);
+			LOG.error("Problem while trying to parse metrics dataReading", e);
 		}
 		return tempMap;
 	}
@@ -205,15 +207,11 @@ public class ZookeeperAccessService {
 	 *            The dataReading from ZooKeeper node inside Map
 	 * @return
 	 */
-	private static boolean checkIfMetricsData(HashMap dataMap) {
-		HashMap configData = (HashMap) dataMap.get("config");
+	private static boolean checkIfMetricsData(HashMap<String, Object> dataMap) {
+		HashMap<String, Object> configData = (HashMap<String, Object>) dataMap.get("config");
 		if (configData != null) {
-			if (configData.get("componentLoad").toString().equals("metrics")
-					|| configData.get("componentLoad").toString().equals("service")) {
-				return true;
-			} else {
-				return false;
-			}
+			return configData.get("componentLoad").toString().equals("metrics")
+					|| configData.get("componentLoad").toString().equals("service");
 		} else {
 			return false;
 		}
@@ -226,7 +224,7 @@ public class ZookeeperAccessService {
 				return true;
 			}
 		} catch (Exception e) {
-			LOG.error("There was a problem while checking if the call is from {} node {} " + pathToData, e);
+			LOG.error("There was a problem while checking if the call is from {} node", pathToData);
 		}
 		return false;
 	}
@@ -245,7 +243,7 @@ public class ZookeeperAccessService {
 				return true;
 			}
 		} catch (Exception e) {
-			LOG.error("There was a problem while checking if the call is from {} node {} " + pathToData, e);
+			LOG.error("There was a problem while checking if the call is from {} node", pathToData);
 		}
 		return false;
 	}
@@ -264,7 +262,7 @@ public class ZookeeperAccessService {
 				return true;
 			}
 		} catch (Exception e) {
-			LOG.error("There was a problem while checking if the call is from {} node {} " + pathToData, e);
+			LOG.error("There was a problem while checking if the call is from {} node", pathToData);
 		}
 		return false;
 	}
@@ -276,8 +274,8 @@ public class ZookeeperAccessService {
 	 *            The dataReading from ZooKeeper node inside Map
 	 * @return
 	 */
-	private static String getStreamName(HashMap dataMap) {
-		HashMap serviceData = (HashMap) dataMap.get("data");
+	private static String getStreamName(HashMap<String, Object> dataMap) {
+		HashMap<String, Object> serviceData = (HashMap<String, Object>) dataMap.get("data");
 		String serviceName;
 		String data = serviceData.toString().substring(1);
 		int index = data.indexOf(' ');
@@ -306,13 +304,13 @@ public class ZookeeperAccessService {
 		LOG.info("Connection to Zookeeper closed.");
 	}
 
-	public void connectToZooKeeper(String credentialsSent) {
+	public static void connectToZooKeeper(String credentialsSent) {
 		String ZOOKEEPER_URL = null;
 		try {
 			client = zooManager.addClientConnection(credentialsSent);
 			init();
 			// ZOOKEEPER_URL = PropertyData.getProperty("ZooKeeperAddress");
-			// LOG.info("Connecting to Zookeeper at " + ZOOKEEPER_URL);
+			// LOG.info("Connecting to Zookeeper at {}" ZOOKEEPER_URL);
 			// builder = CuratorFrameworkFactory.builder().connectString(ZOOKEEPER_URL)
 			// .retryPolicy(new ExponentialBackoffRetry(1000, 3))
 			// .authorization("digest", credentialsSent.getBytes());
@@ -321,10 +319,8 @@ public class ZookeeperAccessService {
 
 			// } catch (IOException e) {
 			// LOG.error("Problem on reading properties file information");
-			// e.printStackTrace();
 		} catch (Exception e) {
-			LOG.error("An unexpected error occurred on connection iwth credentials");
-			e.printStackTrace();
+			LOG.error("An unexpected error occurred on connection to ZooKeeper with credentials");
 		}
 	}
 
@@ -334,15 +330,14 @@ public class ZookeeperAccessService {
 	 * @param nodePath
 	 * @return
 	 */
-	public String readNode(String nodePath) {
+	public static String readNode(String nodePath) {
 		String responseData = "";
 		try {
 			byte[] nodeLinkBytes = client.getData().watched().forPath(nodePath);
 			responseData = new String(nodeLinkBytes);
-			// LOG.info("Node data: "+ responseData);
+			// LOG.info("Node data: {}", responseData);
 		} catch (Exception e) {
-			LOG.error("Error on query for node information read node" + nodePath);
-			LOG.error("Error" + e);
+			LOG.error("Error on query for node information read node {}", nodePath);
 		}
 		return responseData;
 	}
@@ -350,9 +345,9 @@ public class ZookeeperAccessService {
 	/**
 	 * Use to check if the credentials validation was successful and if the user has admin rights
 	 */
-	public boolean checkIfConnected() {
+	public static boolean checkIfConnected() {
 		LoginCache cache = new LoginCache();
-		Boolean userConnected = false, userAdmin, userAction;
+		boolean userConnected = false, userAdmin;
 		if (client.getState() == CuratorFrameworkState.STARTED) {
 			Collection<String> clusterNodes = CuratorUtils.nodeChildrenList(SERVICES_REGISTRY_START_NODE, client);
 			for (String cluster : clusterNodes) {
@@ -364,6 +359,7 @@ public class ZookeeperAccessService {
 						if (!userConnected) {
 							userConnected = true;
 							String tokenNeeded = cache.generateTokenForUser();
+							LOG.trace("Check if connected and since not create a token for connection");
 							zooManager.setConnectionToken(tokenNeeded);
 							zooManager.setClientConnection(client);
 						}
@@ -385,14 +381,14 @@ public class ZookeeperAccessService {
 	 *
 	 * @return The map of all nodes together with their parent and lvl
 	 */
-	public Map<String, String> getTreeNodes(String userToken) throws AuthenticationException {
+	public static Map<String, String> getTreeNodes(String userToken) throws AuthenticationException {
 		setTokenAndGetConn(userToken);
 		Map<String, String> myNodeMap = new HashMap<>();
 		String parentNode = "BaseNode";
 		int nodeLevel = 0;
 		Map<String, String> nodeMap = getZooKeeperTreeNodes(SERVICES_REGISTRY_START_NODE, myNodeMap, parentNode,
 				nodeLevel);
-		// LOG.info("ZooKeeper Node Tree Map = "+ nodeMap.size());
+		// LOG.info("ZooKeeper Node Tree Map ={}", nodeMap.size());
 		return nodeMap;
 	}
 
@@ -407,16 +403,16 @@ public class ZookeeperAccessService {
 	 *            The node for saving the parent node value with current node "initial : BaseNode"
 	 * @return The map of all nodes together with their parent nodes
 	 */
-	private Map<String, String> getZooKeeperTreeNodes(String path, Map<String, String> myNodeMap, String parentNode,
-			int nodeLevel) {
+	private static Map<String, String> getZooKeeperTreeNodes(String path, Map<String, String> myNodeMap,
+			String parentNode, int nodeLevel) {
 		try {
-			Collection<String> serviceNames = null;
+			Collection<String> serviceNames;
 			String nodeName = getAddressEnding(path);
 			Stat statResponse = client.checkExists().forPath(path);
 			if (statResponse == null) {
-				LOG.info("No call path exists: {} Check the configuration file " + path);
+				LOG.info("No call path exists: {} Check the configuration file {}", path);
 			} else if (nodeName.charAt(0) == '_') {
-				// LOG.info("The node {} does not need to be shown in tree view "+ path);
+				// LOG.info("The node {} does not need to be shown in tree view {}", path);
 			} else {
 				Map<String, Integer> tempNode = new HashMap<>();
 				// tempNode.put(path, nodeLevel);
@@ -452,40 +448,39 @@ public class ZookeeperAccessService {
 	 *            The path got on request from front-end or API user to get the dataReading from ZooKeeper node
 	 * @return
 	 */
-	public HashMap getServiceNodeInfoFromLinkForReplay(String pathToData, String userToken)
+	public static HashMap<String, Object> getServiceNodeInfoFromLinkForReplay(String pathToData, String userToken)
 			throws AuthenticationException {
 		setTokenAndGetConn(userToken);
 		String responseLink, responseData, pathToNode, blocksToReplay;
-		HashMap dataMap = new HashMap();
+		HashMap<String, Object> dataMap = new HashMap<>();
 		try {
 			String[] nodeParts = pathToData.split("/");
 			String requestToken = getTheTokenFromZooKeeper(pathToData, AUTH_NODE_PATH_ACTION_RIGHTS);
 			requestToken = TOKEN_TYPE + " " + requestToken;
 			pathToNode = RequestPath.getPathOfSpecifiedLength(pathToData, AGENT_DEPTH);
 			pathToNode = prepareReplayLink(pathToNode);
-//			LOG.info("pathToNode For replay "+ pathToNode);
+			LOG.info("pathToNode For replay {}", pathToNode);
 			blocksToReplay = getAddressEnding(pathToData);
-//			LOG.info("blocksToReplay For replay "+ blocksToReplay);
+			LOG.info("blocksToReplay For replay {}", blocksToReplay);
 			String replayBlockNodeData = readNode(pathToNode);
-//			LOG.info("node data For replay "+ replayBlockNodeData);
-			HashMap urlAddressForReplay = getResponseInJson(replayBlockNodeData);
-//			LOG.info("urlAddressForReplay For replay "+ urlAddressForReplay);
+			LOG.info("node data For replay {}", replayBlockNodeData);
+			HashMap<String, ?> urlAddressForReplay = getResponseInJson(replayBlockNodeData);
+			// LOG.info("urlAddressForReplay For replay {}", urlAddressForReplay);
 			responseLink = urlAddressForReplay.get("data") + blocksToReplay;
-			LOG.info("responseLink For replay "+ responseLink);
+			LOG.info("responseLink For replay {}", responseLink);
 			responseData = HttpUtils.readUrlAsStringWithToken(responseLink, true, requestToken);
-//			LOG.info("responseData For replay "+ responseData);
-			// LOG.info("Response data "+ responseData);
+			// LOG.info("responseData For replay {}", responseData);
+			// LOG.info("Response data {}", responseData);
 			dataMap.put("data", responseData);
-			//dataMap.put("childrenNodes", getListOfChildNodes(pathToData));
+			// dataMap.put("childrenNodes", getListOfChildNodes(pathToData));
 			dataMap.put("Response link", responseLink);
 
 		} catch (Exception e) {
-			LOG.error("Error on query for node information for replay " + pathToData);
-			LOG.error("Error", e);
+			LOG.error("Error on query for node information for replay {}", pathToData);
 		}
-		LOG.debug("Response map size: " + dataMap.size());
-		// LOG.debug("Response map Key set "+ dataMap.keySet());
-		// LOG.debug("Response map for debuging "+ dataMap);
+		LOG.debug("Response map size: {}", dataMap.size());
+		// LOG.debug("Response map Key set {}", dataMap.keySet());
+		// LOG.debug("Response map for debugging {}", dataMap);
 		return dataMap;
 	}
 
@@ -495,14 +490,14 @@ public class ZookeeperAccessService {
 	 * @param data
 	 * @return
 	 */
-	private String prepareReplayLink(String data) {
-		String dataReplay = "";
-//		String[] arrayUrl = data.split("/");
-//		for (int i = 0; i < arrayUrl.length - 1; i++) {
-//			if (!arrayUrl[i].equals("")) {
-//				dataReplay = dataReplay + "/" + arrayUrl[i];
-//			}
-//		}
+	private static String prepareReplayLink(String data) {
+		String dataReplay;
+		// String[] arrayUrl = data.split("/");
+		// for (int i = 0; i < arrayUrl.length - 1; i++) {
+		// if (!arrayUrl[i].equals("")) {
+		// dataReplay = dataReplay + "/" + arrayUrl[i];
+		// }
+		// }
 		dataReplay = SERVICES_REGISTRY_START_PARENT + data + "_replay";
 		return dataReplay;
 	}
@@ -515,11 +510,11 @@ public class ZookeeperAccessService {
 	 *            The path got on request from front-end or API user to get the dataReading from ZooKeeper node
 	 * @return
 	 */
-	public HashMap getServiceNodeInfoFromLink(String pathToData, int logLineCount, String userToken)
-			throws AuthenticationException {
+	public static HashMap<String, Object> getServiceNodeInfoFromLink(String pathToData, int logLineCount,
+			String userToken) throws AuthenticationException {
 		setTokenAndGetConn(userToken);
 		String responseLink, responseData;
-		HashMap dataMap = new HashMap(), actionNodes, configMap, responseMap;
+		HashMap<String, Object> dataMap = new HashMap<>(), actionNodes, configMap, responseMap;
 
 		try {
 			String requestToken = getTheTokenFromZooKeeper(pathToData, AUTH_NODE_PATH_READ_RIGHTS);
@@ -528,7 +523,7 @@ public class ZookeeperAccessService {
 				actionNodes = doChecksForSpecialNeedsNodes(pathToData);
 				configMap = getResponseInJson(actionNodes.get("responseLink").toString());
 				responseLink = configMap.get("data").toString();
-				LOG.info("The link from zkNode: " + responseLink);
+				LOG.info("The link from zkNode: {}", responseLink);
 				if (actionNodes.get("token") != null) {
 					String token = actionNodes.get("token").toString();
 					requestToken = token;
@@ -566,11 +561,8 @@ public class ZookeeperAccessService {
 			}
 
 		} catch (Exception e) {
-			LOG.error("Error on query for node information " + pathToData);
-			LOG.error("Error", e);
+			LOG.error("Error on query for node information {}", pathToData);
 		}
-		// LOG.debug("Response map size: " + dataMap.size());
-		// LOG.info("The data from zkNode: "+dataMap);
 		return dataMap;
 	}
 
@@ -581,10 +573,10 @@ public class ZookeeperAccessService {
 	 * @param logLineCount
 	 * @return
 	 */
-	private HashMap getLogLineNumberSpecified(String responseData, int logLineCount) {
-		HashMap dataMap;
+	private static HashMap<String, Object> getLogLineNumberSpecified(String responseData, int logLineCount) {
+		HashMap<String, Object> dataMap;
 		List<String> slicedLog;
-		HashMap responseMap = new HashMap();
+		HashMap<String, Object> responseMap = new HashMap<>();
 		ObjectMapper objMapper = new ObjectMapper();
 		ObjectWriter writer = objMapper.writer();
 		dataMap = getResponseInJson(responseData);
@@ -600,7 +592,7 @@ public class ZookeeperAccessService {
 				responseMap.put("Service log", serviceLog);
 			}
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			LOG.error("Failed to parse log lines response", e);
 		}
 		dataMap.clear();
 		dataMap.put("data", responseMap);
@@ -613,7 +605,7 @@ public class ZookeeperAccessService {
 	 * @param pathToData
 	 * @return
 	 */
-	public String getTheTokenFromZooKeeper(String pathToData, String tokenNode) {
+	public static String getTheTokenFromZooKeeper(String pathToData, String tokenNode) {
 		pathToData = SERVICES_REGISTRY_START_PARENT + pathToData;
 		String[] nodeParts = pathToData.split("/");
 		if (nodeParts.length == AGENT_DEPTH) {
@@ -634,8 +626,8 @@ public class ZookeeperAccessService {
 	 * @param pathToData
 	 * @return
 	 */
-	private HashMap formatIfMetricsData(HashMap dataMap, String pathToData) {
-		HashMap tempMap = dataMap;
+	private static HashMap<String, Object> formatIfMetricsData(HashMap<String, Object> dataMap, String pathToData) {
+		HashMap<String, Object> tempMap = dataMap;
 		if (checkIfMetricsData(dataMap)) {
 			String serviceName = getStreamName(dataMap);
 			tempMap.put("data", getMetricsWithFormatting(dataMap, serviceName));
@@ -652,13 +644,13 @@ public class ZookeeperAccessService {
 	 * @param pathToData
 	 * @return
 	 */
-	private HashMap formatIfMetricsDataStreams(HashMap dataMap, String pathToData) {
-		HashMap tempMap = dataMap;
+	private static HashMap<String, Object> formatIfMetricsDataStreams(HashMap<String, Object> dataMap,
+			String pathToData) {
+		HashMap<String, Object> tempMap = dataMap;
 		if (getAddressEnding(pathToData).equals(ACTIVE_STREAMS_REGISTRY_NODE)) {
-			for (Object serviceName : dataMap.keySet()) {
-
-				tempMap.put(serviceName,
-						getMetricsWithFormattingStreams(dataMap.get(serviceName), serviceName.toString()));
+			for (Map.Entry<String, Object> stringObjectEntry : dataMap.entrySet()) {
+				tempMap.put(stringObjectEntry.getKey(),
+						getMetricsWithFormattingStreams(stringObjectEntry.getValue(), stringObjectEntry.getKey()));
 			}
 		}
 		return tempMap;
@@ -670,9 +662,10 @@ public class ZookeeperAccessService {
 	 * @param pathToData
 	 * @return
 	 */
-	private HashMap doChecksForSpecialNeedsNodes(String pathToData) throws JsonProcessingException {
-		String responseLink = "";
-		HashMap respone = new HashMap(), configMap;
+	private static HashMap<String, Object> doChecksForSpecialNeedsNodes(String pathToData)
+			throws JsonProcessingException {
+		String responseLink;
+		HashMap<String, Object> respone = new HashMap<>(), configMap;
 		boolean actionCall = false;
 		String tempPathToNode = SERVICES_REGISTRY_START_PARENT + pathToData;
 		if (checkIfNeededURLDownload(pathToData, "downloadables")) {
@@ -698,7 +691,7 @@ public class ZookeeperAccessService {
 		if (actionCall) {
 			String token = getTheTokenFromZooKeeper(pathToData, AUTH_NODE_PATH_ACTION_RIGHTS);
 			token = TOKEN_TYPE + " " + token;
-			LOG.info("Action token from ZooKeeper" + token);
+			LOG.info("Action token from ZooKeeper {}", token);
 			respone.put("token", token);
 		}
 		respone.put("responseLink", responseLink);
@@ -712,7 +705,7 @@ public class ZookeeperAccessService {
 	 * @param path
 	 * @return
 	 */
-	public String getAddressEnding(String path) {
+	public static String getAddressEnding(String path) {
 		String pathEnding = path.substring(path.lastIndexOf('/') + 1);
 		return pathEnding;
 	}
@@ -723,14 +716,14 @@ public class ZookeeperAccessService {
 	 * @param parentPath
 	 * @return
 	 */
-	private List<String> getListOfChildNodes(String parentPath) {
-		Collection<String> nodeNames = null;
+	private static List<String> getListOfChildNodes(String parentPath) {
+		Collection<String> nodeNames;
 		List<String> neededNames = new ArrayList<>();
 		ServiceDiscovery<String> serviceDiscovery = null;
 		try {
 			Stat statResponse = client.checkExists().forPath(parentPath);
 			if (statResponse == null) {
-				LOG.info("No node exists for path. Check the call URL or ZooKeeper node tree " + parentPath);
+				LOG.info("No node exists for path. Check the call URL or ZooKeeper node tree {}", parentPath);
 			} else {
 				serviceDiscovery = ServiceDiscoveryBuilder.builder(String.class).client(client).basePath(parentPath)
 						.build();
@@ -739,7 +732,7 @@ public class ZookeeperAccessService {
 				for (String nodeChildName : nodeNames) {
 					String nodeName = getAddressEnding(nodeChildName);
 					if (nodeName.charAt(0) == '_') {
-						// LOG.info("The node {} does not need to be shown in tree view "+ nodeChildName);
+						// LOG.info("The node {} does not need to be shown in tree view {}", nodeChildName);
 					} else {
 						neededNames.add(nodeChildName);
 					}
@@ -747,7 +740,7 @@ public class ZookeeperAccessService {
 			}
 			serviceDiscovery.close();
 		} catch (Exception e) {
-			LOG.error("Error on getting the children of parent nodes" + e);
+			LOG.error("Error on getting the children of parent nodes", e);
 		}
 		return neededNames;
 	}
@@ -758,7 +751,7 @@ public class ZookeeperAccessService {
 	 * @param token
 	 * @throws AuthenticationException
 	 */
-	private void setTokenAndGetConn(String token) throws AuthenticationException {
+	private static void setTokenAndGetConn(String token) throws AuthenticationException {
 		zooManager.setConnectionToken(token);
 		client = zooManager.getClientConnection();
 	}
@@ -767,15 +760,16 @@ public class ZookeeperAccessService {
 
 	/**
 	 * Method for executing jobs by calling Rundeck API
-	 * 
+	 *
 	 * @param pathToData
 	 * @param userToken
 	 * @return
 	 * @throws AuthenticationException
 	 */
-	public HashMap executeRundeckJob(String pathToData, String userToken) throws AuthenticationException {
+	public static HashMap<String, Object> executeRundeckJob(String pathToData, String userToken)
+			throws AuthenticationException {
 		setTokenAndGetConn(userToken); // Set the connection to the current connected client
-		HashMap dataMap = new HashMap(); // For response (Json)
+		HashMap<String, Object> dataMap = new HashMap<>(); // For response (Json)
 		String responseLink, responseData, pathToNode, blocksToReplay;
 
 		try {
@@ -791,18 +785,17 @@ public class ZookeeperAccessService {
 			blocksToReplay = getAddressEnding(pathToData);
 			responseLink = readNode(pathToNode) + blocksToReplay;
 			responseData = HttpUtils.readUrlAsStringWithToken(responseLink, true, requestToken);
-			// LOG.info("Response data "+ responseData);
+			// LOG.info("Response data {}", responseData);
 			dataMap = getResponseInJson(responseData);
 			dataMap.put("childrenNodes", getListOfChildNodes(pathToData));
 			dataMap.put("Response link", responseLink);
 
 		} catch (Exception e) {
-			LOG.error("Error on query for node information for rundeck" + pathToData);
-			LOG.error("Error", e);
+			LOG.error("Error on query for node information for rundeck {}", pathToData, e);
 		}
-		LOG.debug("Response map size: " + dataMap.size());
-		// LOG.debug("Response map Key set "+ dataMap.keySet());
-		// LOG.debug("Response map for debuging "+ dataMap);
+		LOG.debug("Response map size: {}", dataMap.size());
+		// LOG.debug("Response map Key set {}", dataMap.keySet());
+		// LOG.debug("Response map for debugging {}", dataMap);
 		return dataMap;
 	}
 }

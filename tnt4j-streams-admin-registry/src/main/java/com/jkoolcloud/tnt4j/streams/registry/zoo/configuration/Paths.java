@@ -17,6 +17,8 @@ public class Paths {
 	private String sampleCfgsPath;
 	@JsonProperty("mainConfigPath")
 	private String mainConfigPath;
+	@JsonProperty("sampleDirectoryPath")
+	private String sampleDirectoryPath;
 	@JsonProperty("replayTemplatePath")
 	private String replayTemplatePath;
 	@JsonProperty("monitoredPath")
@@ -46,6 +48,10 @@ public class Paths {
 
 	public String getMainConfigPath() {
 		return mainConfigPath;
+	}
+
+	public String getSampleDirectoryPath() {
+		return sampleDirectoryPath;
 	}
 
 	public String getReplayTemplatePath() {

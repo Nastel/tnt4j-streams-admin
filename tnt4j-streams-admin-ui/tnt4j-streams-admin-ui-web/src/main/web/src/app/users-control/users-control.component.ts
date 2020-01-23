@@ -129,7 +129,7 @@ export class UserControlComponent implements OnInit {
   /** ------------------------- Only for non admin user  --------------------- */
   fillStartData(){
     this.formFill['username']=this.username
-    console.log( this.formFill['username'])
+//    console.log( this.formFill['username'])
     this.infoUserCall(this.username);
   }
   /** ------------------------- The methods for user actions UTILS  --------------------- */
@@ -253,7 +253,7 @@ export class UserControlComponent implements OnInit {
         this.allDataFilled = false;
       }
     }else{
-      console.log("here")
+//      console.log("here")
       if(this.compareIfExists(this.formFill["username"]) && this.compareIfExists(this.clustersChoice.value)){
         this.allDataFilled = true;
       }else{
@@ -492,7 +492,6 @@ export class UserControlComponent implements OnInit {
       let clusterList = sessionStorage.getItem("clustersList");
       this.blockUI.start('Updating users list...');
       let data = {};
-      console.log()
       try{
         if(JSON.parse(this.userAdmin)){
           data = await   this.data.loadUsersList("refreshUserList", clusterList).toPromise();
@@ -521,7 +520,7 @@ export class UserControlComponent implements OnInit {
       }else{
         this.infoUserCall(this.username);
       }
-      console.log(this.clustersList)
+//      console.log(this.clustersList)
     }
   /** ------------------------- The methods for user actions ADD, REMOVE, EDIT --------------------- */
 
@@ -628,12 +627,11 @@ export class UserControlComponent implements OnInit {
   }
 
   editUserCall(username: string){
-    console.log(this.clustersListFull);
-    console.log(this.clustersList);
+//    console.log(this.clustersListFull);
+//    console.log(this.clustersList);
     if(this.compareIfExists(this.clustersListFull)){
       this.fillCheckUncheckObject(this.clustersListFull, false);
     }else{
-      console.log("okay");
       this.fillCheckUncheckObject(this.clustersList, false);
     }
     this.formActionChoice = "edit";
@@ -654,7 +652,7 @@ export class UserControlComponent implements OnInit {
 
   cancelAction(username: string){
     if(JSON.parse(this.userAdmin)){
-    console.log(this.formActionChoice)
+//    console.log(this.formActionChoice)
       if(this.utilsSvc.compareStrings(this.formActionChoice, 'add')){
         this.formFill["username"] = this.username;
         this.infoUserCall(this.username);

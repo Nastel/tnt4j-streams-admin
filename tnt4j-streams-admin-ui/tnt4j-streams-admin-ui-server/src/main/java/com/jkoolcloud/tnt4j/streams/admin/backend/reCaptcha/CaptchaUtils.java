@@ -7,15 +7,15 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.PropertyData;
 
 public class CaptchaUtils {
-
-	private static Logger LOG = Logger.getLogger(CaptchaUtils.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CaptchaUtils.class);
 
 	public static JsonNode verify(String reCaptchaResponse) throws Exception {
 		String url = PropertyData.getProperty("verifyURL");

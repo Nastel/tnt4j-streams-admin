@@ -3,11 +3,8 @@ package com.jkoolcloud.tnt4j.streams.admin.backend.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZookeeperAccessService;
-
 public class RequestPath {
-
-	private static final Logger LOG = LoggerFactory.getLogger(ZookeeperAccessService.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RequestPath.class);
 
 	public RequestPath() {
 	}

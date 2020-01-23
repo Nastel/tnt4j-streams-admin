@@ -207,7 +207,7 @@ export class DialogOverviewExampleDialog {
           //let config = JSON.parse(result["config"]);
           let config =  result["config"];
           result = result['data'];
-          console.log(config["componentLoad"], "threadDump")
+//          console.log(config["componentLoad"], "threadDump")
           if(this.utilsSvc.isObject(result) && this.utilsSvc.compareStrings(config["componentLoad"], "thread")){
           console.log("THREAD DATA", result);
             for(let key in result){

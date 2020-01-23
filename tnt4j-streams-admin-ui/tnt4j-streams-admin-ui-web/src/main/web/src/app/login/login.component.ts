@@ -60,11 +60,9 @@ export class LoginComponent implements OnInit {
     let tempModal =  this.model["password"];
     tempModal = this.encryptData(tempModal);
     if(this.captchaResponse!=null){
-     console.log(this.captchaResponse);
       sessionStorage.setItem( this.usernameSession, this.model["username"]);
       this.data.getBackEndLoginResponse(pathToData, tempModal, this.model["username"], this.captchaResponse).subscribe( data => {
         this.result = data;
-        console.log("the response from back end", JSON.stringify(this.result));
           if(!this.utilsSvc.compareStrings(this.result["token"], "") && !this.utilsSvc.compareStrings(this.result["token"], "undefined") && this.reCaptchaCheck){
             sessionStorage.setItem(this.tokenName, this.result["token"]);
             sessionStorage.setItem("admin", this.result["admin"]);

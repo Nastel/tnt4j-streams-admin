@@ -15,16 +15,16 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.cli.AclParser;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jkoolcloud.tnt4j.streams.admin.backend.utils.PropertyData;
-import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZooKeeperConnectionManager;
 import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.ZookeeperAccessService;
 import com.jkoolcloud.tnt4j.streams.admin.backend.zookeeper.utils.CuratorUtils;
 
@@ -33,7 +33,8 @@ import commands.AddUserCommand;
 import commands.RemoveAllAclCommand;
 
 public class UsersUtils {
-	private static Logger LOG = Logger.getLogger(UsersUtils.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UsersUtils.class);
+
 	private static String schema = "digest";
 	private static Boolean userRemoval = false;
 	private static String SERVICES_REGISTRY_START_NODE;
@@ -43,7 +44,7 @@ public class UsersUtils {
 	 * Generates a key and an initialization vector with the given key and password.
 	 *
 	 * @param key
-	 *            the salt data (8 bytes of data or <code>null</code>)
+	 *            the salt data (8 bytes of data or {@code null})
 	 * @param password
 	 *            the password data (optional)
 	 * @param md
@@ -298,16 +299,14 @@ public class UsersUtils {
 		CuratorFramework curatorFramework;
 		if (admin) {
 			curatorFramework = ZookeeperAccessService.getConnection();
-			LOG.info("curator connection admin admin");
+			// LOG.info("curator connection admin admin");
 		} else {
 			curatorFramework = ZookeeperAccessService.getConnectionAdmin();
-			LOG.info("curator connection simple user admin " + curatorFramework);
+			// LOG.info("curator connection simple user admin " + curatorFramework);
 		}
 		Invoker invoker = new Invoker(curatorFramework);
-		LOG.info("Fail on invoker??");
 		try {
 			for (String nodePath : pathsToNode) {
-				LOG.info("Removing user: " + username + ". From path: " + nodePath);
 				invoker.invoke(new RemoveAllAclCommand(nodePath, username));
 			}
 			userRemoval = true;
@@ -336,7 +335,7 @@ public class UsersUtils {
 	 */
 	public void updateUser(HashMap<String, List> clustersAndRights, String username, String password, boolean admin)
 			throws AuthenticationException, InterruptedException {
-		LOG.info("Inside edit user method call");
+		// LOG.info("Inside edit user method call");
 		boolean passwordWasChanged = false;
 		List<String> userClusters = new ArrayList<>();
 		password = passDecrypt(password);
@@ -355,11 +354,9 @@ public class UsersUtils {
 					updateUserAclCall(clustersAndRights, username);
 				}
 			} else {
-				LOG.info("Correct choice non admin user");
 				removeUser(userClusters, username, false);
 				addUser(clustersAndRights, username, password, false, false);
 			}
-
 		} catch (AuthenticationException e) {
 			LOG.error("Problem on editing user information");
 			throw new AuthenticationException("A user with that username already exists");
@@ -585,9 +582,10 @@ public class UsersUtils {
 				return true;
 			} else {
 				LOG.info("No user with the token provided was found");
-				ZooKeeperConnectionManager zooManager = new ZooKeeperConnectionManager();
-				zooManager.setConnectionToken(header);
-				zooManager.removeClientConnection();
+				loginCache.disconnectFromZooKeeper(header);
+				// ZooKeeperConnectionManager zooManager = new ZooKeeperConnectionManager();
+				// zooManager.setConnectionToken(header);
+				// zooManager.removeClientConnection();
 				return false;
 			}
 		} else {

@@ -1,0 +1,650 @@
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+  @import './customize-bootstrap';
+
+
+  /* -----------Main body -----------------------------------------------*/
+  html {
+  font-size: 0.75em;
+  height: 100%;
+  }
+  body {
+  overflow-x: hidden;
+  height: 100%;
+  font-family: Montserrat,sans-serif;
+  background-color: #FBFBFB !important;
+  }
+
+  /* -----------Footer style -----------------------------------------------*/
+  .footer {
+  padding: 3rem !important;
+  margin-top: 2rem !important;
+  }
+
+  /* -----------Contetnt header font color configuration available in configuration file -----------------------------------------------*/
+  .headerFont {
+  font-size: 1.35em;
+  color: #2E2E2E;
+  font-family: Montserrat,sans-serif;
+  border-top-left-radius: 1em;
+  border-top-right-radius: 1em;
+  padding: 0.25em;
+  word-break: break-all;
+  }
+
+  /* -----------Dialog popup-----------------------------------------------*/
+  .cdk-global-scrollblock{
+    overflow-y: auto;
+  }
+
+  .heightAndWidth{
+    min-height : 8em;
+    max-height : 80em;
+    min-width : 30em;
+    max-width : 100em;
+  }
+
+  /* -----------Material TABLE component style changes-----------------------------------------------*/
+  .mat-paginator-container {
+  display: flex;
+  justify-content: center !important;
+  }
+  .mat-row:nth-child(even){
+  transition: 0.4s;
+  background-color:#E6E6E6;
+  &:hover {
+    background: #e1fcf1;
+   }
+  }
+  .mat-row:nth-child(odd){
+  transition: 0.4s;
+  background-color:#D1CFCF;
+  &:hover {
+    background: #e1fcf1;
+   }
+  }
+
+  .mat-row{
+    min-height: 0em !important;
+    max-height: 400em !important;
+    word-break: break-all;
+  }
+
+  /* --------------------Responsive table---------------------------------*/
+  .example-container {
+	  display: flex;
+	  flex-direction: column;
+	  max-height: 500px;
+	  min-width: 300px;
+  }
+
+  .mat-table {
+	  font-family: Montserrat,sans-serif !important;
+	  max-height: 500em;
+  }
+
+  .mobile-label {
+  	display: none;
+  }
+
+  @media(max-width: 800px) {
+    .mobile-label {
+      font-family: Montserrat,sans-serif !important;
+      text-align: center;
+      display: inline-block;
+      font-weight: bold;
+    }
+
+    .mat-header-row {
+      display: none;
+    }
+
+    .mat-row {
+      flex-direction: column;
+      align-items: start;
+      padding: 8px 24px;
+    }
+
+    .mat-cell{
+        font-size: 1em !important;
+        font-family: Montserrat,sans-serif !important;
+        padding-right: 24px !important;
+    }
+  }
+
+  /* ----------- Dropdown with multi select -----------------------------------------------*/
+  .selected-list {
+  display: flex !important;
+  justify-content: center !important;
+  }
+  .selected-list .c-btn {
+  width: 70% !important;
+  }
+  .selected-list .c-list .c-token .c-remove svg{
+    fill: #000000 !important;
+  }
+  .mat-checkbox:not(.mat-checkbox-disabled).mat-accent .mat-checkbox-ripple .mat-ripple-element{
+    background-color: #489431 !important;
+  }
+  .mat-accent .mat-pseudo-checkbox-checked, .mat-accent .mat-pseudo-checkbox-indeterminate, .mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-indeterminate{
+    background-color: #489431 !important;
+  }
+  .mat-checkbox-checked.mat-accent .mat-checkbox-background, .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background{
+    background-color: #489431 !important;
+  }
+
+  .selected-list .c-list .c-token .c-label{
+    font-size: 1.2em !important;
+  }
+
+  /* -----------Material FORM component style changes-----------------------------------------------*/
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+	  padding: 0.6em !important;
+	  border-top : 0px !important;
+  }
+
+  ::ng-deep .mat-form-field-infix{
+  	border-top : 0px !important;
+  }
+
+  /* -----------Material SPINNER component style changes-----------------------------------------------*/
+
+  .mat-progress-spinner circle, .mat-spinner circle {
+  	stroke: #298A08 !important;
+  }
+  .spinnerSection{
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+  }
+  .spinnerTop{
+	  margin-left:5px;
+	  margin-bottom:2px;
+	  margin-right:10px;
+  }
+
+  /* -----------Material TREE component style changes -----------------------------------------------*/
+  mark{
+  	background: #95ADB6 !important;
+  }
+  .navTreeFill {
+	  transition: 0.7s;
+	  color: black;
+	  cursor: pointer;
+	  padding: 2px;
+	  &:hover {
+	  background-color: #FBFBFB;
+	  	text-decoration: underline;
+	  }
+  }
+  .navTreeSelected {
+	  color: black;
+	  cursor: pointer;
+	  padding: 2px;
+	  background-color: #FBFBFB !important;
+	  text-decoration: underline;
+  }
+  button:focus{
+  	outline:none !important;
+  }
+  .mat-icon-button {
+  	width: 1.5em !important;
+  }
+  .mat-tree{
+  	font-family: Montserrat,sans-serif;
+  }
+  .mat-tree-node{
+	  background-color: #e6e6e6;
+	  min-height: 1.6em !important;
+	  height: 1.6em !important;
+  }
+  .mat-tree-node-leaf{
+  	padding-left: 20px !important;
+  }
+  .mat-icon.serviceIcon{
+  	padding-left: 5px !important;
+  }
+  .treeButtonMargin{
+	  margin-right: 1em !important;
+	  margin-left: 1em !important;
+  }
+  a.navTree {
+	  color: black !important;
+	  font-size: 1.05em;
+	  padding: 0.4em 0.2em;
+  }
+
+  /* -----------Data background view-----------------------------------------------*/
+  .fullBorder {
+  height: 100%;
+  min-height: 40em !important;
+  background-color: #E6E6E6 ;
+  border-radius: 2em;
+  box-shadow: 6px 12px 6px #A4A4A4;
+  margin-bottom: 1em !important;
+  }
+  .loginBack{
+    height: 100%;
+    background-color: #E6E6E6 ;
+    border-radius: 2em;
+    box-shadow: 6px 12px 6px #A4A4A4;
+    margin-bottom: 1em !important;
+  }
+
+  /* ----------Input fields design------------------------------------------------*/
+
+  .filterInputField{
+  	padding-left: 1em;
+  }
+
+  .inputHighlight{
+	  min-width:10em;
+	  margin-left: 0.5em;
+	  margin-right: 0.5em;
+  }
+
+  .formSubmitButton{
+    transition: 1s;
+    background-color: Transparent;
+    border: none;
+    height: 4em;
+    width: 6em;
+    border-radius: 0.7em;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    &:hover {
+      background: #FAFAFA;
+    }
+  }
+
+  .small-formSubmitButton{
+    transition: 1s;
+    background-color: Transparent;
+    border: none;
+    height: 3em;
+    width: 4em;
+    border-radius: 0.7em;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    &:hover {
+      background: #FAFAFA;
+    }
+  }
+  /* ----------Log show borders------------------------------------------------*/
+  .logBorderBottom {
+	  border: 2px solid #D8D8D8;
+	  margin-bottom: 2em 1em 1em 1em;
+	  background-color: #E6E6E6 ;
+	  overflow-y : auto;
+	  overflow-x: hidden;
+	  max-height: 15em;
+	  min-height: 1em;
+  }
+  .threads {
+	  word-break: break-all;
+	  font-family: Montserrat,sans-serif;
+	  font-size: 1rem;
+  }
+  .hiddenOverflowComponents{
+	  overflow-y : auto;
+	  overflow-x: hidden;
+	  max-height: 48em;
+  }
+  .logAmountShown{
+	  color: #888080;
+	  overflow-x: hidden;
+  }
+
+  /* ----------Configuration file navigation------------------------------------------------*/
+  .configNav {
+	  cursor: pointer;
+	  word-break: break-all;
+	  font-size: 1.25em !important;
+	  font-family: Montserrat,sans-serif;
+	  padding: 0px;
+	  margin: 0px;
+  }
+  .borderConfNav {
+	  transition: 0.3s;
+	  border-bottom-width:1px;
+	  border-bottom-color:black;
+	  border-bottom-style: solid;
+	  min-height: 2.5em !important;
+	  max-height: 8 em !important;
+	  padding: 5px 0px 5px 10px;
+	  &:hover {
+	  	background: #FAFAFA;
+	  }
+  }
+
+  /* ----------Agent runtime------------------------------------------------*/
+  .agentRuntimeServiceInformationTableHeader{
+  font-family: Montserrat,sans-serif !important;
+  font-size: 1.15em !important;
+  font-weight: bold;
+  }
+  .agentRuntimeTable{
+  max-height: 40em !important;
+  padding: 5px 20px 5px 0px;
+  }
+
+  /* -------------reCapcha scale--------------------*/
+
+  .reCaptcha {
+    transform:scale(0.77);
+    transform-origin:10 0;
+  }
+  /* -------------User managemnet--------------------*/
+  .background-bleak{
+    background-color:#dddcdc ;
+  }
+
+  /* -----------------------------------------------        ONE PURPOSE STYLES            -----------------------------------------------------------*/
+
+
+  /* ---------------------------------------  LAYOUT  ----------------------------------------------------*/
+
+  /* -----------------PADDING------------------*/
+  .noPadding{
+  	padding: 0px 0px 0px 0px !important;;
+  }
+  .extraSmall-paddingTopBottom{
+	  padding-bottom: 0.5em;
+	  padding-top: 0.5em;
+  }
+  .small-paddingLeft{
+  	padding-left: 1em;
+  }
+  .small-paddingRight{
+  	padding-right: 1em;
+  }
+  .small-paddingTop{
+  	padding-top: 1em;
+  }
+  .small-paddingBottom{
+  	padding-bottom: 1em;
+  }
+  .small-padding{
+	  padding-top: 1em;
+	  padding-right: 1em;
+	  padding-left: 1em;
+	  padding-bottom: 1em;
+  }
+  .small-paddingTopBottom{
+	  padding-bottom: 1em;
+	  padding-top: 1em;
+  }
+  .small-paddingLeftRight{
+	  padding-left: 1em;
+	  padding-right: 1em;
+  }
+  .medium-paddingTop{
+  	padding-top: 1.5em;
+  }
+  .medium-paddingLeft{
+    padding-left: 1.5em;
+  }
+  .large-paddingTop{
+  	padding-top: 3em;
+  }
+  .large-paddingLeft{
+    padding-left: 2.5em;
+  }
+  .large-paddingLeftRight{
+    padding-right: 3em;
+    padding-left: 3em;
+  }
+  .medium-paddingBottom{
+  	padding-bottom: 3em;
+  }
+  .large-padding{
+    padding-top: 3em;
+    padding-right: 3em;
+    padding-left: 3em;
+    padding-bottom: 3em;
+  }
+  /* -----------------MARGIN------------------*/
+  .noMargin{
+  	margin: 0px 0px 0px 0px !important;;
+  }
+  .extraSmall-marginTopBottom{
+  	margin-bottom: 0.4em;
+  	margin-top: 0.4em;
+  }
+  .extraSmall-marginRight{
+  	margin-right: 0.5em;
+  }
+  .extraSmall-marginLeft{
+  	margin-left: 0.5em;
+  }
+  .extraSmall-marginBottom{
+  	margin-bottom: 0.5em;
+  }
+  .extraSmall-marginTop{
+  	margin-top: 0.5em;
+  }
+  .small-marginLeft{
+  	margin-left: 1em;
+  }
+  .large-marginLeft{
+  margin-left: 3em;
+  }
+  .extraLarge-marginLeft{
+  margin-left: 20em;
+  }
+  .small-marginRight{
+  	margin-right: 1em !important;
+  }
+  .small-marginTop{
+  	margin-top: 1em;
+  }
+  .small-marginBottom{
+  	margin-bottom: 1em;
+  }
+  .small-margin{
+  	margin-top: 1em;
+  	margin-right: 1em;
+  	margin-left: 1em;
+  	margin-bottom: 1em;
+  }
+  .small-marginTopBottom{
+  	margin-bottom: 1em;
+  	margin-top: 1em;
+  }
+  .small-marginLeftRight{
+  	margin-left: 1em;
+  	margin-right: 1em;
+  }
+  .medium-marginTop{
+  	margin-top: 1.5em;
+  }
+  .medium-marginRight{
+  	margin-right: 1.5em !important;
+  }
+  .medium-marginLeftRight{
+  	margin-left: 1.5em;
+  	margin-right: 1.5em;
+  }
+  .medium-marginTopBottom{
+  	margin-top: 1.5em;
+  	margin-bottom: 1.5em;
+  }
+  .medium-margin{
+  	margin-top: 1.5em;
+  	margin-right: 1.5em;
+  	margin-left: 1.5em;
+  	margin-bottom: 1.5em;
+  }
+  .large-marginLeftRight{
+    margin-left: 3em;
+    margin-right: 3em;
+  }
+  .large-marginTopBottom{
+  	margin-top: 3em;
+  	margin-bottom: 3em;
+  }
+  /* -------------DISPLAY--------------------*/
+  .display-inlineBlock{
+  	display: inline-block;
+  }
+  .display-inline{
+  	display: inline;
+  }
+  .display-inlineFlex{
+  	display: inline-flex;
+  }
+  .displayFlex{
+  	display: flex !important;
+  }
+  .displayNone{
+  	display: none;
+  }
+  .display-content{
+  	display: contents;
+  }
+  .display-grid{
+  	display: grid;
+  }
+  .displayCenter{
+    display: flex;
+    align-items: center;
+  }
+
+
+  /* --------------------------------------------  COMPONENT VIEW   ------------------------------------------------------*/
+
+  /* -------------DISPLAY--------------------*/
+  .rounded-corners{
+  	border-collapse:separate;
+  	border-radius: 1em;
+  }
+  .rounded-cornersTop{
+  	border-top-left-radius: 1em;
+  	border-top-right-radius: 1em;
+  }
+  .rounded-cornersBottom{
+  	border-bottom-left-radius: 1em;
+  	border-bottom-right-radius: 1em;
+  }
+  .rounded-cornersLeft{
+  	border-bottom-left-radius: 1em;
+  	border-top-left-radius: 1em;
+  }
+  .rounded-cornersRight{
+  	border-top-right-radius: 1em;
+  	border-bottom-right-radius: 1em;
+  }
+  .block-nameValue{
+  	width:30em;
+  }
+  .fullWidth{
+  	width: 100%;
+  }
+  /* -------------FIELD SIZE--------------------*/
+  .medium-inputField{
+  	height : 3em;
+  	width : 22em;
+  }
+
+  /* -------------TEXT--------------------*/
+  .small-fontSize{
+  	font-family: Montserrat,sans-serif;
+  	font-size: 0.8em !important;
+  }
+  .medium-fontSize{
+  	font-family: Montserrat,sans-serif;
+  	font-size: 1em !important;
+  }
+  .large-fontSize{
+  	font-family: Montserrat,sans-serif;
+  	font-size: 1.25em !important;
+  }
+  .extraLarge-fontSize{
+  	font-family: Montserrat,sans-serif;
+  	font-size: 1.5em !important;
+  }
+  .routing{
+  	color:#790604;
+  	&:hover {
+  		text-decoration: underline;
+  	}
+  }
+  .wordBreak{
+  	word-break: break-all;
+  }
+  .boldFont{
+    font-weight: bold;
+  }
+  .wordWrap{
+  	white-space: pre-wrap;
+  }
+  .textBreak{
+  	word-break: break-word;
+  }
+
+  /* -------------SVG EFFECTS--------------------*/
+  .background-svgColorChange{
+  	transition: 0.3s;
+  	&:hover {
+  		background: #8e948e !important;
+  	}
+  }
+
+  /* -------------TEXT EFFECTS--------------------*/
+  .hoverWhite{
+  transition: 0.3s;
+  &:hover {
+  background: #FAFAFA;
+  }
+  }
+  .backgroundWhite{
+  background: #FAFAFA;
+  }
+  .hoverUnderline{
+  &:hover {
+  text-decoration: underline;
+  }
+  }
+  .backgroundUnderline{
+  border-bottom-width:1px;
+  border-bottom-color:black;
+  border-bottom-style: solid;
+  text-decoration-color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* ------------- CURSOR EFFECTS--------------------*/
+  .mousePointer{
+  cursor: pointer;
+  }
+  .mouseAuto{
+  cursor: default;
+  }
+  .mouseHelp{
+  cursor: help;
+  }
+  /* -------------CONTENT ALIGN--------------------*/
+  .text-alignCenter{
+  display: flex;
+  justify-content: center;
+  }
+  .align-alignEnd{
+  display: flex;
+  justify-content: flex-end;
+  }
+  .align-alignStart{
+  display: flex;
+  justify-content: flex-start;
+  }
+  .hiddenOverflow{
+  overflow-y : auto;
+  }
+
+  .full-height {
+  height: 100%;
+  }
+
+  .full-width {
+  width: 100%;
+  }
+

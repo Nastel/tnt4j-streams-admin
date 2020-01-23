@@ -12,7 +12,6 @@ import org.xml.sax.SAXException;
 
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.admin.utils.log.StringBufferAppender;
 import com.jkoolcloud.tnt4j.streams.inputs.StreamThread;
@@ -26,12 +25,9 @@ public class AgentStats {
 	private static final MetadataProvider metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
 
 	public static String getConfigs() {
-
 		Set<Map<String, Object>> fullConfigurationsList = new HashSet<>();
 
-		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getConfigUiMetadata(),
-				new TypeReference<HashMap<String, Object>>() {
-				});
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getConfigUiMetadata(), HashMap.class);
 
 		String configsPath = metadataProvider.getMainCfgPath();
 
@@ -49,7 +45,6 @@ public class AgentStats {
 	}
 
 	private static String getFile(String file, String path) {
-
 		String contentPath = path;
 
 		String filePath = FileUtils.findFile(contentPath, file);
@@ -84,10 +79,8 @@ public class AgentStats {
 	}
 
 	public static String getDownloadables() {
-
 		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getDownloadablesUiMetadata(),
-				new TypeReference<HashMap>() {
-				});
+				HashMap.class);
 		String logsPath = metadataProvider.getLogsPath();
 
 		List<String> logs = FileUtils.getAvailableFiles(logsPath);
@@ -105,10 +98,7 @@ public class AgentStats {
 	}
 
 	public static String getLogs() {
-
-		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getLogsUiMetadata(),
-				new TypeReference<HashMap>() {
-				});
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getLogsUiMetadata(), HashMap.class);
 
 		StringBufferAppender stringBufferAppenderNormal = null;
 		StringBufferAppender stringBufferAppenderError = null;
@@ -137,10 +127,8 @@ public class AgentStats {
 	}
 
 	public static String agentRuntime() {
-
 		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getStreamAgentUiMetadata(),
-				new TypeReference<HashMap<String, Object>>() {
-				});
+				HashMap.class);
 
 		Map<String, Object> box = new HashMap<>();
 
@@ -151,10 +139,7 @@ public class AgentStats {
 	}
 
 	public static String runtimeInformation() {
-
-		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getRuntimeUiMetadata(),
-				new TypeReference<HashMap<String, Object>>() {
-				});
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getRuntimeUiMetadata(), HashMap.class);
 
 		Map<String, Object> box = new HashMap<>();
 
@@ -166,8 +151,7 @@ public class AgentStats {
 
 	public static String getSamples() {
 		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getSampleConfigsUiMetadata(),
-				new TypeReference<HashMap<String, Object>>() {
-				});
+				HashMap.class);
 
 		String streamConfigsPath = metadataProvider.getSampleCfgsPath();
 
@@ -200,12 +184,9 @@ public class AgentStats {
 	}
 
 	public static String getThreadDump() {
-
 		String currentTime = TimeUtils.getCurrentTimeStr();
 
-		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getThreadDumpUiMetadata(),
-				new TypeReference<HashMap<String, Object>>() {
-				});
+		Map<String, Object> uiMetadata = JsonUtils.jsonToMap(metadataProvider.getThreadDumpUiMetadata(), HashMap.class);
 
 		String threadDump = RuntimeInformation.getThreadDump();
 
@@ -222,7 +203,6 @@ public class AgentStats {
 	}
 
 	public static String getAllStreamsAndMetricsJson() {
-
 		String mainCfgPath = metadataProvider.getMainCfgPath();
 
 		Map<String, Object> streamToClassMap = null;
@@ -247,7 +227,6 @@ public class AgentStats {
 	}
 
 	private static Map<String, Map<String, Metric>> getAllStreamsAndMetrics() {
-
 		ThreadGroup threadGroup = ThreadUtils.getThreadGroupByName("com.jkoolcloud.tnt4j.streams.StreamsAgentThreads");
 
 		if (threadGroup == null) {
@@ -265,7 +244,6 @@ public class AgentStats {
 	}
 
 	private static RuntimeInfo getRuntime() {
-
 		Map<String, Object> osMap = RuntimeInfoWrapper.getOsProperties();
 		Map<String, Object> network = RuntimeInfoWrapper.getNetworkProperties();
 		Map<String, Object> cpu = RuntimeInfoWrapper.getCpuProperties();
