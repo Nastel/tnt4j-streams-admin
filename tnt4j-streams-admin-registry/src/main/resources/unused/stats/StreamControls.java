@@ -1,8 +1,25 @@
+/*
+ * Copyright 2014-2020 JKOOL, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.jkoolcloud.tnt4j.streams.registry.zoo.stats;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.WRITE;
 
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,6 +28,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import org.apache.commons.text.StringSubstitutor;
 
 import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.StreamsAgent;
@@ -21,19 +40,16 @@ import com.jkoolcloud.tnt4j.streams.custom.dirStream.StreamingJobListener;
 import com.jkoolcloud.tnt4j.streams.custom.dirStream.StreamingJobLogger;
 import com.jkoolcloud.tnt4j.streams.inputs.StreamingStatus;
 import com.jkoolcloud.tnt4j.streams.inputs.TNTInputStreamStatistics;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.MetadataProvider;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.Init;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.StringUtils;
 
 public class StreamControls {
-
-	private static MetadataProvider metadataProvider = new MetadataProvider(System.getProperty("streamsAdmin"));
 
 	private static final String FILE_WILDCARD_NAME = "streams_job_*.xml";
 
 	public static void restartStreams(String streamName) {
 
-		String mainCfgPath = metadataProvider.getMainCfgPath();
+		String mainCfgPath = Init.getPaths().getMainConfigPath();
 		BufferedReader bufferedReader = null;
 		try {
 			bufferedReader = new BufferedReader(new FileReader(mainCfgPath));
@@ -68,7 +84,6 @@ public class StreamControls {
 		dm.addStreamingJobListener(new StreamingJobListener() {
 			@Override
 			public void onProgressUpdate(StreamingJob job, int current, int total) {
-
 			}
 
 			@Override
@@ -77,12 +92,10 @@ public class StreamControls {
 
 			@Override
 			public void onFailure(StreamingJob job, String msg, Throwable exc, String code) {
-
 			}
 
 			@Override
 			public void onStatusChange(StreamingJob job, StreamingStatus status) {
-
 			}
 
 			@Override
@@ -105,13 +118,12 @@ public class StreamControls {
 					LoggerWrapper.addMessage(OpLevel.INFO,
 							String.format("File >>%s<< at path >>%s<< was not found", fileToBeDeleted, pathToFile));
 				}
-
 			}
 
 			@Override
 			public void onStreamEvent(StreamingJob job, OpLevel level, String message, Object source) {
-
 			}
+
 		});
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
@@ -138,7 +150,7 @@ public class StreamControls {
 			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 
-		return StringUtils.substitutePlaceholders(template, placeholderToValue);
+		return StringSubstitutor.replace(template, placeholderToValue);
 	}
 
 	private static String saveConfig(String config, String dirPath, String cfgName) {
@@ -153,9 +165,9 @@ public class StreamControls {
 	}
 
 	public static void processRequest(String[] blocksArr) {
-		String streamTemplatePath = metadataProvider.getReplayTemplatePath();
+		String streamTemplatePath = Init.getPaths().getReplayTemplatePath();
 
-		String userRequests = metadataProvider.getMonitoredFolder();
+		String userRequests = Init.getPaths().getMonitoredPath();
 
 		if (streamTemplatePath == null || streamTemplatePath.isEmpty()) {
 			LoggerWrapper.addMessage(OpLevel.ERROR, "No template found");

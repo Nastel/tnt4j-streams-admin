@@ -1,26 +1,36 @@
+/*
+ * Copyright 2014-2020 JKOOL, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.jkoolcloud.tnt4j.streams.registry.zoo.jmx;
 
 import java.io.File;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
-import java.lang.management.RuntimeMXBean;
-import java.lang.management.ThreadMXBean;
+import java.io.IOException;
+import java.lang.management.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import javax.management.JMX;
-import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
+import javax.management.*;
 
-import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.sink.EventSink;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jkoolcloud.tnt4j.streams.registry.zoo.Init;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
-import com.jkoolcloud.tnt4j.streams.utils.LoggerUtils;
+import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.TimeUtils;
 import com.sun.management.OperatingSystemMXBean;
 
 public class JmxStatistics {
@@ -29,7 +39,9 @@ public class JmxStatistics {
 
 	private Map<String, Object> objectNameToMXBean = new HashMap<>();
 
-	private static final EventSink JmxStatisticsEventSink = LoggerUtils.getLoggerSink("JmxStatistics");
+	// private static final EventSink JmxStatisticsEventSink = LoggerUtils.getLoggerSink("JmxStatistics");
+
+	private static final Logger JmxStatisticsEventSink = LoggerFactory.getLogger("JmxStatistics");
 
 	public JmxStatistics(MBeanServerConnection mbeanConn) {
 		this.mbeanConn = mbeanConn;
@@ -41,7 +53,7 @@ public class JmxStatistics {
 		try {
 			objectName = new ObjectName(objName);
 		} catch (MalformedObjectNameException e) {
-			JmxStatisticsEventSink.log(OpLevel.ERROR, "Object name string was incorrect or malformed", e);
+			JmxStatisticsEventSink.error("Object name string was incorrect or malformed", e);
 			return null;
 		}
 
@@ -59,13 +71,17 @@ public class JmxStatistics {
 
 		ThreadMXBean threadMXBean = (ThreadMXBean) requestMXBean("java.lang:type=Threading", ThreadMXBean.class);
 
+		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) requestMXBean(
+				"java.lang:type=OperatingSystem", OperatingSystemMXBean.class);
+
 		Map<String, Object> streamsAgentCpuLoadMap = new HashMap<>();
 
+		// TODO handle nulls
 		Integer threadCount = threadMXBean.getThreadCount();
-		// Double processCpuLoad = RuntimeInformation.getProcessCpuLoad();
+		Double processCpuLoad = operatingSystemMXBean.getProcessCpuLoad();
 		Integer peakThreadCount = threadMXBean.getPeakThreadCount();
 
-		streamsAgentCpuLoadMap.put("Process CPU load [0-1]", 0);
+		streamsAgentCpuLoadMap.put("Process CPU load [0-1]", processCpuLoad);
 		streamsAgentCpuLoadMap.put("Thread count", threadCount);
 		streamsAgentCpuLoadMap.put("Peak thread count", peakThreadCount);
 
@@ -76,6 +92,7 @@ public class JmxStatistics {
 	public Map<String, Object> getStreamsAgentMemoryProperties() {
 		MemoryMXBean memoryMXBean = (MemoryMXBean) requestMXBean("java.lang:type=Memory", MemoryMXBean.class);
 
+		// TODO handle null
 		MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
 		MemoryUsage nonHeapMemoryUsage = memoryMXBean.getNonHeapMemoryUsage();
 
@@ -131,7 +148,7 @@ public class JmxStatistics {
 		return configsLocations;
 	}
 
-	public Map<String, Object> getRam() {
+	public Map<String, Object> getServerPhysicalMemory() {
 		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) requestMXBean(
 				"java.lang:type=OperatingSystem", OperatingSystemMXBean.class);
 
@@ -189,6 +206,8 @@ public class JmxStatistics {
 		try {
 			hostName = InetAddress.getLocalHost().getHostName();
 		} catch (UnknownHostException e) {
+			JmxStatisticsEventSink.error("", e);
+
 			hostName = "UnknownHost";
 		}
 
@@ -197,6 +216,7 @@ public class JmxStatistics {
 		try {
 			hostAddress = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
+			JmxStatisticsEventSink.error("", e);
 			hostAddress = "UnknownAddress";
 		}
 
@@ -231,6 +251,115 @@ public class JmxStatistics {
 		versions.put("Java VM version", javaVmVersion);
 
 		return versions;
+	}
+
+	public Map<String, Object> getThreadDump() {
+		ThreadMXBean threadMXBean = (ThreadMXBean) requestMXBean("java.lang:type=Threading", ThreadMXBean.class);
+
+		ThreadInfo[] threadInfos = null;
+		try {
+			// TODO handle null
+			threadInfos = threadMXBean.dumpAllThreads(true, true);
+		} catch (NullPointerException e) {
+			JmxStatisticsEventSink.error("could not get thread dump through MXBean", e);
+		}
+		StringBuilder threadDumpStr = new StringBuilder();
+		// TODO handle null
+		for (ThreadInfo threadInfo : threadInfos) {
+			if (threadInfo != null) {
+				threadDumpStr.append(threadInfo.toString());
+			}
+		}
+
+		Map<String, Object> threadDump = new HashMap<>();
+		String currentTime = TimeUtils.getCurrentTimeStr();
+		threadDump.put("threadDump", threadDumpStr.toString());
+		threadDump.put("timestamp", currentTime);
+
+		return threadDump;
+	}
+
+	public Map<String, Object> getAllAttributesOfObjectName(String name) {
+		ObjectName objectName = null;
+		try {
+			objectName = new ObjectName(name);
+		} catch (MalformedObjectNameException e) {
+			JmxStatisticsEventSink
+					.error("javax.management.ObjectName with the following constructor argument : " + name, e);
+			e.printStackTrace();
+		}
+
+		Set<ObjectName> objectNameSet = null;
+		try {
+			objectNameSet = mbeanConn.queryNames(objectName, null);
+		} catch (IOException e) {
+			JmxStatisticsEventSink.error("", e);
+			e.printStackTrace();
+		}
+
+		Map<String, Object> attributeNameToValue = new HashMap<>();
+
+		// TODO handle null Set<ObjectName> objectNameSet
+		for (ObjectName objName : objectNameSet) {
+
+			MBeanAttributeInfo[] attributeInfos = null;
+			try {
+				attributeInfos = mbeanConn.getMBeanInfo(objName).getAttributes();
+			} catch (InstanceNotFoundException | IntrospectionException | ReflectionException | IOException e) {
+				JmxStatisticsEventSink.error("", e);
+				e.printStackTrace();
+			}
+
+			// TODO handle null
+			String[] names = Arrays.stream(attributeInfos).map(MBeanAttributeInfo::getName).toArray(String[]::new);
+
+			AttributeList attributeList = null;
+			try {
+				attributeList = mbeanConn.getAttributes(objName, names);
+			} catch (InstanceNotFoundException | ReflectionException | IOException e) {
+				JmxStatisticsEventSink.error("attribute could not be retrieved", e);
+				e.printStackTrace();
+			}
+
+			attributeNameToValue.put(objName.getKeyPropertyList().get("name"), attributeList);
+		}
+
+		return attributeNameToValue;
+	}
+
+	public Map<String, Object> getAgentAttributes() {
+		return getAllAttributesOfObjectName("com.jkoolcloud.tnt4j.streams:name=*,type=Agent");
+	}
+
+	public Map<String, Object> getStreamAttributes(String streamName) {
+		return getAllAttributesOfObjectName("com.jkoolcloud.tnt4j.streams:name=*,type=" + streamName);
+	}
+
+	public List<Map<String, Object>> getConfigFilesSystemProp() {
+
+		RuntimeMXBean runtimeMXBean = (RuntimeMXBean) requestMXBean("java.lang:type=Runtime", RuntimeMXBean.class);
+
+		if (runtimeMXBean == null) {
+			return new ArrayList<>();
+		}
+
+		List<Map<String, Object>> list = new ArrayList<>();
+
+		Set<String> configFileNames = runtimeMXBean.getSystemProperties().keySet();
+
+		// TODO REFACTOR
+		for (Object configProperty : configFileNames) {
+			String propertiesPath = System.getProperty((String) configProperty);
+			if (propertiesPath.startsWith("file:")) {
+				propertiesPath = propertiesPath.substring(5);
+			}
+			File file = new File(propertiesPath);
+			if (file.isFile() && !configProperty.toString().equals("mainCfg")) {
+				Map<String, Object> response = FileUtils.FileNameAndContentToMap(file, "name", "config");
+				list.add(response);
+			}
+		}
+		return list;
 	}
 
 }

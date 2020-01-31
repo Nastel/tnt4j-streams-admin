@@ -1,25 +1,41 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+/*
+ * Copyright 2014-2020 JKOOL, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import { ServiceRepositoryStatusComponent } from './service-repository-status.component';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-describe('ServiceRepositoryStatusComponent', () => {
+import {ServiceRepositoryStatusComponent} from './service-repository-status.component';
+
+describe ('ServiceRepositoryStatusComponent', () => {
   let component: ServiceRepositoryStatusComponent;
   let fixture: ComponentFixture<ServiceRepositoryStatusComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ServiceRepositoryStatusComponent ]
-    })
-    .compileComponents();
+  beforeEach (async (() => {
+    TestBed.configureTestingModule ({
+                                      declarations: [ServiceRepositoryStatusComponent]
+                                    })
+      .compileComponents ();
   }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ServiceRepositoryStatusComponent);
+  beforeEach (() => {
+    fixture = TestBed.createComponent (ServiceRepositoryStatusComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    fixture.detectChanges ();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it ('should create', () => {
+    expect (component).toBeTruthy ();
   });
 });
