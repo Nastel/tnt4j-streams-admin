@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 JKOOL, LLC.
+ * Copyright 2014-2020 JKOOL, LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@ package com.jkoolcloud.tnt4j.streams.registry.zoo.utils;
 import java.io.File;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
 
 /**
  * The type Static object mapper.
@@ -32,6 +33,7 @@ public class JsonUtils {
 	/**
 	 * The constant mapper.
 	 */
+	private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
 	private static final ObjectMapper mapper = new ObjectMapper();
 
 	private JsonUtils() {
@@ -43,7 +45,8 @@ public class JsonUtils {
 		try {
 			jsonStr = JsonUtils.mapper.writeValueAsString(json);
 		} catch (JsonProcessingException e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			logger.error("", e);
+			// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 		return jsonStr;
 	}
@@ -54,7 +57,8 @@ public class JsonUtils {
 		try {
 			data = JsonUtils.mapper.readValue(new File(filePath), cls);
 		} catch (IOException e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			logger.error("", e);
+			// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 		}
 
 		return data;

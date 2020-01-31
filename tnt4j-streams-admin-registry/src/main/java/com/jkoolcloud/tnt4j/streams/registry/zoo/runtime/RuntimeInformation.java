@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 JKOOL, LLC.
+ * Copyright 2014-2020 JKOOL, LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-import com.codahale.metrics.jvm.ThreadDump;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.Init;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.streams.ZookeeperOutputStream;
 import com.sun.management.OperatingSystemMXBean;
 
 /**
@@ -224,17 +222,13 @@ public class RuntimeInformation {
 	 * @return the thread dump
 	 */
 	public static String getThreadDump() {
-		ThreadDump threadDump = new ThreadDump(ManagementFactory.getThreadMXBean());
-		ZookeeperOutputStream zookeeperOutputStream = new ZookeeperOutputStream(new StringBuilder());
-		threadDump.dump(zookeeperOutputStream);
-		try {
-			zookeeperOutputStream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		String response = zookeeperOutputStream.getResponse();
-
-		return response;
+		/*
+		 * ThreadDump threadDump = new ThreadDump(ManagementFactory.getThreadMXBean()); ZookeeperOutputStream
+		 * zookeeperOutputStream = new ZookeeperOutputStream(new StringBuilder());
+		 * threadDump.dump(zookeeperOutputStream); try { zookeeperOutputStream.close(); } catch (IOException e) {
+		 * e.printStackTrace(); } String response = zookeeperOutputStream.getResponse();
+		 */
+		return "";
 	}
 
 }

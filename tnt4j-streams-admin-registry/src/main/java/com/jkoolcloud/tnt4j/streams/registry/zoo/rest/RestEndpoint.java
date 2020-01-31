@@ -1,26 +1,55 @@
+/*
+ * Copyright 2014-2020 JKOOL, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.jkoolcloud.tnt4j.streams.registry.zoo.rest;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.authentication.SecureAction;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.authentication.SecureRead;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.AgentStats;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.StreamControls;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.StreamStats;
 
 @Path("/")
 public class RestEndpoint {
+
+	// @Inject
+	// JmxConnRegistry jmxConnRegistry;
+
+	private Integer integer = new Integer(0);
+
+	@GET
+	@Path("/ping")
+	@Produces(MediaType.TEXT_PLAIN)
+	// @SecureRead
+	public Response ping() {
+
+		System.out.println();
+
+		System.out.println(integer);
+
+		return Response.status(Response.Status.OK).entity(" ").build();
+	}
 
 	@GET
 	@Path("/streamsAgent")
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureRead
 	public String streamAgent() {
-		return AgentStats.agentRuntime();
+		return null;// AgentStats.agentRuntime();
 	}
 
 	@GET
@@ -28,7 +57,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureRead
 	public String configs() {
-		return AgentStats.getConfigs();
+		return null;// AgentStats.getConfigs();
 	}
 
 	@GET
@@ -36,7 +65,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureRead
 	public String logs() {
-		return AgentStats.getLogs();
+		return null;// AgentStats.getLogs();
 	}
 
 	@GET
@@ -44,7 +73,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureRead
 	public String runtime() {
-		return AgentStats.runtimeInformation();
+		return null;// AgentStats.runtimeInformation();
 	}
 
 	@GET
@@ -52,7 +81,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureRead
 	public String samples() {
-		return AgentStats.getSamples();
+		return null;// AgentStats.getSamples();
 	}
 
 	@GET
@@ -60,7 +89,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureRead
 	public String threadDump() {
-		return AgentStats.getThreadDump();
+		return null;// AgentStats.getThreadDump();
 	}
 
 	@GET
@@ -68,7 +97,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureRead
 	public String downloadables() {
-		return AgentStats.getDownloadables();
+		return null;// AgentStats.getDownloadables();
 	}
 
 	@GET
@@ -76,7 +105,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureRead
 	public String allStreamsAndMetrics() {
-		return AgentStats.getAllStreamsAndMetricsJson();
+		return null;// AgentStats.getAllStreamsAndMetricsJson();
 	}
 
 	@GET
@@ -84,7 +113,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureRead
 	public String stream(@PathParam("streamName") String streamName) {
-		return StreamStats.getMetricsForStreamNode(streamName);
+		return null;// StreamStats.getMetricsForStreamNode(streamName);
 	}
 
 	@GET
@@ -92,10 +121,12 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureRead
 	public String download(@PathParam("file") String fileName) {
-		return AgentStats.getFile(fileName);
+		return null;// AgentStats.getFile(fileName);
 	}
 
 	/*
+	 * +
+	 * 
 	 * @GET
 	 * 
 	 * @Path("/streamsAgent/{streamName}/incomplete")
@@ -120,7 +151,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureRead
 	public String metrics(@PathParam("streamName") String streamName) {
-		return StreamStats.getMetricsForNode(streamName);
+		return null;// StreamStats.getMetricsForNode(streamName);
 	}
 
 	@GET
@@ -128,7 +159,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureAction
 	public String start(@PathParam("streamName") String streamName) {
-		StreamControls.restartStreams(streamName);
+		// StreamControls.restartStreams(streamName);
 		return "started";
 	}
 
@@ -137,7 +168,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@SecureAction
 	public String stop(@PathParam("streamName") String streamName) {
-		StreamControls.stopStream(streamName);
+		// StreamControls.stopStream(streamName);
 		return "stopped";
 	}
 
@@ -151,21 +182,13 @@ public class RestEndpoint {
 
 		for (String block : blocksArr) {
 			if (!block.matches("[0-9]+")) {
-				LoggerWrapper.addMessage(OpLevel.ERROR, String.format("Bad format: %s", blocks));
+				// LoggerWrapper.addMessage(OpLevel.ERROR, String.format("Bad format: %s", blocks));
 				return "{ \"error\" : \" Wrong format\" }";
 			}
 		}
-		StreamControls.processRequest(blocksArr);
+		// StreamControls.processRequest(blocksArr);
 
 		return blocks;
-	}
-
-	@GET
-	@Path("/ping")
-	@Produces(MediaType.APPLICATION_JSON)
-	// @SecureRead
-	public Response ping() {
-		return Response.ok("pong", MediaType.TEXT_PLAIN).build();
 	}
 
 }

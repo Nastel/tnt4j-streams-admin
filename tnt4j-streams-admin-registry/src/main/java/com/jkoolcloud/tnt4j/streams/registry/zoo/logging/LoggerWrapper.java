@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 JKOOL, LLC.
+ * Copyright 2014-2020 JKOOL, LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,8 @@
 
 package com.jkoolcloud.tnt4j.streams.registry.zoo.logging;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
-import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.format.DefaultFormatter;
-import com.jkoolcloud.tnt4j.sink.EventSink;
-import com.jkoolcloud.tnt4j.streams.utils.LoggerUtils;
 
 /**
  * The type Logger wrapper.
@@ -33,12 +27,12 @@ public class LoggerWrapper {
 	/**
 	 * The Event sink.
 	 */
-	private static final EventSink streamsAdminLogger;
+	// private static final EventSink streamsAdminLogger;
 
-	static {
-		streamsAdminLogger = LoggerUtils.getLoggerSink("streamsAdmin_error");
-		streamsAdminLogger.setEventFormatter(new DefaultFormatter("{2}")); // NON-NLS
-	}
+	// static {
+	// streamsAdminLogger = LoggerUtils.getLoggerSink("streamsAdmin_error");
+	// streamsAdminLogger.setEventFormatter(new DefaultFormatter("{2}")); // NON-NLS
+	// }
 
 	/**
 	 * Add message.
@@ -48,16 +42,16 @@ public class LoggerWrapper {
 	 * @param msg
 	 *            the msg
 	 */
-	public static void addMessage(OpLevel opLevel, String msg) {
-		streamsAdminLogger.log(opLevel, msg);
-	}
+	// public static void addMessage(OpLevel opLevel, String msg) {
+	// streamsAdminLogger.log(opLevel, msg);
+	// }
 
 	public static void addQuartzJobLog(String clazzName, String zkPath, String payload) {
-		LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%1$-20s: %2$20s", "failed", clazzName));
-		LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%1$-20s: %2$30s", "Path:", zkPath));
+		// LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%1$-20s: %2$20s", "failed", clazzName));
+		// LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%1$-20s: %2$30s", "Path:", zkPath));
 		// LoggerWrapper.addMessage(OpLevel.ERROR, String.format("%1$-20s: %2$30s","Response", payload ));
-		LoggerWrapper.addMessage(OpLevel.ERROR,
-				String.format("%1$-20s: %2$3d", "ResponseSizeInBytes", payload.getBytes().length));
+		// LoggerWrapper.addMessage(OpLevel.ERROR,
+		// String.format("%1$-20s: %2$3d", "ResponseSizeInBytes", payload.getBytes().length));
 	}
 
 	private static String getStatTrace(Exception e) {
@@ -73,11 +67,11 @@ public class LoggerWrapper {
 		return stackTrace;
 	}
 
-	public static void logStackTrace(OpLevel opLevel, Exception e) {
-		LoggerWrapper.addMessage(opLevel, getStatTrace(e));
-	}
+	// public static void logStackTrace(OpLevel opLevel, Exception e) {
+	// LoggerWrapper.addMessage(opLevel, getStatTrace(e));
+	// }
 
-	public static void closeLogger() throws IOException {
-		streamsAdminLogger.close();
-	}
+	// public static void closeLogger() throws IOException {
+	// streamsAdminLogger.close();
+	// }
 }

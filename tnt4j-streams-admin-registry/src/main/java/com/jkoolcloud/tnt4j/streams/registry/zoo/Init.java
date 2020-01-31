@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014-2020 JKOOL, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.jkoolcloud.tnt4j.streams.registry.zoo;
 
 import java.io.IOException;
@@ -18,15 +34,16 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.jboss.weld.environment.servlet.Listener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.jkoolcloud.tnt4j.core.OpLevel;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.authentication.TokenAuth;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.configuration.*;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.CustomJettyLogger;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.stats.StreamControls;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.FileUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.JsonUtils;
 import com.jkoolcloud.tnt4j.streams.registry.zoo.utils.ValidatorUtils;
@@ -49,6 +66,8 @@ public class Init {
 	private static AtomicBoolean streamsAdminRunning = new AtomicBoolean(false);
 
 	private ExecutorService streamAdminMainThread = Executors.newSingleThreadExecutor();
+
+	private final static Logger logger = LoggerFactory.getLogger(Init.class);
 
 	public static TokenAuth getReadToken() {
 		return readToken;
@@ -181,11 +200,43 @@ public class Init {
 		server.setRequestLog(new CustomJettyLogger());
 	}
 
+	private void configureWebAppContext() {
+
+		WebAppContext context = new WebAppContext();
+		context.setDescriptor("src/main/webapp/WEB-INF/web.xml");
+		context.setResourceBase("src/main/resources");
+		context.setContextPath("/");
+
+		context.addServlet(HttpServletDispatcher.class, "/");
+
+		context.setInitParameter("javax.ws.rs.Application",
+				"com.jkoolcloud.tnt4j.streams.registry.zoo.rest.RestScanner");
+
+		context.setInitParameter("resteasy.injector.factory", "org.jboss.resteasy.cdi.CdiInjectorFactory");
+
+		context.setInitParameter("resteasy.providers",
+				"com.jkoolcloud.tnt4j.streams.registry.zoo.authentication.ReadRequestFilter,"
+						+ "com.jkoolcloud.tnt4j.streams.registry.zoo.authentication.ActionRequestFilter");
+
+		context.addEventListener(new Listener());
+
+		HandlerCollection handlers = new HandlerCollection();
+		handlers.setHandlers(new Handler[] { context, new DefaultHandler() });
+
+		server.setHandler(handlers);
+		server.setConnectors(new Connector[] { setupSsl(server) });
+
+		server.setRequestLog(new CustomJettyLogger());
+
+	}
+
 	private void startJetty() {
 		try {
 			server.start();
 		} catch (Exception e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			logger.error("", e);
+
 		}
 	}
 
@@ -194,7 +245,8 @@ public class Init {
 			try {
 				server.stop();
 			} catch (Exception e) {
-				LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+				// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+				logger.error("", e);
 			} finally {
 				server.destroy();
 			}
@@ -204,7 +256,9 @@ public class Init {
 	private void dirStreaming(String dir) {
 
 		if (dir == null || dir.isEmpty()) {
-			LoggerWrapper.addMessage(OpLevel.INFO, "Dir streaming is off");
+			// LoggerWrapper.addMessage(OpLevel.INFO, "Dir streaming is off");
+			logger.info("Dir streaming is off");
+
 			return;
 		}
 
@@ -222,17 +276,20 @@ public class Init {
 			public void run() {
 				try {
 					if (ValidatorUtils.isResourceAvailable(dir, ValidatorUtils.Resource.DIRECTORY)) {
-						LoggerWrapper.addMessage(OpLevel.INFO, "starting dir streaming");
-						StreamControls.dirStreaming(dir);
+						// LoggerWrapper.addMessage(OpLevel.INFO, "starting dir streaming");
+
+						// StreamControls.dirStreaming(dir);
 					}
 				} catch (Exception e) {
-					LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+					Init.logger.error("", e);
+					// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
 				}
 			}
 		});
 	}
 
 	public void loadConfigAndStartCurator(String zkPath) {
+
 		root = JsonUtils.jsonToObject(zkPath, Root.class);
 
 		zookeeper = root.getZookeeper();
@@ -264,12 +321,6 @@ public class Init {
 		stopJetty();
 
 		try {
-			LoggerWrapper.closeLogger();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		try {
 			streamAdminMainThread.shutdown();
 			streamAdminMainThread.awaitTermination(10, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
@@ -285,9 +336,11 @@ public class Init {
 		createBaseTree(zookeeper.getAgentNodes());
 		createStreamNodes(zookeeper.getStreamNodes());
 		dirStreaming(paths.getMonitoredPath());
-		configureConnectors();
+		// configureConnectors()
+		configureWebAppContext();
 		startJetty();
-		LoggerWrapper.addMessage(OpLevel.INFO, "Stream admin has started successfully");
+		// LoggerWrapper.addMessage(OpLevel.INFO, "Stream admin has started successfully");
+		logger.info("Stream admin has started successfully");
 
 	}
 
@@ -302,4 +355,11 @@ public class Init {
 			});
 		}
 	}
+
+	public static void main(String[] args) {
+
+		// Init init = new Init("");
+
+	}
+
 }

@@ -1,73 +1,88 @@
-  .mat-column-value {
+/*
+ * Copyright 2014-2020 JKOOL, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.mat-column-value {
   flex: 0 0 75% !important;
   min-width: 104px !important;
-  }
+}
 
-  .mat-column-value {
-    flex: 0 0 75% !important;
-    min-width: 104px !important;
-  }
+.mat-column-value {
+  flex: 0 0 75% !important;
+  min-width: 104px !important;
+}
 
-  .mat-column-control {
-    flex: 0 0 30% !important;
-    min-width: 104px !important;
-  }
-
-
-  .mat-column-AgentName {
-    flex: 0 0 20% !important;
-    justify-content: flex-start;
-  }
-
-  .mat-column-Status {
-    justify-content: center;
-  }
-
-  .mat-column-StreamName {
-    justify-content: flex-start;
-  }
-
-  .mat-column-Stream {
-    flex: 0 0 22% !important;
-    justify-content: flex-start;
-    padding-right: 24px !important;
-  }
-
-  mat-row.expand-detail-row {
-    min-height: 0em !important;
-  }
-
-  mat-cell.expand-detail-row{
-    text-align: start;
-  }
-
-  .mat-cell-Clusters{
-    overflow:inherit;
-    display:flex;
-    justify-content: center;
-  }
+.mat-column-control {
+  flex: 0 0 30% !important;
+  min-width: 104px !important;
+}
 
 
-  .mat-Header {
-    display:flex !important;
-  }
+.mat-column-AgentName {
+  flex: 0 0 20% !important;
+  justify-content: flex-start;
+}
 
-  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
-    padding: 0.6em !important;
-    border-top : 0px !important;
-  }
+.mat-column-Status {
+  justify-content: center;
+}
 
-  ::ng-deep .mat-form-field-infix{
-    border-top : 0px !important;
-  }
+.mat-column-StreamName {
+  justify-content: flex-start;
+}
 
-    .mat-cell{
-    font-size: 1em !important;
-    font-family: Montserrat,sans-serif !important;
-  }
+.mat-column-Stream {
+  flex: 0 0 22% !important;
+  justify-content: flex-start;
+  padding-right: 24px !important;
+}
+
+mat-row.expand-detail-row {
+  min-height: 0em !important;
+}
+
+mat-cell.expand-detail-row {
+  text-align: start;
+}
+
+.mat-cell-Clusters {
+  overflow: inherit;
+  display: flex;
+  justify-content: center;
+}
 
 
+.mat-Header {
+  display: flex !important;
+}
 
-    mat-footer-row, mat-header-row, mat-row{
-      align-items: unset !important;
-    }
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+  padding: 0.6em !important;
+  border-top: 0px !important;
+}
+
+::ng-deep .mat-form-field-infix {
+  border-top: 0px !important;
+}
+
+.mat-cell {
+  font-size: 1em !important;
+  font-family: Montserrat, sans-serif !important;
+}
+
+
+mat-footer-row, mat-header-row, mat-row {
+  align-items: unset !important;
+}

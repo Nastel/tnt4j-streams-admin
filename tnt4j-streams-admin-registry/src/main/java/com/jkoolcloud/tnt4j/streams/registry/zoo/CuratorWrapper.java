@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014-2020 JKOOL, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.jkoolcloud.tnt4j.streams.registry.zoo;
 
 import java.util.Arrays;
@@ -12,13 +28,14 @@ import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
-
-import com.jkoolcloud.tnt4j.core.OpLevel;
-import com.jkoolcloud.tnt4j.streams.registry.zoo.logging.LoggerWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CuratorWrapper {
 
 	private final CuratorFramework curatorFramework;
+
+	private final static Logger logger = LoggerFactory.getLogger(CuratorWrapper.class);
 
 	public CuratorWrapper(CuratorFramework curatorFramework) {
 		this.curatorFramework = curatorFramework;
@@ -58,7 +75,8 @@ public class CuratorWrapper {
 			stat = curatorFramework.checkExists().forPath(path);
 		} catch (Exception e) {
 			System.out.println(path);
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			logger.error("", e);
 		}
 
 		return stat != null;
@@ -76,7 +94,8 @@ public class CuratorWrapper {
 				String result = curatorFramework.create().forPath(path);
 			}
 		} catch (Exception e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			logger.error("", e);
 		}
 	}
 
@@ -96,7 +115,8 @@ public class CuratorWrapper {
 				stat = curatorFramework.setData().forPath(path, data.getBytes());
 			}
 		} catch (Exception e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			logger.error("", e);
 		}
 		return stat != null;
 	}
@@ -117,7 +137,8 @@ public class CuratorWrapper {
 				stat = curatorFramework.setData().forPath(path, data.getBytes());
 			}
 		} catch (Exception e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			logger.error("", e);
 		}
 		return stat != null;
 	}
@@ -132,7 +153,8 @@ public class CuratorWrapper {
 		try {
 			curatorFramework.delete().forPath(path);
 		} catch (Exception e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			logger.error("", e);
 		}
 	}
 
@@ -148,7 +170,8 @@ public class CuratorWrapper {
 		try {
 			bytes = curatorFramework.getData().forPath(path);
 		} catch (Exception e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			logger.error("", e);
 		}
 		return bytes;
 	}
@@ -169,7 +192,8 @@ public class CuratorWrapper {
 			Collection<String> serviceNames = serviceDiscovery.queryForNames();
 
 		} catch (Exception e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			logger.error("", e);
 		}
 	}
 
@@ -217,7 +241,8 @@ public class CuratorWrapper {
 				String result = curator.create().withMode(CreateMode.EPHEMERAL).forPath(path);
 			}
 		} catch (Exception e) {
-			LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			// LoggerWrapper.logStackTrace(OpLevel.ERROR, e);
+			logger.error("", e);
 		}
 	}
 
@@ -225,14 +250,16 @@ public class CuratorWrapper {
 
 		if (curatorFramework == null) {
 			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
-			LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Curator framework is NULL \n %s", stackTrace));
+			// LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Curator framework is NULL \n %s", stackTrace));
+			logger.warn(String.format("Curator framework is NULL \n %s", stackTrace));
 			return false;
 		}
 
 		if (curatorFramework.getState() != CuratorFrameworkState.STARTED) {
 			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
-			LoggerWrapper.addMessage(OpLevel.WARNING,
-					String.format("Curator framework was not started: \n %s", stackTrace));
+			// LoggerWrapper.addMessage(OpLevel.WARNING,
+			// String.format("Curator framework was not started: \n %s", stackTrace));
+			logger.warn(String.format("Curator framework was not started: \n %s", stackTrace));
 			return false;
 		}
 
@@ -243,14 +270,19 @@ public class CuratorWrapper {
 		int MAX_ZK_PAYLOAD_SIZE_BYTES = 1_000_000;
 		if (payload == null) {
 			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
-			LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Payload is NULL: %s", stackTrace));
+			// LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Payload is NULL: %s", stackTrace));
+
+			logger.warn(String.format("Payload is NULL: %s", stackTrace));
 
 			return false;
 		}
 		if (payload.getBytes().length > MAX_ZK_PAYLOAD_SIZE_BYTES) {
 			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
-			LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Invalid parameter payload, too big: %d \n %s",
-					payload.getBytes().length, stackTrace));
+			// LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Invalid parameter payload, too big: %d \n %s",
+			// payload.getBytes().length, stackTrace));
+
+			logger.warn(String.format("Invalid parameter payload, too big: %d \n %s", payload.getBytes().length,
+					stackTrace));
 
 			return false;
 		}
@@ -261,7 +293,9 @@ public class CuratorWrapper {
 	private boolean validatePath(String path) {
 		if (path == null) {
 			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
-			LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Path is NULL \n %s", stackTrace));
+			// LoggerWrapper.addMessage(OpLevel.WARNING, String.format("Path is NULL \n %s", stackTrace));
+
+			String.format(String.format("Path is NULL \n %s", stackTrace));
 
 			return false;
 		}
@@ -276,9 +310,10 @@ public class CuratorWrapper {
 
 		if (!isPathValid || !doesNodeExist(path)) {
 			String stackTrace = Arrays.toString(Thread.currentThread().getStackTrace());
-			LoggerWrapper.addMessage(OpLevel.WARNING,
-					String.format("Invalid parameter path: %s \n %s", path, stackTrace));
+			// LoggerWrapper.addMessage(OpLevel.WARNING,
+			// String.format("Invalid parameter path: %s \n %s", path, stackTrace));
 
+			String.format(String.format("Invalid parameter path: %s \n %s", path, stackTrace));
 			return false;
 		}
 		return true;

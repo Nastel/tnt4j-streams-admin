@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 JKOOL, LLC.
+ * Copyright 2014-2020 JKOOL, LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,16 @@ package com.jkoolcloud.tnt4j.streams.registry.zoo.streams;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.jkoolcloud.tnt4j.format.DefaultFormatter;
-import com.jkoolcloud.tnt4j.sink.EventSink;
-import com.jkoolcloud.tnt4j.streams.utils.LoggerUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The type Zookeeper output stream.
  */
 public class ZookeeperOutputStream extends OutputStream {
-	private static final EventSink LOGGER_ZOOKEEPER = LoggerUtils.getLoggerSink("zookeeperLog"); // NON-NLS
+	// private static final EventSink LOGGER_ZOOKEEPER = LoggerUtils.getLoggerSink("zookeeperLog"); // NON-NLS
+
+	private Logger logger = LoggerFactory.getLogger(ZookeeperOutputStream.class);
 
 	/**
 	 * The Message buffer.
@@ -42,7 +43,7 @@ public class ZookeeperOutputStream extends OutputStream {
 	 */
 	public ZookeeperOutputStream(StringBuilder messageBuffer) {
 		this.messageBuffer = messageBuffer;
-		LOGGER_ZOOKEEPER.setEventFormatter(new DefaultFormatter("{2}")); // NON-NLS
+		// LOGGER_ZOOKEEPER.setEventFormatter(new DefaultFormatter("{2}")); // NON-NLS
 	}
 
 	/**
