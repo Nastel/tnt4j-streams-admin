@@ -36,7 +36,7 @@
         <logback.version>1.2.3</logback.version>
         <jackson.version>2.12.1</jackson.version>
         <jboss.resteasy.version>4.4.2.Final</jboss.resteasy.version>
-        <guava.version>28.2-jre</guava.version>
+        <guava.version>30.1.1-jre</guava.version>
         <jasypt.version>1.9.3</jasypt.version>
         <quartz.version>2.3.1</quartz.version>
         <jsonassert.version>1.5.0</jsonassert.version>
