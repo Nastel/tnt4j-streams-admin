@@ -39,7 +39,7 @@
         <weld.servlet.version>2.4.8.Final</weld.servlet.version>
         <jandex.version>2.1.2.Final</jandex.version>
         <jackson.version>2.12.1</jackson.version>
-        <apache.commons.io.version>2.6</apache.commons.io.version>
+        <apache.commons.io.version>2.7</apache.commons.io.version>
         <apache.commons-lang3>3.9</apache.commons-lang3>
     </properties>
 
