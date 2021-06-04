@@ -40,7 +40,7 @@
         <jasypt.version>1.9.3</jasypt.version>
         <quartz.version>2.3.1</quartz.version>
         <jsonassert.version>1.5.0</jsonassert.version>
-        <httpcomp.version>4.5.11</httpcomp.version>
+        <httpcomp.version>4.5.13</httpcomp.version>
         <swagger.version>2.0.0</swagger.version>
         <powermock.version>1.6.6</powermock.version>
         <zookeeper.version>3.5.6</zookeeper.version>
