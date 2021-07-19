@@ -33,7 +33,7 @@
     <properties>
         <curator.version>4.2.0</curator.version>
         <dropwizard.metrics.version>4.1.2</dropwizard.metrics.version>
-        <jetty.version>11.0.3</jetty.version>
+        <jetty.version>11.0.6</jetty.version>
         <jboss.resteasy.version>4.4.2.Final</jboss.resteasy.version>
         <tnt4j.streams.version>1.11.0-SNAPSHOT</tnt4j.streams.version>
         <weld.servlet.version>2.4.8.Final</weld.servlet.version>
