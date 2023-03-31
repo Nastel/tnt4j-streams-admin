@@ -34,7 +34,7 @@
         <weld.version>2.4.8.Final</weld.version>
         <servlet.api.version>4.0.1</servlet.api.version>
         <logback.version>1.2.3</logback.version>
-        <jackson.version>2.13.4.1</jackson.version>
+        <jackson.version>2.13.4.2</jackson.version>
         <jboss.resteasy.version>4.6.0.Final</jboss.resteasy.version>
         <guava.version>30.1.1-jre</guava.version>
         <jasypt.version>1.9.3</jasypt.version>
